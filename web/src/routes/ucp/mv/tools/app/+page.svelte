@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Textarea } from 'flowbite-svelte';
+	import { DateTime } from 'luxon';
+	import { Select, Textarea } from 'flowbite-svelte';
 	let code = $state('');
 	interface muszak {
 		[key: string]: number;
@@ -16,7 +17,10 @@
 	let b: muszak = $state({});
 	let all: allmuszak = $state({});
 	let hivasok = $state([0, 0, 0]);
+	let time_format = $state('yyyy. MM. dd. HH:mm:ss');
+	let timeerror = $state(false);
 	const handle = () => {
+		timeerror = false;
 		n = {};
 		a = {};
 		b = {};
@@ -26,7 +30,11 @@
 		for (let row of rows) {
 			if (row.length > 0) {
 				let row_g = row.split('\t');
-				let call_date = new Date(Date.parse(row_g[3]));
+				let unstable_time = DateTime.fromFormat(row_g[3], time_format).toMillis();
+				if (isNaN(unstable_time)) {
+					timeerror = true;
+				}
+				let call_date = new Date(unstable_time);
 				if (call_date.getHours() < 15) {
 					if (row_g[0] !== 'Lemondott') {
 						hivasok[2]++;
@@ -113,21 +121,31 @@
 				}
 			}
 		}
-		console.log(all);
-		console.log(hivasok);
-		console.log(a);
-		console.log(b);
-		console.log(n);
 	};
 </script>
 
 <div class="flex text-center text-white">
 	<div class="m-auto">
+		{#if timeerror}
+			<h1 class="text-xl font-bold text-red-600">
+				Időkezelés hiba, problálj meg egy másik időformátumot, ha egyik se megy keress fel
+				Discordon! (@hvcsano)
+			</h1>
+		{/if}
 		<h1 class="mt-4 text-3xl font-bold">APP Feldolgozó</h1>
 		<h2>
 			Illeszd be az app kódját ide, <a href="/app.mp4" class="text-taxi" target="_blank">így</a> (kiválasztasz
 			egyet, majd CTRL+A és CTRL+C):
 		</h2>
+		<Select
+			bind:value={time_format}
+			class="mb-3"
+			placeholder="Kérlek válassz: (2024 április elseje, 15 óra 12 perc 22 másodperc a példákban az idő!)"
+		>
+			<option value="yyyy. MM. dd. HH:mm:ss">Magyar (2024. 04. 01. 15:12:22)</option>
+			<option value="dd/MM/yyyy HH:mm:ss">Angol (01/04/2024 15:12:22)</option>
+			<option value="dd.MM.yyyy HH:mm:ss">Német (01.04.2024 15:12:22)</option>
+		</Select>
 		<Textarea bind:value={code}></Textarea>
 		<button
 			onclick={handle}
