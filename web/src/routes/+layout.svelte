@@ -16,9 +16,9 @@
 	<title>SAMT</title>
 	<meta name="description" content="A SAMT rendszerének weboldala." />
 	<meta content="SAMT Weboldal" property="og:title" />
-	<meta content="https://samt.hu" property="og:url" />
+	<meta content="/" property="og:url" />
 	<meta content="A SAMT rendszerének weboldala." property="og:description" />
-	<meta content="https://samt.hu/favicon.png" property="og:image" />
+	<meta content="/favicon.png" property="og:image" />
 	<meta content="#fece01" data-react-helmet="true" name="theme-color" />
 </svelte:head>
 {#if snow}
