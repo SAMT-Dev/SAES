@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Factions } from '$lib/permissions';
 	import { Tooltip } from 'flowbite-svelte';
 	import { Button } from 'flowbite-svelte';
 

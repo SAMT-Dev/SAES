@@ -240,7 +240,7 @@
 
 <dialog
 	bind:this={modal}
-	class="h-screen w-screen rounded-3xl bg-black bg-opacity-75 text-center text-white open:flex lg:h-[800px] lg:w-[600px]"
+	class="m-auto h-screen w-screen rounded-3xl bg-black/75 text-center text-white open:flex lg:h-[800px] lg:w-[600px]"
 >
 	{#if bindEdit.custombg}
 		<img
@@ -266,7 +266,7 @@
 		onclick={() => closeModal()}><span class="icon-[carbon--close-filled] m-auto"></span></button
 	>
 	{#if !bindEdit.custombg}
-		<div class="z-20 m-auto h-max w-max rounded-3xl bg-black bg-opacity-25 p-5 lg:w-[500px]">
+		<div class="z-20 m-auto h-max w-max rounded-3xl bg-black/25 p-5 lg:w-[500px]">
 			<form onsubmit={() => editDone()}>
 				<div class="grid grid-cols-2 items-center gap-3">
 					<h1 class=" col-span-2 mx-2 text-3xl font-bold">
