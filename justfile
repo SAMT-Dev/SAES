@@ -56,6 +56,7 @@ r_build soft:
 
 dev_to_test:
     git switch test
+    git pull
     git rebase devel
     git push
     git switch devel
