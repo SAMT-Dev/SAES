@@ -33,6 +33,25 @@ impl Default for GlobalConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AccessKeysConfig {
+    pub key: String,
+    pub access: Vec<AccessConfig>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum AccessConfig {
+    UCP,
+    Admin,
+    Shift,
+    Fleet,
+    Faction,
+    Supplements,
+    Hails,
+    Bills,
+    Shorts,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FactionConfig {
     pub shift_access: ShiftAccess,
     pub access: FactionAccessConfig,
@@ -79,6 +98,7 @@ impl Default for FactionConfig {
 pub struct MainConfig {
     pub global: GlobalConfig,
     pub factions: HashMap<Factions, FactionConfig>,
+    pub access_keys: Vec<AccessKeysConfig>,
 }
 
 impl Default for MainConfig {
@@ -90,6 +110,7 @@ impl Default for MainConfig {
         Self {
             global: GlobalConfig::default(),
             factions,
+            access_keys: vec![],
         }
     }
 }
