@@ -75,7 +75,7 @@ pub async fn key_auth(
         .iter()
         .find(|p| p.key == auth.unwrap().to_str().unwrap());
     if access.is_none() {
-        return Err((StatusCode::UNAUTHORIZED, "Nincs access-key".to_string()));
+        return Err((StatusCode::FORBIDDEN, "Rossz access-key".to_string()));
     }
     request.extensions_mut().insert(AccessKeyExt {
         access: access.unwrap().access.clone(),
