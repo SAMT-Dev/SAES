@@ -38,7 +38,7 @@ pub struct AccessKeysConfig {
     pub access: Vec<AccessConfig>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub enum AccessConfig {
     UCP,
     Admin,

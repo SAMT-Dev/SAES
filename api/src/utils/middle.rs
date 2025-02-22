@@ -2,7 +2,7 @@ use axum::{extract::Request, http::HeaderMap, middleware::Next, response::IntoRe
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
-use crate::{auth::get_discord_envs, MAIN_CONFIG, WEB_CLIENT};
+use crate::{auth::get_discord_envs, config::structs::AccessConfig, MAIN_CONFIG, WEB_CLIENT};
 
 use super::{
     api::get_api_envs,
@@ -51,6 +51,41 @@ pub struct Driver {
     pub tow: Option<FactionRecord>,
     pub apms: Option<FactionRecord>,
     pub faction: Option<Factions>,
+}
+
+#[derive(Debug, Deserialize, Clone, Serialize)]
+pub struct AccessKeyExt {
+    pub access: Vec<AccessConfig>,
+    pub user: Option<String>,
+}
+
+pub async fn key_auth(
+    headers: HeaderMap,
+    mut request: Request,
+    next: Next,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let config = MAIN_CONFIG.get().unwrap();
+    let auth = headers.get("access-key");
+    let user = headers.get("user-id");
+    if auth.is_none() {
+        return Err((StatusCode::UNAUTHORIZED, "Nincs access-key".to_string()));
+    }
+    let access = config
+        .access_keys
+        .iter()
+        .find(|p| p.key == auth.unwrap().to_str().unwrap());
+    if access.is_none() {
+        return Err((StatusCode::UNAUTHORIZED, "Nincs access-key".to_string()));
+    }
+    request.extensions_mut().insert(AccessKeyExt {
+        access: access.unwrap().access.clone(),
+        user: if user.is_some() {
+            Some(user.unwrap().to_str().unwrap().to_string())
+        } else {
+            None
+        },
+    });
+    return Ok(next.run(request).await);
 }
 
 pub async fn ucp_auth(

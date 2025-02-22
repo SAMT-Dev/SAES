@@ -19,6 +19,7 @@ use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
 
+mod api;
 mod auth;
 mod config;
 mod envs;
@@ -88,7 +89,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .route("/auth", get(auth::auth_home))
         .route("/auth/cb", get(auth::base_callback))
         .route("/list", get(list::base_list_get))
-        .route("/shorts", get(shorts::base_get_shorts))
+        .nest("/api", api::routes())
         .nest("/ucp", ucp::routes())
         .layer(
             ServiceBuilder::new()

@@ -3,9 +3,9 @@ import type { PageServerLoad } from './$types';
 import { apiUrl } from '$lib/api';
 
 export const load = (async ({ params }) => {
-	const shorts = await fetch(`${apiUrl}/shorts`, {
+	const shorts = await fetch(`${apiUrl}/api/shorts`, {
 		headers: {
-			'secret-key': process.env.secret_key as string
+			'access-key': process.env.access_key as string
 		}
 	});
 	if (shorts.ok) {

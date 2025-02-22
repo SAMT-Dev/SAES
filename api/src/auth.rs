@@ -24,7 +24,6 @@ pub struct DiscordAuth {
     pub redirect_url: String,
     pub domain: String,
     pub fdomain: String,
-    pub secret_key: String,
 }
 
 pub async fn get_discord_envs() -> DiscordAuth {
@@ -34,7 +33,6 @@ pub async fn get_discord_envs() -> DiscordAuth {
     let cb = hash.get("env_redirect_url").unwrap();
     let domain = hash.get("env_domain").unwrap();
     let fdomain = hash.get("env_full_domain").unwrap();
-    let secret_key = hash.get("env_secret_key").unwrap();
     DiscordAuth {
         api_endpoint: String::from("https://discord.com/api/v10"),
         discord_id: id.to_owned(),
@@ -43,7 +41,6 @@ pub async fn get_discord_envs() -> DiscordAuth {
         fdomain: fdomain.to_owned(),
         redirect_url: cb.to_owned(),
         discord_base: String::from("discord.com/oauth2/authorize"),
-        secret_key: secret_key.to_owned(),
     }
 }
 
