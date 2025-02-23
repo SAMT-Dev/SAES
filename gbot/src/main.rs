@@ -15,8 +15,18 @@ struct DriverData {
     count: u32,
 }
 
-async fn get_current_week() -> Vec<DriverData> {
-    let calls_url = env::var("CALLS_URL").expect("CALLS_URL lekérése sikertelen");
+#[derive(Debug, Clone)]
+enum Apis {
+    SCKK,
+    TOW,
+}
+
+async fn get_current_week(mode: Apis) -> Vec<DriverData> {
+    let calls_url = env::var(match mode {
+        Apis::SCKK => "CALLS_URL",
+        Apis::TOW => "CALLS_URL_TOW",
+    })
+    .expect("CALLS_URL lekérése sikertelen");
     let res = reqwest::get(calls_url)
         .await
         .expect("Hívás lekérés sikertelen");
@@ -25,8 +35,12 @@ async fn get_current_week() -> Vec<DriverData> {
     drivers
 }
 
-async fn get_previous_week() -> Vec<DriverData> {
-    let calls_url = env::var("CALLS_URL_PREV").expect("CALLS_URL_PREV lekérése sikertelen");
+async fn get_previous_week(mode: Apis) -> Vec<DriverData> {
+    let calls_url = env::var(match mode {
+        Apis::SCKK => "CALLS_URL_PREV",
+        Apis::TOW => "CALLS_URL_PREV_TOW",
+    })
+    .expect("CALLS_URL_PREV lekérése sikertelen");
     let res = reqwest::get(calls_url)
         .await
         .expect("Hívás lekérés sikertelen");
@@ -46,37 +60,67 @@ async fn main() {
         println!(" ");
         println!("==== Taxi A műszak aktuális hét ====");
         println!(" ");
-        handle_tables("Taxi A műszak", "B3:C22", "C3", "current").await;
+        handle_tables("Taxi A műszak", "B3:C22", "C3", "current", Apis::SCKK).await;
         println!(" ");
         println!("==== Taxi B műszak aktuális hét ====");
         println!(" ");
-        handle_tables("Taxi B műszak", "B3:C22", "C3", "current").await;
+        handle_tables("Taxi B műszak", "B3:C22", "C3", "current", Apis::SCKK).await;
         println!(" ");
         println!("==== Taxi C műszak aktuális hét ====");
         println!(" ");
-        handle_tables("Taxi C műszak", "B3:C22", "C3", "current").await;
+        handle_tables("Taxi C műszak", "B3:C22", "C3", "current", Apis::SCKK).await;
         println!(" ");
         println!("==== Taxi műszakfüggetlen aktuális hét ====");
         println!(" ");
-        handle_tables("Taxi műszakfüggetlen", "B3:C29", "C3", "current").await;
+        handle_tables(
+            "Taxi műszakfüggetlen",
+            "B3:C29",
+            "C3",
+            "current",
+            Apis::SCKK,
+        )
+        .await;
+        println!(" ");
+        println!("==== TOW A műszak aktuális hét ====");
+        println!(" ");
+        handle_tables("TOW A műszak", "B3:C22", "C3", "current", Apis::TOW).await;
+        println!(" ");
+        println!("==== TOW műszakfüggetlen aktuális hét ====");
+        println!(" ");
+        handle_tables("TOW műszakfüggetlen", "B3:C29", "C3", "current", Apis::TOW).await;
         println!(" ");
         println!("=======================");
         println!(" ");
         println!("==== Taxi A műszak előző hét ====");
         println!(" ");
-        handle_tables("Taxi A műszak", "H3:I22", "I3", "previous").await;
+        handle_tables("Taxi A műszak", "H3:I22", "I3", "previous", Apis::SCKK).await;
         println!(" ");
         println!("==== Taxi B műszak előző hét ====");
         println!(" ");
-        handle_tables("Taxi B műszak", "H3:I22", "I3", "previous").await;
+        handle_tables("Taxi B műszak", "H3:I22", "I3", "previous", Apis::SCKK).await;
         println!(" ");
         println!("==== Taxi C műszak előző hét ====");
         println!(" ");
-        handle_tables("Taxi C műszak", "H3:I22", "I3", "previous").await;
+        handle_tables("Taxi C műszak", "H3:I22", "I3", "previous", Apis::SCKK).await;
         println!(" ");
         println!("==== Taxi műszakfüggetlen előző hét ====");
         println!(" ");
-        handle_tables("Taxi műszakfüggetlen", "H3:I29", "I3", "previous").await;
+        handle_tables(
+            "Taxi műszakfüggetlen",
+            "H3:I29",
+            "I3",
+            "previous",
+            Apis::SCKK,
+        )
+        .await;
+        println!(" ");
+        println!("==== TOW a műszak előző hét ====");
+        println!(" ");
+        handle_tables("TOW A műszak", "H3:I22", "I3", "previous", Apis::TOW).await;
+        println!(" ");
+        println!("==== TOW műszakfüggetlen előző hét ====");
+        println!(" ");
+        handle_tables("TOW műszakfüggetlen", "H3:I29", "I3", "previous", Apis::TOW).await;
         println!(" ");
         println!("=======================");
         println!(" ");
@@ -116,12 +160,12 @@ async fn handle_now(table: &str, cell: &str) {
         .expect("Dátum beírása sikertelen");
 }
 
-async fn handle_tables(table: &str, read_range: &str, write_range: &str, week: &str) {
+async fn handle_tables(table: &str, read_range: &str, write_range: &str, week: &str, mode: Apis) {
     let client = hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new());
     if week == "current" {
         let spread_id = env::var("SPREADSHEET_ID").expect("SPREADSHEET_ID lekérése sikertelen");
         let token = auth::get_google_auth().await;
-        let calls = get_current_week().await;
+        let calls = get_current_week(mode.clone()).await;
         let sheets = Sheets::new(
             client.build(
                 hyper_rustls::HttpsConnectorBuilder::new()
@@ -176,7 +220,7 @@ async fn handle_tables(table: &str, read_range: &str, write_range: &str, week: &
     if week == "previous" {
         let spread_id = env::var("SPREADSHEET_ID").expect("SPREADSHEET_ID lekérése sikertelen");
         let token = auth::get_google_auth().await;
-        let calls = get_previous_week().await;
+        let calls = get_previous_week(mode).await;
         let sheets = Sheets::new(
             client.build(
                 hyper_rustls::HttpsConnectorBuilder::new()
