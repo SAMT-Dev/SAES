@@ -21,7 +21,7 @@
 	};
 </script>
 
-<div class="m-5 grid grid-cols-2 gap-2 text-center text-white">
+<div class="m-5 mx-auto grid grid-cols-2 gap-2 text-center text-white">
 	<div class="rounded-lg bg-amber-300">
 		<h1 class="mt-2 text-3xl font-bold">Global Config</h1>
 		<label for="announcement" class="text-xl font-bold">Hírdetmény: </label>

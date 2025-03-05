@@ -7,7 +7,7 @@ use crate::{
     logging::db_log,
     utils::{
         api::get_api_envs,
-        middle::{DiscordUser, Driver, GetUserRes, SAMTAuth},
+        middle::{DiscordUser, Driver, GetUserRes},
     },
     MAIN_CONFIG, WEB_CLIENT,
 };
@@ -38,10 +38,9 @@ pub async fn on_connect(socket: SocketRef, data: InitialData) {
         if parsed_user.is_ok() {
             let real_user: DiscordUser = parsed_user.unwrap();
             let getuser: String = WEB_CLIENT
-                .post(format!("{}/saes/authenticate", envs.samt))
-                .json(&SAMTAuth {
-                    userdiscordid: real_user.id.clone(),
-                })
+                .get(format!("{}/authenticate", envs.fms,))
+                .query(&[("dcid", real_user.id.clone())])
+                .header("authkey", envs.fms_key)
                 .send()
                 .await
                 .expect("Lekérés sikertelen")
@@ -54,7 +53,7 @@ pub async fn on_connect(socket: SocketRef, data: InitialData) {
                 let tag = Driver {
                     discordid: real_user.id,
                     name: real_tag.username,
-                    driverid: real_tag.userid,
+                    driverid: real_tag.id,
                     admin: real_tag.issysadmin,
                     perms: real_tag.permissions,
                     faction: None,

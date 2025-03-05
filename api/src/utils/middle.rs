@@ -31,7 +31,7 @@ pub struct GetUserRes {
     pub factionrecords: Vec<FactionRecord>,
     pub issysadmin: bool,
     pub permissions: Vec<String>,
-    pub userid: i8,
+    pub id: i8,
     pub username: String,
 }
 
@@ -113,10 +113,9 @@ pub async fn ucp_auth(
             if parsed_user.is_ok() {
                 let real_user: DiscordUser = parsed_user.unwrap();
                 let getuser = WEB_CLIENT
-                    .post(format!("{}/saes/authenticate", envs.samt))
-                    .json(&SAMTAuth {
-                        userdiscordid: real_user.id.clone(),
-                    })
+                    .get(format!("{}/authenticate", envs.fms,))
+                    .query(&[("dcid", real_user.id.clone())])
+                    .header("authkey", envs.fms_key)
                     .send()
                     .await
                     .expect("Lekérés sikertelen");
@@ -258,7 +257,7 @@ pub async fn ucp_auth(
                             let tag = Driver {
                                 discordid: real_user.id,
                                 name: real_tag.username,
-                                driverid: real_tag.userid,
+                                driverid: real_tag.id,
                                 admin: real_tag.issysadmin,
                                 perms: real_tag.permissions,
                                 faction: fact,
@@ -277,7 +276,8 @@ pub async fn ucp_auth(
                     } else {
                         return Err((
                             StatusCode::FORBIDDEN,
-                            "Hát ez egy béna lekérés volt!".to_string(),
+                            "Nem sikerült informatikai tudásunkat alkalmazni ehhez a lekéréshez!"
+                                .to_string(),
                         ));
                     }
                 } else {
