@@ -20,17 +20,6 @@
 					</h2>
 				</a>
 			{/if}
-			<a
-				href="/s/montage"
-				target="_blank"
-				class="col-span-2 w-1/2 rounded-3xl border-4 border-emerald-600 p-5 transition-colors duration-500 hover:bg-emerald-600 lg:w-1/4"
-			>
-				<h1 class="text-2xl font-bold">Montage klipp beküldés</h1>
-				<h2 class="font-itim">
-					Ütköztél, vagy valami zseniális manővert hajtottál végre? Küld be róla a klippet ide, és a
-					következő montage videóban is benne lehetsz!
-				</h2>
-			</a>
 			{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
 				<a
 					href="/s/steam"
