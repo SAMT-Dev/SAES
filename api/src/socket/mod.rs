@@ -4,12 +4,13 @@ use tracing::{info, warn};
 
 use crate::{
     auth::get_discord_envs,
+    config::loader::get_config,
     logging::db_log,
     utils::{
         api::get_api_envs,
         middle::{DiscordUser, Driver, GetUserRes},
     },
-    MAIN_CONFIG, WEB_CLIENT,
+    WEB_CLIENT,
 };
 
 #[derive(Debug, Deserialize)]
@@ -78,14 +79,14 @@ pub async fn on_connect(socket: SocketRef, data: InitialData) {
                     socket.id, tag.name, tag.driverid, tag.discordid,
                 );
                 db_log(tag.name.clone(), None, None, None, "LOGIN", None).await;
-                let mama = MAIN_CONFIG.get().unwrap();
+                let mama = get_config().await;
                 if tag.admin {
-                    socket.join("mv").expect("MV Szobacsatlakozás sikertelen")
+                    socket.join("sysadmin");
                 }
                 // io.to("socketppl")
                 //   .emit("socketppl-update", io.sockets().unwrap().len())
                 //   .expect("SocketPPL - Update on connect kiküldése sikertelen");
-                socket.join("ucp").expect("UCP Szobacsatlakozás sikertelen");
+                socket.join("ucp");
                 socket
                     .emit("maintenance", &mama.global.maintenance)
                     .unwrap();

@@ -11,6 +11,8 @@
 	import Header from '$lib/ucp/header.svelte';
 	import { allowPerms } from '$lib/api.js';
 	import { Factions, Permissions } from '$lib/permissions.js';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	let { data, children } = $props();
 	let maintenance = $state(false);
 	let initial_socket = $state(false);
@@ -28,8 +30,11 @@
 			tip = 'TOW';
 		}
 	}
+	if (data.refresh && browser) {
+		goto(page.url.pathname, { replaceState: true });
+	}
 	onMount(() => {
-		if (!data.noaccess && !data.noauth && !data.error && !data.nofact) {
+		if (!data.noaccess && !data.noauth && !data.error && !data.nofact && !data.refresh) {
 			$socket = io(data.api, {
 				auth: {
 					auth_token: data.auth
@@ -282,7 +287,9 @@
 					? 'selection:bg-taxi'
 					: data.faction === Factions.Tow
 						? 'selection:bg-tow'
-						: data.faction === Factions.Apms ? "selection:bg-apms" : ''}
+						: data.faction === Factions.Apms
+							? 'selection:bg-apms'
+							: ''}
 			>
 				{@render children?.()}
 			</main>
@@ -291,7 +298,7 @@
 		<main>
 			<div class="flex h-screen">
 				<div class="m-auto text-center">
-					<h1 class="text-5xl font-bold text-red-600">Karbantartás</h1>
+					<h1 class="text-5xl font-bold uppercase text-red-600">Karbantartás</h1>
 					<h1 class="text-3xl text-gray-300">
 						Jelenleg karbantartás zajlik, kérlek nézz vissza később!
 					</h1>
@@ -300,9 +307,10 @@
 					{/if}
 					{#if allowPerms(data, [Permissions.SaesMaintenance])}
 						<a
+							data-sveltekit-reload
 							href="/ucp/keine"
 							class="bg-linear-to-r mb-5 ml-5 mr-5 mt-5 block rounded-full from-red-500 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-2 py-1 text-center text-lg font-bold text-white drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
-							>Továbblépés (nyomj rá majd töltsd újra az oldalt)</a
+							>Továbblépés</a
 						>
 					{/if}
 				</div>

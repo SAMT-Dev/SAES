@@ -1,7 +1,6 @@
 use std::{collections::HashMap, env, error::Error};
 
 use axum::{routing::get, Router};
-use config::structs::MainConfig;
 use dotenvy::dotenv;
 use lazy_static::lazy_static;
 use reqwest::Client;
@@ -36,13 +35,14 @@ lazy_static! {
     pub static ref BASE_HASHMAP: RwLock<HashMap<String, String>> = RwLock::new(HashMap::new());
 }
 pub static DB_CLIENT: OnceCell<DatabaseConnection> = OnceCell::const_new();
-pub static MAIN_CONFIG: OnceCell<MainConfig> = OnceCell::const_new();
+pub static SOCKET_IO: OnceCell<SocketIo> = OnceCell::const_new();
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenv().expect(".env fájl nem található");
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
     let (layer, io) = SocketIo::new_layer();
+    SOCKET_IO.set(io).unwrap();
     envs::load_envs().await;
     let env_mode = env::var("ENV_MODE");
     if env_mode.is_err() {
@@ -63,10 +63,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "env_mode".to_string(),
         env_mode.clone().to_uppercase().to_string(),
     );
-
     init::main().await;
     DB_CLIENT.set(get_db_conn().await).unwrap();
-    io.ns(
+    SOCKET_IO.get().unwrap().ns(
         "/",
         move |socket: SocketRef, Data(data): Data<InitialData>| socket::on_connect(socket, data),
     );

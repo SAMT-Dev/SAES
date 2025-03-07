@@ -16,7 +16,7 @@
 
 <nav class="grid grid-cols-2 items-center justify-between bg-rose-500 text-white lg:flex">
 	<div class="ml-2 flex shrink items-center gap-2 xl:ml-[10vw]">
-		<h1 class="hidden text-3xl font-bold drop-shadow-xl md:block">Sysadmin</h1>
+		<h1 class="hidden text-3xl font-bold drop-shadow-xl md:block">Rendszergizda</h1>
 		<h1 class="text-3xl font-bold drop-shadow-xl md:hidden">Sys</h1>
 	</div>
 	<button

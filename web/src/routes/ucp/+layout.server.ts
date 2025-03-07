@@ -110,6 +110,11 @@ export const load = (async ({ cookies, request, url }) => {
 					cookies.delete('selected_faction', { path: '/' });
 					throw redirect(303, url.pathname);
 				}
+				if (url.searchParams.get('cookie_refresh')) {
+					return {
+						refresh: true
+					};
+				}
 				if (!cookies.get('selected_faction')) {
 					if (
 						countPerms({ layout: jeson }, [

@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 
 use crate::{
+    config::loader::get_config,
     logging::db_log,
     utils::{
         factions::get_faction_id,
@@ -19,7 +20,7 @@ use crate::{
         structs::SMGetItemsFull,
         types_statuses::{get_statuses_as_list, get_types, get_types_as_list},
     },
-    DB_CLIENT, MAIN_CONFIG,
+    DB_CLIENT,
 };
 
 #[derive(Debug, Deserialize)]
@@ -43,7 +44,7 @@ pub async fn admin_items_get(
     quer: Query<SMItemsQuery>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let db = DB_CLIENT.get().unwrap();
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     let types = get_types();
     if quer.tipus == types.supplements.id
         && config
@@ -164,7 +165,7 @@ pub async fn admin_items_post(
     extract::Json(body): extract::Json<SMPostItemsBody>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let status_list = get_statuses_as_list();
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     let types_list = get_types_as_list();
     if status_list.contains(&body.status) && types_list.contains(&body.tipus) {
         let types = get_types();

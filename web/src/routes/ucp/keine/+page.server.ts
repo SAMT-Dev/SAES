@@ -8,5 +8,5 @@ export const load = (async ({ cookies }) => {
 		secure: true,
 		path: '/'
 	});
-	throw redirect(307, '/ucp');
+	throw redirect(307, '/ucp?cookie_refresh=true');
 }) satisfies PageServerLoad;

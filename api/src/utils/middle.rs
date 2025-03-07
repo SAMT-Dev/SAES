@@ -2,7 +2,11 @@ use axum::{extract::Request, http::HeaderMap, middleware::Next, response::IntoRe
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
-use crate::{auth::get_discord_envs, config::structs::AccessConfig, MAIN_CONFIG, WEB_CLIENT};
+use crate::{
+    auth::get_discord_envs,
+    config::{loader::get_config, structs::AccessConfig},
+    WEB_CLIENT,
+};
 
 use super::{
     api::get_api_envs,
@@ -64,7 +68,7 @@ pub async fn key_auth(
     mut request: Request,
     next: Next,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     let auth = headers.get("access-key");
     let user = headers.get("user-id");
     if auth.is_none() {
@@ -97,6 +101,7 @@ pub async fn ucp_auth(
     let faction = headers.get("faction");
     let ds = get_discord_envs().await;
     let envs = get_api_envs().await;
+    let config = get_config().await;
     if auth.is_some() {
         let dcuserget = WEB_CLIENT
             .get(format!("{}/users/@me", ds.api_endpoint))
@@ -205,7 +210,6 @@ pub async fn ucp_auth(
                             if fact.is_some() {
                                 match fact.unwrap() {
                                     Factions::SCKK => {
-                                        let config = MAIN_CONFIG.get().unwrap();
                                         if !config
                                             .factions
                                             .get(&Factions::SCKK)
@@ -221,7 +225,6 @@ pub async fn ucp_auth(
                                         }
                                     }
                                     Factions::TOW => {
-                                        let config = MAIN_CONFIG.get().unwrap();
                                         if !config
                                             .factions
                                             .get(&Factions::TOW)
@@ -237,7 +240,6 @@ pub async fn ucp_auth(
                                         }
                                     }
                                     Factions::APMS => {
-                                        let config = MAIN_CONFIG.get().unwrap();
                                         if !config
                                             .factions
                                             .get(&Factions::APMS)
@@ -312,7 +314,7 @@ pub async fn shift_auth(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let exts: Option<&Driver> = req.extensions_mut().get();
     let uwrp = exts.expect("Tag lekérése sikertelen, ucp_auth megtörtént?");
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     if uwrp.faction.is_some() {
         let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdminShift(
             uwrp.faction.unwrap(),
@@ -348,7 +350,7 @@ pub async fn admin_auth(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let exts: Option<&Driver> = req.extensions_mut().get();
     let uwrp = exts.expect("Tag lekérése sikertelen, ucp_auth megtörtént?");
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     if uwrp.faction.is_some() {
         let fact = if uwrp
             .perms
@@ -387,7 +389,7 @@ pub async fn faction_auth(
     next: Next,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let exts: Option<&Driver> = req.extensions_mut().get();
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     let uwrp = exts.expect("Tag lekérése sikertelen, ucp_auth megtörtént?");
     if uwrp.faction.is_none() {
         return Err((

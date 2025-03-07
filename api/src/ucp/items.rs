@@ -20,6 +20,7 @@ use sha2::Digest;
 use tokio::fs::remove_file;
 
 use crate::{
+    config::loader::get_config,
     logging::db_log,
     utils::{
         factions::{get_faction_id, Factions},
@@ -27,7 +28,7 @@ use crate::{
         queries::{UCPTypeExtraQuery, UCPTypeQuery},
         types_statuses::{get_statuses, get_types, get_types_as_list},
     },
-    DB_CLIENT, MAIN_CONFIG,
+    DB_CLIENT,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -57,7 +58,7 @@ pub async fn ucp_items_get(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let db = DB_CLIENT.get().unwrap();
     let types = get_types();
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     if ext.faction.is_some() {
         if cucc.tipus == types.supplements.id
             && config
@@ -180,7 +181,7 @@ pub async fn ucp_items_post(
     let dates = cucc.dates.clone();
     let ditas: Vec<&str> = dates.split(",").collect();
     let types = get_types();
-    let config = MAIN_CONFIG.get().unwrap();
+    let config = get_config().await;
     let statuses = get_statuses();
     let types_list = get_types_as_list();
     let mut i = 0;

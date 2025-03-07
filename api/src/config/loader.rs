@@ -1,44 +1,49 @@
-use std::{
-    fs::{self, File},
-    io::Write,
-    path::Path,
-};
+use std::path::Path;
 
 use serde_json::to_string_pretty;
+use tokio::{
+    fs::{self, File, OpenOptions},
+    io::AsyncWriteExt,
+};
 
-use crate::MAIN_CONFIG;
+use crate::SOCKET_IO;
 
 use super::structs::MainConfig;
 
-pub fn check_config() {
+pub async fn get_config() -> MainConfig {
     let dir = Path::new("./config");
     if !dir.exists() {
-        fs::create_dir(dir).unwrap();
+        fs::create_dir(dir).await.unwrap();
     }
     let config_file = Path::new("./config/main.json");
     if !config_file.exists() {
-        let mut file = File::create(config_file).unwrap();
+        let mut file = File::create(config_file).await.unwrap();
         let config = MainConfig::default();
         let json = to_string_pretty(&config).unwrap();
         let buf = json.as_bytes();
-        file.write(buf).unwrap();
+        file.write_all(buf).await.unwrap();
     }
-    let config = File::open(config_file);
-    if config.is_err() {
-        panic!("Config load failed.")
-    }
-    let config: Result<MainConfig, serde_json::Error> = serde_json::from_reader(config.unwrap());
-    if config.is_err() {
-        panic!("Config parse failed.")
-    }
-    MAIN_CONFIG.set(config.unwrap()).unwrap();
+    let config = File::open(config_file).await.unwrap();
+    let config: MainConfig = serde_json::from_reader(config.into_std().await).unwrap();
+    config
 }
 
-pub fn write_config(config: &MainConfig) {
+pub async fn write_config(config: &MainConfig) {
     let config_file = Path::new("./config/main.json");
-    let mut file = File::open(config_file).unwrap();
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(config_file)
+        .await
+        .unwrap();
     let json = to_string_pretty(config).unwrap();
     let buf = json.as_bytes();
-    file.write(buf).unwrap();
-    check_config();
+    file.write(buf).await.unwrap();
+    let io = SOCKET_IO.get().unwrap();
+    io.emit("maintenance", &config.global.maintenance)
+        .await
+        .expect("Failed to resend maintenance");
+    io.emit("announcement", &config.global.announcement)
+        .await
+        .expect("Failed to resend announcement");
 }

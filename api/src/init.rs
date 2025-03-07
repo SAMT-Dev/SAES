@@ -6,7 +6,7 @@ use std::{
 
 use saes_shared::sql::test_db_conn;
 
-use crate::config::loader::check_config;
+use crate::config::loader::get_config;
 
 async fn stores_dir_init() {
     let stores_dir = Path::new("stores");
@@ -44,7 +44,7 @@ fn image_tmp_init() {
 }
 
 pub async fn main() {
-    check_config();
+    get_config().await;
     test_db_conn().await;
     stores_dir_init().await;
     image_init();
