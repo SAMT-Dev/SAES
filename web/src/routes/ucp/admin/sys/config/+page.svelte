@@ -4,6 +4,12 @@
 
 	let { data } = $props();
 
+	const factions: string[][] = [
+		['SCKK', 'TAXI', 'bg-taxi'],
+		['TOW', 'TOW', 'bg-tow'],
+		['APMS', 'APMS', 'bg-apms']
+	];
+
 	let announcement = $state(
 		data.config?.global.announcement ? data.config?.global.announcement : null
 	);
@@ -74,4 +80,9 @@
 			<Tooltip>Változás mentése</Tooltip>
 		{/if}
 	</div>
+	{#each factions as f}
+		<div class={`rounded-lg ${f[2]}`}>
+			<h1 class="mt-2 text-3xl font-bold">{f[1]} config</h1>
+		</div>
+	{/each}
 </div>
