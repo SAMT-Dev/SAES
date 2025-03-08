@@ -69,6 +69,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "/",
         move |socket: SocketRef, Data(data): Data<InitialData>| socket::on_connect(socket, data),
     );
+    SOCKET_IO
+        .get()
+        .unwrap()
+        .ns("/app", move |socket: SocketRef| {
+            socket::app::on_connect(socket)
+        });
     let hash = env::var("COMMIT_HASH");
     let app = Router::new()
         .route(
