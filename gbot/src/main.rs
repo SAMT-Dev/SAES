@@ -87,7 +87,7 @@ async fn main() {
         println!(" ");
         println!("==== TOW műszakfüggetlen aktuális hét ====");
         println!(" ");
-        handle_tables("TOW műszakfüggetlen", "B3:C29", "C3", "current", Apis::TOW).await;
+        handle_tables("TOW műszakfüggetlen", "B3:C22", "C3", "current", Apis::TOW).await;
         println!(" ");
         println!("=======================");
         println!(" ");
@@ -107,7 +107,7 @@ async fn main() {
         println!(" ");
         handle_tables(
             "Taxi műszakfüggetlen",
-            "H3:I22",
+            "H3:I29",
             "I3",
             "previous",
             Apis::SCKK,
