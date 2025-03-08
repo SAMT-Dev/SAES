@@ -43,44 +43,62 @@
 	<div class="relative z-20 border-b bg-white dark:bg-gray-700 dark:text-white">
 		<div class="mx-0 px-0 xl:container lg:mx-auto lg:py-4">
 			<div class="flex items-center justify-between gap-2">
-				<a
-					class="group relative z-20 flex items-center gap-3"
-					data-sveltekit-reload={multifact ? true : false}
-					href={multifact ? '?clear_faction=true' : '/ucp'}
-				>
-					<div
-						class={`${faction === Factions.Tow ? 'group-hover:border-tow' : faction === Factions.Taxi ? 'group-hover:border-taxi' : 'group-hover:border-apms'} pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200`}
+				<div class="m-auto flex items-center justify-center gap-2">
+					<a
+						class="group relative z-20 flex items-center gap-3"
+						data-sveltekit-reload={multifact ? true : false}
+						href={multifact ? '?clear_faction=true' : '/ucp'}
 					>
-						<img
-							src={faction === Factions.Taxi || faction === Factions.Tow
-								? '/sckk_icon.png'
-								: faction === Factions.Apms
-									? '/apms_icon.png'
-									: '/favicon.png'}
-							class="border-1 pointer-events-none rounded-full border-solid border-black"
-							width="40"
-							height="40"
-							alt="SCKK Logó"
-						/>
-					</div>
-					<h1
-						class={`text-3xl font-bold drop-shadow-xl transition-colors duration-200 ${
-							faction === Factions.Tow
-								? 'group-hover:text-tow'
-								: faction === Factions.Taxi
-									? 'group-hover:text-taxi'
-									: 'group-hover:text-apms'
-						}`}
-					>
-						{tip}
-					</h1>
-					{#if christmas}
-						<img src="/santa.svg" class="absolute bottom-2 left-3.5 w-14 -rotate-[24deg]" alt="" />
+						<div
+							class={`${faction === Factions.Tow ? 'group-hover:border-tow' : faction === Factions.Taxi ? 'group-hover:border-taxi' : 'group-hover:border-apms'} pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200`}
+						>
+							<img
+								src={faction === Factions.Taxi || faction === Factions.Tow
+									? '/sckk_icon.png'
+									: faction === Factions.Apms
+										? '/apms_icon.png'
+										: '/favicon.png'}
+								class="border-1 pointer-events-none rounded-full border-solid border-black"
+								width="40"
+								height="40"
+								alt="Logó"
+							/>
+						</div>
+						<h1
+							class={`text-3xl font-bold drop-shadow-xl transition-colors duration-200 ${
+								faction === Factions.Tow
+									? 'group-hover:text-tow'
+									: faction === Factions.Taxi
+										? 'group-hover:text-taxi'
+										: 'group-hover:text-apms'
+							}`}
+						>
+							{tip}
+						</h1>
+						{#if christmas}
+							<img
+								src="/santa.svg"
+								class="absolute bottom-2 left-3.5 w-14 -rotate-[24deg]"
+								alt=""
+							/>
+						{/if}
+					</a>
+					{#if multifact}
+						<Tooltip>Frakcióváltás</Tooltip>
 					{/if}
-				</a>
-				{#if multifact}
-					<Tooltip>Frakcióváltás</Tooltip>
-				{/if}
+					<a href="/ucp/settings" aria-label="Beállítások" class="group"
+						><span
+							class={`icon-[material-symbols--settings] h-6 w-6 transition-colors duration-200 ${
+								faction === Factions.Tow
+									? 'group-hover:text-tow'
+									: faction === Factions.Taxi
+										? 'group-hover:text-taxi'
+										: 'group-hover:text-apms'
+							}`}
+						></span></a
+					>
+					<Tooltip>Beállítások</Tooltip>
+				</div>
 				<div class="flex items-center justify-end border-l lg:border-l-0">
 					<input type="checkbox" name="hamburger" id="hamburger" class="peer opacity-0" hidden />
 					<label
