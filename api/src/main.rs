@@ -42,7 +42,9 @@ pub static APP_AUTHS: OnceCell<RwLock<Vec<AppUser>>> = OnceCell::const_new();
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    dotenv().expect(".env fájl nem található");
+    if dotenv().is_err() {
+        println!("Failed to load .env")
+    };
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
     let (layer, io) = SocketIo::new_layer();
     SOCKET_IO.set(io).unwrap();

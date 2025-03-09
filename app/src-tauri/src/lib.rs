@@ -5,7 +5,7 @@ use tauri::{
     AppHandle, Emitter, Manager,
 };
 use tauri_plugin_opener::OpenerExt;
-use util::login::begin_login;
+use util::login::{begin_login, get_api_url};
 
 mod util;
 
@@ -33,6 +33,7 @@ pub fn run() {
             println!("Single instance callback");
         }))
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_opener::Builder::new().build())
         .setup(|app| {
             let quit_i = MenuItem::with_id(app, "quit", "Kilépés", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&quit_i])?;
@@ -53,7 +54,11 @@ pub fn run() {
                 .build(app)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![update_done, begin_login])
+        .invoke_handler(tauri::generate_handler![
+            update_done,
+            begin_login,
+            get_api_url
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

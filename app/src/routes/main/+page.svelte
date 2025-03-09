@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
+	import { openUrl } from '@tauri-apps/plugin-opener';
 	let page = $state('noconfig');
 	listen<string>('setmainpage', (ev) => {
 		page = ev.payload;
 	});
 	async function beginLogin() {
+		let api = await invoke('get_api_url');
+		await openUrl(`${api}/auth?mode=app`);
 		await invoke('begin_login');
 	}
 </script>

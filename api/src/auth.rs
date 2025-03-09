@@ -82,6 +82,12 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         serde_json::from_str(&token_response).expect("Átalakítás sikertelen");
     let path = String::from_utf8(general_purpose::STANDARD.decode(query.state).unwrap()).unwrap();
     let path_full: AuthState = serde_json::from_str(&path).expect("Nem megy");
+    if path_full.mode == "app".to_string() {
+        return Redirect::to(&format!(
+            "http://localhost:31313/app-auth/cb?code={}",
+            object.access_token
+        ));
+    }
     if GLOBAL_ARRAY.read().await.contains(&path_full.truestate) {
         cookies.add(
             Cookie::build(("auth_token", object.access_token))
@@ -101,6 +107,7 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         GLOBAL_ARRAY.write().await.remove(id);
         return Redirect::to(&format!("{}{}", &ds.fdomain, path_full.path));
     }
+
     Redirect::to("https://google.com")
 }
 
@@ -119,6 +126,7 @@ pub struct AuthHomeCode {
 pub struct AuthState {
     path: String,
     truestate: String,
+    mode: String,
 }
 
 #[debug_handler]
@@ -128,22 +136,15 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>) -> Redirect {
     let state = AuthState {
         path: q.path,
         truestate: rstate.clone(),
+        mode: if q.mode.is_some() {
+            q.mode.unwrap()
+        } else {
+            "web".to_string()
+        },
     };
     GLOBAL_ARRAY.write().await.push(rstate);
     let state_str = serde_json::to_string(&state).expect("Sikertelen átalakítás");
     let ds = get_discord_envs().await;
-    let redirecturi = if q.mode.is_some() {
-        let qun = q.mode.unwrap();
-        if qun == "web".to_string() {
-            ds.redirect_url
-        } else if qun == "app".to_string() {
-            "http://127.0.0.1:31313/app-auth/cb".to_string()
-        } else {
-            "https://google.com".to_string()
-        }
-    } else {
-        ds.redirect_url
-    };
     ub.set_protocol("https")
         .set_host(&ds.discord_base.as_str())
         .add_param("response_type", "code")
@@ -151,7 +152,7 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>) -> Redirect {
         .add_param("client_id", &ds.discord_id)
         .add_param("scope", "identify")
         .add_param("prompt", "none")
-        .add_param("redirect_uri", &redirecturi);
+        .add_param("redirect_uri", &ds.redirect_url);
     let built_url = ub.build();
     Redirect::to(&built_url)
 }
