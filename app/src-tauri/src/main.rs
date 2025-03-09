@@ -4,6 +4,8 @@
 use dotenvy::dotenv;
 
 fn main() {
-    dotenv().unwrap();
+    if dotenv().is_err() {
+        println!("No .env")
+    }
     samt_app_lib::run()
 }
