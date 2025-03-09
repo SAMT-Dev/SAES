@@ -13,8 +13,6 @@ use crate::{
     WEB_CLIENT,
 };
 
-pub mod app;
-
 #[derive(Debug, Deserialize)]
 pub struct InitialData {
     auth_token: String,

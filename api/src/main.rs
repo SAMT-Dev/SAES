@@ -17,8 +17,10 @@ use tower_cookies::CookieManagerLayer;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
+use utils::structs::AppUser;
 
 mod api;
+mod app;
 mod auth;
 mod config;
 mod envs;
@@ -36,6 +38,7 @@ lazy_static! {
 }
 pub static DB_CLIENT: OnceCell<DatabaseConnection> = OnceCell::const_new();
 pub static SOCKET_IO: OnceCell<SocketIo> = OnceCell::const_new();
+pub static APP_AUTHS: OnceCell<RwLock<Vec<AppUser>>> = OnceCell::const_new();
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -65,16 +68,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
     init::main().await;
     DB_CLIENT.set(get_db_conn().await).unwrap();
+    APP_AUTHS.set(RwLock::new(Vec::new())).unwrap();
     SOCKET_IO.get().unwrap().ns(
         "/",
         move |socket: SocketRef, Data(data): Data<InitialData>| socket::on_connect(socket, data),
     );
-    SOCKET_IO
-        .get()
-        .unwrap()
-        .ns("/app", move |socket: SocketRef| {
-            socket::app::on_connect(socket)
-        });
     let hash = env::var("COMMIT_HASH");
     let app = Router::new()
         .route(
@@ -96,6 +94,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .route("/list", get(list::base_list_get))
         .nest("/api", api::routes())
         .nest("/ucp", ucp::routes())
+        .nest("/app", app::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(CorsLayer::permissive())

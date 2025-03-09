@@ -16,3 +16,9 @@ pub struct SMGetItemsFull {
     pub date: chrono::DateTime<Utc>,
     pub item_type: i8,
 }
+
+#[derive(Debug, Serialize)]
+pub struct AppUser {
+    pub usertoken: String,
+    pub authcode: String,
+}
