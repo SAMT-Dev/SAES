@@ -112,6 +112,7 @@ fn base_path() -> String {
 pub struct AuthHomeCode {
     #[serde(default = "base_path")]
     path: String,
+    mode: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -131,6 +132,18 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>) -> Redirect {
     GLOBAL_ARRAY.write().await.push(rstate);
     let state_str = serde_json::to_string(&state).expect("Sikertelen átalakítás");
     let ds = get_discord_envs().await;
+    let redirecturi = if q.mode.is_some() {
+        let qun = q.mode.unwrap();
+        if qun == "web".to_string() {
+            ds.redirect_url
+        } else if qun == "app".to_string() {
+            "http://127.0.0.1:31313/app-auth/cb".to_string()
+        } else {
+            "https://google.com".to_string()
+        }
+    } else {
+        ds.redirect_url
+    };
     ub.set_protocol("https")
         .set_host(&ds.discord_base.as_str())
         .add_param("response_type", "code")
@@ -138,7 +151,7 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>) -> Redirect {
         .add_param("client_id", &ds.discord_id)
         .add_param("scope", "identify")
         .add_param("prompt", "none")
-        .add_param("redirect_uri", &ds.redirect_url);
+        .add_param("redirect_uri", &redirecturi);
     let built_url = ub.build();
     Redirect::to(&built_url)
 }

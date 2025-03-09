@@ -1,9 +1,11 @@
 use tauri::{
+    http::Response,
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
     AppHandle, Emitter, Manager,
 };
 use tauri_plugin_opener::OpenerExt;
+use util::login::begin_login;
 
 mod util;
 
@@ -24,14 +26,6 @@ async fn update_done(app: AppHandle) {
     }
 }
 
-#[tauri::command]
-async fn start_app(app_handle: AppHandle) {
-    let overlay = app_handle.get_webview_window("overlay").unwrap();
-    let loader = app_handle.get_webview_window("loader").unwrap();
-    loader.hide().unwrap();
-    overlay.show().unwrap();
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -50,7 +44,6 @@ pub fn run() {
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
-                        println!("quit menu item was clicked");
                         app.exit(0);
                     }
                     _ => {
@@ -58,10 +51,9 @@ pub fn run() {
                     }
                 })
                 .build(app)?;
-
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![update_done])
+        .invoke_handler(tauri::generate_handler![update_done, begin_login])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
