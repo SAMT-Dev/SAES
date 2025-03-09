@@ -54,11 +54,12 @@ jobs:
       - name: install frontend dependencies
         working-directory: ./app
         run: bun install # change this to npm, pnpm or bun depending on which one you use.
-
+      - name: Create .env file
+        run: |
+          echo "API_URL=${{ env.API_URL }}" > app/src-tauri/.env
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          API_URL: ${{ env.API_URL }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD}}
         with:
