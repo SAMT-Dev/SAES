@@ -7,6 +7,7 @@ alias rd := r_dev
 alias wd := w_dev
 alias dtt := dev_to_test
 alias td := t_dev
+alias dbg := db_gen
 
 #* DEV scripts
 
@@ -75,3 +76,13 @@ t_dev:
 [linux]
 t_dev:
     cd app && cargo tauri dev
+
+#* DB Type gen based on api's .env
+
+[windows]
+db_gen:
+    cd api; sea-orm-cli generate entity -o ../shared/src/db
+
+[linux]
+db_gen:
+    cd api && sea-orm-cli generate entity -o ../shared/src/db
