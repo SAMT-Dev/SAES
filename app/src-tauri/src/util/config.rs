@@ -5,9 +5,9 @@ use std::{
 };
 
 use homedir::my_home;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub dc_token: String,
     pub game_dir: String,
