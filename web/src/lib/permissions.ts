@@ -30,9 +30,9 @@ export function get_faction_by_id(faction: number) {
 		return Factions.Taxi;
 	}
 	if (faction === 2) {
-		return Factions.Apms;
+		return Factions.Tow;
 	}
 	if (faction === 3) {
-		return Factions.Tow;
+		return Factions.Apms;
 	}
 }

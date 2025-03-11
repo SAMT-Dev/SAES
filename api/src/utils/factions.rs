@@ -10,8 +10,8 @@ pub enum Factions {
 pub fn get_faction_id(faction: Factions) -> i8 {
     match faction {
         Factions::SCKK => 1,
-        Factions::APMS => 2,
-        Factions::TOW => 3,
+        Factions::APMS => 3,
+        Factions::TOW => 2,
     }
 }
 
