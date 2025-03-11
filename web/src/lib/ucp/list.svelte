@@ -61,7 +61,7 @@
 			<h2 class="m-auto text-black dark:text-white">
 				Összesen {data.potlekok.length} darab.
 			</h2>
-			{#if data.faction === Factions.Apms && tipus === get_type_number('számla')}
+			{#if data.faction === Factions.Apms || tipus !== get_type_number('számla')}
 				<a
 					href={`${page.url.pathname}/upload`}
 					aria-label="Feltöltés"
