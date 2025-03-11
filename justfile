@@ -3,6 +3,11 @@ default:
 
 set windows-powershell
 
+alias rd := r_dev
+alias wd := w_dev
+alias dtt := dev_to_test
+alias td := t_dev
+
 #* DEV scripts
 
 [windows]
