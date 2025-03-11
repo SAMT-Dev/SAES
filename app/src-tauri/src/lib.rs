@@ -1,13 +1,20 @@
+use std::env;
+
+use lazy_static::lazy_static;
 use tauri::{
-    http::Response,
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
     AppHandle, Emitter, Manager,
 };
-use tauri_plugin_opener::OpenerExt;
-use util::login::{begin_login, get_api_url};
+use tokio::sync::RwLock;
+use util::login::{begin_login, check_envs, get_api_url};
 
 mod util;
+
+lazy_static! {
+    pub static ref DISCORD_TOKEN: RwLock<Option<String>> = RwLock::new(None);
+    pub static ref API_URL: RwLock<Option<String>> = RwLock::new(None);
+}
 
 #[tauri::command]
 async fn update_done(app: AppHandle) {
@@ -57,7 +64,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             update_done,
             begin_login,
-            get_api_url
+            get_api_url,
+            check_envs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

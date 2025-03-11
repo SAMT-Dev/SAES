@@ -7,6 +7,7 @@
 	import { listen } from '@tauri-apps/api/event';
 	let text = $state('Frissítések keresése');
 	let ver = $state('');
+	let envserr = $state(false);
 
 	listen<string>('setloadertext', (ev) => {
 		text = ev.payload;
@@ -44,10 +45,17 @@
 				text = 'Frissítés kész, újraindítás';
 				await relaunch();
 			}
-			text = 'App indítása';
-			setTimeout(() => {
-				invoke('update_done');
-			}, 500);
+			text = 'ENV ellenőrzése';
+			let envs: boolean = await invoke('check_envs');
+			if (envs) {
+				text = 'App indítása';
+				setTimeout(() => {
+					invoke('update_done');
+				}, 500);
+			} else {
+				envserr = true;
+				text = '';
+			}
 		}, 300);
 	});
 </script>
@@ -59,6 +67,12 @@
 		<img src="/favicon.png" class="w-[200px] m-auto" alt="" />
 		<h1 class="font-bold text-3xl text-white w-screen">SAMT App</h1>
 		<h2 class="text-gray-300 font-light">{text}</h2>
+		{#if envserr}
+			<h2 class="text-red-500 font-light">
+				ENV beolvasása sikertelen. Ez első indításkor előfordul, kérlek indítsd újra az appot. Ha
+				nem oldja meg, keress fel egy fejlesztőt.
+			</h2>
+		{/if}
 	</div>
 	<h2 class="text-gray-400 absolute bottom-0 left-1">v{ver}</h2>
 </div>

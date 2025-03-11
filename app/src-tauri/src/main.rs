@@ -5,7 +5,7 @@ use dotenvy::dotenv;
 
 fn main() {
     if dotenv().is_err() {
-        println!("No .env")
-    }
+        println!("No .env found")
+    };
     samt_app_lib::run()
 }
