@@ -72,7 +72,7 @@ pub async fn sm_stat(
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .filter(bills::Column::Date.gt(friday.last_friday))
             .filter(bills::Column::Date.lt(friday.next_friday))
-            .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(bills::Column::TargetFaction.eq(get_faction_id(ext.faction.unwrap())))
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -122,7 +122,7 @@ pub async fn sm_stat(
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .filter(bills::Column::Date.gt(friday.before_last_friday))
             .filter(bills::Column::Date.lt(friday.last_friday))
-            .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(bills::Column::TargetFaction.eq(get_faction_id(ext.faction.unwrap())))
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");

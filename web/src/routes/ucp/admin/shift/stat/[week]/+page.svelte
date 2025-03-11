@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
-	import { navigating, page } from '$app/stores';
+	import { page } from '$app/state';
 	import Error from '$lib/error.svelte';
 	import { getRealText, getAlterText } from '$lib/ucp/public.js';
+	import { onMount } from 'svelte';
 	interface calls {
 		[key: string]: number;
 	}
@@ -16,8 +15,7 @@
 	}
 	let { data } = $props();
 	let aha: tipus = $state({});
-	function render() {
-		aha = {};
+	onMount(() => {
 		if (data.date) {
 			for (const potlek of data.stats.potlekok) {
 				if (potlek.type === 1) {
@@ -49,14 +47,14 @@
 
 			for (const szamla of data.stats.szamlak) {
 				if (!aha['számla']) aha['számla'] = {};
-				if (aha['számla'][szamla.owner]) {
-					aha['számla'][szamla.owner] += Number(szamla.price);
+				if (aha['számla'][szamla.driver!]) {
+					aha['számla'][szamla.driver!] += Number(szamla.price);
 				} else {
-					aha['számla'][szamla.owner] = Number(szamla.price);
+					aha['számla'][szamla.driver!] = Number(szamla.price);
 				}
 			}
 		}
-	}
+	});
 	function copyClip(str: string, id: string) {
 		navigator.clipboard.writeText(str);
 		copied[id] = true;
@@ -64,9 +62,6 @@
 			copied[id] = false;
 		}, 3000);
 	}
-	run(() => {
-		if (!$navigating) render();
-	});
 </script>
 
 <Error {data}>
@@ -99,7 +94,7 @@
 										class="ml-1 flex items-center justify-center rounded-full bg-gray-600 p-1 transition-colors duration-200 hover:bg-gray-800"
 										onclick={() =>
 											copyClip(
-												`${$page.url.origin}/list/${key2.replace(' ', '_')}/${getAlterText(key)}?faction=${data.faction}`,
+												`${page.url.origin}/list/${key2.replace(' ', '_')}/${getAlterText(key)}?faction=${data.faction}`,
 												`${key}_${key2}`
 											)}
 										>{#if copied[`${key}_${key2}`]}
@@ -111,7 +106,7 @@
 									<a
 										aria-label="Link megnyitása"
 										class="ml-1 flex items-center justify-center rounded-full bg-gray-600 p-1 transition-colors duration-200 hover:bg-gray-800"
-										href={`${$page.url.origin}/list/${key2.replace(' ', '_')}/${getAlterText(key)}?faction=${data.faction}`}
+										href={`${page.url.origin}/list/${key2.replace(' ', '_')}/${getAlterText(key)}?faction=${data.faction}`}
 										target="”_blank”"
 									>
 										<span class="icon-[ion--open-outline] h-6 w-6 text-blue-500"></span></a

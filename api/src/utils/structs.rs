@@ -7,6 +7,8 @@ pub struct SMGetItemsFull {
     pub owner: String,
     pub img_1: i32,
     pub img_2: Option<i32>,
+    pub target_faction: Option<i8>,
+    pub driver: Option<String>,
     pub status: i8,
     pub reason: Option<String>,
     pub r#type: Option<i8>,

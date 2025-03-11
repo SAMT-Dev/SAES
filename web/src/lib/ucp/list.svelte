@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import Error from '$lib/error.svelte';
 	import { onMount } from 'svelte';
 	import type { PageData } from '../../routes/ucp/potlekok/$types';
@@ -9,6 +8,7 @@
 	import { get_status_string, get_type_number, get_type_string } from './types';
 	import { Tooltip } from 'flowbite-svelte';
 	import { Factions } from '$lib/permissions';
+	import { page } from '$app/state';
 	let multipage = $state(false);
 	interface Props {
 		data: PageData;
@@ -20,7 +20,7 @@
 	let handled_potleks: any = $state([]);
 	let pagee = $state(data.page as number);
 	function switchPage(mode: 'next' | 'prev') {
-		let url = new URL($page.url);
+		let url = new URL(page.url);
 		if (mode === 'next') {
 			url.searchParams.set('page', String(Number(pagee) + 1));
 			goto(`?${url.searchParams.toString()}`);
@@ -63,7 +63,7 @@
 			</h2>
 			{#if data.faction === Factions.Apms}
 				<a
-					href={`${$page.url.pathname}/upload`}
+					href={`${page.url.pathname}/upload`}
 					aria-label="Feltöltés"
 					class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-white shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
 					><span class="icon-[material-symbols--upload] h-full w-full"></span></a
@@ -95,6 +95,9 @@
 						</h1>
 						{#if data.layout?.name !== potle.owner}
 							<h1 class="drop-shadow-xl">Feltöltő: {potle.owner}</h1>
+						{/if}
+						{#if tipus === get_type_number('számla') && potle.price}
+							<h1 class="drop-shadow-xl">Végösszeg: {potle.price}$</h1>
 						{/if}
 						{#if potle.reason}
 							<h1 class="drop-shadow-xl">

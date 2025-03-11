@@ -23,7 +23,7 @@
 		get_type_number,
 		get_type_string
 	} from '$lib/ucp/types';
-	import { Factions } from '$lib/permissions';
+	import { Factions, get_faction_by_id } from '$lib/permissions';
 	let haveadmin = $state(false);
 	interface Props {
 		title?: string;
@@ -60,6 +60,8 @@
 				img_1: number;
 				img_2: null | number;
 				price: null | number;
+				target_faction: null | number;
+				driver: null | number;
 				handled_by: string | null;
 				am: boolean;
 			}[];
@@ -132,7 +134,10 @@
 
 	function edit(id: number) {
 		modal?.showModal();
-		bindEdit = potleks.data.items[id];
+		bindEdit = JSON.parse(JSON.stringify(potleks.data.items[id]));
+		if (potleks.data.items[id].target_faction) {
+			bindEdit.target_faction = get_faction_by_id(potleks.data.items[id].target_faction);
+		}
 		bindEdit.custombg = false;
 		editid = id;
 		editing = true;
@@ -216,7 +221,9 @@
 				status: bindEdit.status,
 				reason: bindEdit.reason,
 				supp_type: bindEdit.type,
-				price: bindEdit.price
+				price: bindEdit.price,
+				target_faction: bindEdit.target_faction,
+				driver: bindEdit.driver
 			})
 		});
 		if (fatcs.ok) {
@@ -286,9 +293,7 @@
 						<option value={3}>elutasítva</option>
 					</Select>
 
-					<label for="reason" class="text-xl"
-						>{data.faction === Factions.Apms ? 'Kedvezményezett neve' : 'Megjegyzés'}</label
-					>
+					<label for="reason" class="text-xl">Megjegyzés</label>
 					<input
 						type="text"
 						name="reason"
@@ -296,6 +301,27 @@
 						class="text-xl text-black opacity-80 focus:opacity-100"
 						bind:value={bindEdit.reason}
 					/>
+					{#if type === get_type_number('számla')}
+						<label for="driver" class="text-xl">Kedvezményezett neve</label>
+						<input
+							type="text"
+							name="driver"
+							id="driver"
+							class="text-xl text-black opacity-80 focus:opacity-100"
+							bind:value={bindEdit.driver}
+						/>
+						<label for="target_faction" class="text-xl">Frakció</label>
+						<Select
+							placeholder="Kérlek válassz"
+							name="target_faction"
+							bind:value={bindEdit.target_faction}
+							class="bg-emerald-600 text-xl text-white opacity-80 focus:opacity-100"
+						>
+							{#each Object.values(Factions) as fact}
+								<option value={fact}>{fact}</option>
+							{/each}
+						</Select>
+					{/if}
 					{#if extraText}
 						<label for="extra" class="text-xl">{extraText}</label>
 						{#if type === get_type_number('pótlék')}
@@ -362,9 +388,11 @@
 					<TableHeadCell>IG Név</TableHeadCell>
 					<TableHeadCell>Kép (Kattints rá)</TableHeadCell>
 					<TableHeadCell>Státusz</TableHeadCell>
-					<TableHeadCell
-						>{data.faction === Factions.Apms ? 'Kedvezményezett neve' : 'Megjegyzés'}</TableHeadCell
-					>
+					<TableHeadCell>Megjegyzés</TableHeadCell>
+					{#if type === get_type_number('számla')}
+						<TableHeadCell>Frakció</TableHeadCell>
+						<TableHeadCell>Kedvezményezett neve</TableHeadCell>
+					{/if}
 					{#if extraText}
 						<TableHeadCell>{extraText}</TableHeadCell>
 					{/if}
@@ -425,6 +453,12 @@
 							</TableBodyCell>
 							<TableBodyCell>{get_status_string(potle.status)}</TableBodyCell>
 							<TableBodyCell>{potle.reason ? potle.reason : 'nincs'}</TableBodyCell>
+							<TableBodyCell
+								>{potle.target_faction
+									? get_faction_by_id(potle.target_faction)
+									: 'nincs'}</TableBodyCell
+							>
+							<TableBodyCell>{potle.driver ? potle.driver : 'nincs'}</TableBodyCell>
 							{#if extraText}
 								<TableBodyCell
 									>{potle.price

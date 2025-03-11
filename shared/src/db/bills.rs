@@ -9,13 +9,14 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub owner: String,
+    pub driver: Option<String>,
     pub image: i32,
     pub status: i8,
     pub price: Option<i32>,
     pub reason: Option<String>,
     pub handled_by: Option<String>,
     pub faction: i8,
-    pub target_faction: i8,
+    pub target_faction: Option<i8>,
     pub date: DateTimeUtc,
     pub modified: DateTimeUtc,
 }

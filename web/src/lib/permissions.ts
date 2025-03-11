@@ -24,3 +24,15 @@ export enum Factions {
 	Apms = 'APMS',
 	Tow = 'TOW'
 }
+
+export function get_faction_by_id(faction: number) {
+	if (faction === 1) {
+		return Factions.Taxi;
+	}
+	if (faction === 2) {
+		return Factions.Apms;
+	}
+	if (faction === 3) {
+		return Factions.Tow;
+	}
+}

@@ -14,7 +14,7 @@ use crate::{
     config::{loader::get_config, structs::ItemAccess},
     logging::db_log,
     utils::{
-        factions::get_faction_id,
+        factions::{get_faction_id, Factions},
         middle::Driver,
         queries::SMItemsQuery,
         structs::SMGetItemsFull,
@@ -28,6 +28,8 @@ pub struct SMPostItemsBody {
     pub id: i32,
     pub status: i8,
     pub price: Option<i32>,
+    pub target_faction: Option<Factions>,
+    pub driver: Option<String>,
     pub supp_type: Option<i8>,
     pub reason: Option<String>,
     pub tipus: i8,
@@ -83,6 +85,8 @@ pub async fn admin_items_get(
                     r#type: item.r#type,
                     handled_by: item.handled_by.clone(),
                     reason: item.reason.clone(),
+                    driver: None,
+                    target_faction: None,
                     owner: item.owner.clone(),
                     item_type: types.supplements.id,
                 }
@@ -127,6 +131,8 @@ pub async fn admin_items_get(
                     handled_by: item.handled_by.clone(),
                     reason: item.reason.clone(),
                     owner: item.owner.clone(),
+                    driver: None,
+                    target_faction: None,
                     item_type: types.hails.id,
                 }
             })
@@ -170,6 +176,8 @@ pub async fn admin_items_get(
                     handled_by: item.handled_by.clone(),
                     reason: item.reason.clone(),
                     owner: item.owner.clone(),
+                    driver: item.driver.clone(),
+                    target_faction: item.target_faction,
                     item_type: types.bills.id,
                 }
             })
@@ -296,6 +304,8 @@ pub async fn admin_items_post(
                 owner: statreturn.owner,
                 price: None,
                 r#type: statreturn.r#type,
+                target_faction: None,
+                driver: None,
                 item_type: types.supplements.id,
             })
             .into_response())
@@ -377,6 +387,8 @@ pub async fn admin_items_post(
                 owner: statreturn.owner,
                 r#type: None,
                 price: None,
+                target_faction: None,
+                driver: None,
                 item_type: types.hails.id,
             })
             .into_response())
@@ -442,6 +454,42 @@ pub async fn admin_items_post(
                 )
                 .as_str();
             }
+            if old_model.driver != body.driver {
+                act += format!(
+                    "{}driver FROM {} TO {}",
+                    if act.len() > 0 { "; " } else { "" },
+                    if old_model.driver.is_some() {
+                        old_model.driver.unwrap()
+                    } else {
+                        String::from("null")
+                    },
+                    if body.driver.is_some() {
+                        body.driver.clone().unwrap()
+                    } else {
+                        String::from("null")
+                    }
+                )
+                .as_str();
+            }
+            if body.target_faction.is_some() {
+                if old_model.target_faction != Some(get_faction_id(body.target_faction.unwrap())) {
+                    act += format!(
+                        "{}target_faction FROM {} TO {}",
+                        if act.len() > 0 { "; " } else { "" },
+                        if old_model.target_faction.is_some() {
+                            old_model.target_faction.unwrap()
+                        } else {
+                            0
+                        },
+                        if body.target_faction.is_some() {
+                            get_faction_id(body.target_faction.unwrap())
+                        } else {
+                            0
+                        }
+                    )
+                    .as_str();
+                }
+            }
             db_log(
                 ext.name.clone(),
                 Some(get_faction_id(ext.faction.unwrap())),
@@ -456,6 +504,12 @@ pub async fn admin_items_post(
                 faction: Set(get_faction_id(ext.faction.unwrap())),
                 status: Set(body.status),
                 reason: Set(body.reason),
+                target_faction: Set(if body.target_faction.is_some() {
+                    Some(get_faction_id(body.target_faction.unwrap()))
+                } else {
+                    None
+                }),
+                driver: Set(body.driver),
                 price: Set(body.price),
                 handled_by: Set(Some(ext.name.clone())),
                 ..Default::default()
@@ -475,6 +529,8 @@ pub async fn admin_items_post(
                 img_2: None,
                 owner: statreturn.owner,
                 price: statreturn.price,
+                driver: statreturn.driver,
+                target_faction: statreturn.target_faction,
                 r#type: None,
                 item_type: types.bills.id,
             })

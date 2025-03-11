@@ -97,9 +97,9 @@ pub async fn base_list_get(
         return Ok(Json(ret));
     } else if quer.tipus == "szamla".to_string() {
         let bills_ret = bills::Entity::find()
-            .filter(bills::Column::Owner.eq(quer.driver.clone()))
+            .filter(bills::Column::Driver.eq(quer.driver.clone()))
             .filter(bills::Column::Date.gt(friday.before_last_friday))
-            .filter(bills::Column::Faction.eq(get_faction_id(quer.faction)))
+            .filter(bills::Column::TargetFaction.eq(get_faction_id(quer.faction)))
             .filter(bills::Column::Date.lt(friday.last_friday))
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .order_by(bills::Column::Date, Order::Desc)

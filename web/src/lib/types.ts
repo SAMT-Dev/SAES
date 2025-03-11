@@ -6,6 +6,8 @@ export interface FullDBType {
 	image: string;
 	owner: string;
 	reason: null | string;
+	driver: null | string;
+	target_faction: null | string;
 	status: number;
 	type: number;
 }
@@ -21,6 +23,8 @@ export interface SMGetItemsFull {
 	price: number | undefined;
 	faction: number;
 	handled_by: string | undefined;
+	driver: null | string;
+	target_faction: null | string;
 	date: Date;
 	item_type: number;
 }
