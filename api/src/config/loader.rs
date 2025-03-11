@@ -22,6 +22,7 @@ pub async fn get_config() -> MainConfig {
         file.write_all(buf).await.unwrap();
     }
     let config = File::open(config_file).await.unwrap();
-    let config: MainConfig = serde_json::from_reader(config.into_std().await).unwrap();
+    let config: MainConfig =
+        serde_json::from_reader(config.into_std().await).expect("Config betöltése sikertelen!");
     config
 }

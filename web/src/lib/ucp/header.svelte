@@ -86,7 +86,7 @@
 					{#if multifact}
 						<Tooltip>Frakcióváltás</Tooltip>
 					{/if}
-					<a href="/ucp/settings" aria-label="Beállítások" class="group"
+					<a href="/ucp/settings" aria-label="Beállítások" class="group hidden"
 						><span
 							class={`icon-[material-symbols--settings] h-6 w-6 transition-colors duration-200 ${
 								faction === Factions.Tow

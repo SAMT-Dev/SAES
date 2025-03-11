@@ -23,6 +23,7 @@
 		get_type_number,
 		get_type_string
 	} from '$lib/ucp/types';
+	import { Factions } from '$lib/permissions';
 	let haveadmin = $state(false);
 	interface Props {
 		title?: string;
@@ -285,7 +286,9 @@
 						<option value={3}>elutasítva</option>
 					</Select>
 
-					<label for="reason" class="text-xl">Megjegyzés</label>
+					<label for="reason" class="text-xl"
+						>{data.faction === Factions.Apms ? 'Kedvezményezett neve' : 'Megjegyzés'}</label
+					>
 					<input
 						type="text"
 						name="reason"
@@ -359,7 +362,9 @@
 					<TableHeadCell>IG Név</TableHeadCell>
 					<TableHeadCell>Kép (Kattints rá)</TableHeadCell>
 					<TableHeadCell>Státusz</TableHeadCell>
-					<TableHeadCell>Megjegyzés</TableHeadCell>
+					<TableHeadCell
+						>{data.faction === Factions.Apms ? 'Kedvezményezett neve' : 'Megjegyzés'}</TableHeadCell
+					>
 					{#if extraText}
 						<TableHeadCell>{extraText}</TableHeadCell>
 					{/if}

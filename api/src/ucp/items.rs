@@ -59,111 +59,148 @@ pub async fn ucp_items_get(
     let db = DB_CLIENT.get().unwrap();
     let types = get_types();
     let config = get_config().await;
-    if ext.faction.is_some() {
-        if cucc.tipus == types.supplements.id
-            && (config
+    if ext.faction.is_none() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Frakciójelölés hiányzik!".to_string(),
+        ));
+    }
+    if cucc.tipus == types.supplements.id
+        && (config
+            .factions
+            .get(&ext.faction.unwrap())
+            .unwrap()
+            .access
+            .supplements
+            == ItemAccess::Read
+            || config
                 .factions
                 .get(&ext.faction.unwrap())
                 .unwrap()
                 .access
                 .supplements
-                == ItemAccess::Read
-                || config
-                    .factions
-                    .get(&ext.faction.unwrap())
-                    .unwrap()
-                    .access
-                    .supplements
-                    == ItemAccess::Write)
-        {
-            let items = supplements::Entity::find()
-                .filter(supplements::Column::Owner.eq(&ext.name))
-                .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
-                .order_by(supplements::Column::Date, Order::Desc)
-                .all(db)
-                .await
-                .expect("Pótlékok lekérése sikertelen az adatbázisból");
-            let another: Vec<ItemsStruct> = items
-                .iter()
-                .map(|strucc| -> ItemsStruct {
-                    ItemsStruct {
-                        owner: strucc.owner.clone(),
-                        img_1: strucc.image,
-                        faction: ext.faction.unwrap(),
-                        img_2: None,
-                        reason: strucc.reason.clone(),
-                        status: strucc.status,
-                        date: strucc.date,
-                        id: strucc.id,
-                        handled_by: strucc.handled_by.clone(),
-                    }
-                })
-                .collect();
-            return Ok(Json(another));
-        } else if cucc.tipus == types.hails.id
-            && (config
+                == ItemAccess::Write)
+    {
+        let items = supplements::Entity::find()
+            .filter(supplements::Column::Owner.eq(&ext.name))
+            .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .order_by(supplements::Column::Date, Order::Desc)
+            .all(db)
+            .await
+            .expect("Pótlékok lekérése sikertelen az adatbázisból");
+        let another: Vec<ItemsStruct> = items
+            .iter()
+            .map(|strucc| -> ItemsStruct {
+                ItemsStruct {
+                    owner: strucc.owner.clone(),
+                    img_1: strucc.image,
+                    faction: ext.faction.unwrap(),
+                    img_2: None,
+                    reason: strucc.reason.clone(),
+                    status: strucc.status,
+                    date: strucc.date,
+                    id: strucc.id,
+                    handled_by: strucc.handled_by.clone(),
+                }
+            })
+            .collect();
+        return Ok(Json(another));
+    } else if cucc.tipus == types.hails.id
+        && (config
+            .factions
+            .get(&ext.faction.unwrap())
+            .unwrap()
+            .access
+            .hails
+            == ItemAccess::Read
+            || config
                 .factions
                 .get(&ext.faction.unwrap())
                 .unwrap()
                 .access
                 .hails
-                == ItemAccess::Read
-                || config
-                    .factions
-                    .get(&ext.faction.unwrap())
-                    .unwrap()
-                    .access
-                    .hails
-                    == ItemAccess::Write)
-        {
-            let items = hails::Entity::find()
-                .filter(hails::Column::Owner.eq(&ext.name))
-                .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
-                .order_by(hails::Column::Date, Order::Desc)
-                .all(db)
-                .await
-                .expect("Pótlékok lekérése sikertelen az adatbázisból");
-            let another: Vec<ItemsStruct> = items
-                .iter()
-                .map(|strucc| -> ItemsStruct {
-                    ItemsStruct {
-                        faction: ext.faction.unwrap(),
-                        owner: strucc.owner.clone(),
-                        img_1: strucc.image_1,
-                        img_2: Some(strucc.image_2),
-                        reason: strucc.reason.clone(),
-                        status: strucc.status,
-                        date: strucc.date,
-                        id: strucc.id,
-                        handled_by: strucc.handled_by.clone(),
-                    }
-                })
-                .collect();
-            return Ok(Json(another));
-        } else if cucc.tipus == types.bills.id
-            && (config
+                == ItemAccess::Write)
+    {
+        let items = hails::Entity::find()
+            .filter(hails::Column::Owner.eq(&ext.name))
+            .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .order_by(hails::Column::Date, Order::Desc)
+            .all(db)
+            .await
+            .expect("Pótlékok lekérése sikertelen az adatbázisból");
+        let another: Vec<ItemsStruct> = items
+            .iter()
+            .map(|strucc| -> ItemsStruct {
+                ItemsStruct {
+                    faction: ext.faction.unwrap(),
+                    owner: strucc.owner.clone(),
+                    img_1: strucc.image_1,
+                    img_2: Some(strucc.image_2),
+                    reason: strucc.reason.clone(),
+                    status: strucc.status,
+                    date: strucc.date,
+                    id: strucc.id,
+                    handled_by: strucc.handled_by.clone(),
+                }
+            })
+            .collect();
+        return Ok(Json(another));
+    } else if cucc.tipus == types.bills.id
+        && (config
+            .factions
+            .get(&ext.faction.unwrap())
+            .unwrap()
+            .access
+            .bills
+            == ItemAccess::Read
+            || config
                 .factions
                 .get(&ext.faction.unwrap())
                 .unwrap()
                 .access
                 .bills
-                == ItemAccess::Read
-                || config
-                    .factions
-                    .get(&ext.faction.unwrap())
-                    .unwrap()
-                    .access
-                    .bills
-                    == ItemAccess::Write)
-        {
-            let items = bills::Entity::find()
-                .filter(bills::Column::Owner.eq(&ext.name))
-                .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
-                .order_by(bills::Column::Date, Order::Desc)
-                .all(db)
-                .await
-                .expect("Pótlékok lekérése sikertelen az adatbázisból");
-            let another: Vec<ItemsStruct> = items
+                == ItemAccess::Write)
+    {
+        let items = bills::Entity::find()
+            .filter(bills::Column::Owner.eq(&ext.name))
+            .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .order_by(bills::Column::Date, Order::Desc)
+            .all(db)
+            .await
+            .expect("Pótlékok lekérése sikertelen az adatbázisból");
+        let items_extra = if ext.faction.unwrap() != Factions::APMS {
+            Some(
+                bills::Entity::find()
+                    .filter(bills::Column::Faction.eq(get_faction_id(Factions::APMS)))
+                    .filter(bills::Column::Reason.eq(&ext.name))
+                    .order_by(bills::Column::Date, Order::Desc)
+                    .all(db)
+                    .await
+                    .expect("No bills :("),
+            )
+        } else {
+            None
+        };
+        let mut another: Vec<ItemsStruct> = items
+            .iter()
+            .map(|strucc| -> ItemsStruct {
+                ItemsStruct {
+                    faction: ext.faction.unwrap(),
+                    owner: strucc.owner.clone(),
+                    img_1: strucc.image,
+                    img_2: None,
+                    reason: strucc.reason.clone(),
+                    status: strucc.status,
+                    date: strucc.date,
+                    id: strucc.id,
+                    handled_by: strucc.handled_by.clone(),
+                }
+            })
+            .collect();
+        let mut combined: Vec<ItemsStruct> = vec![];
+        if items_extra.is_some() {
+            let mut another_extra: Vec<ItemsStruct> = items_extra
+                .unwrap()
                 .iter()
                 .map(|strucc| -> ItemsStruct {
                     ItemsStruct {
@@ -179,17 +216,14 @@ pub async fn ucp_items_get(
                     }
                 })
                 .collect();
-            return Ok(Json(another));
-        } else {
-            return Err((
-                StatusCode::NOT_FOUND,
-                "Ilyen típus nem található!".to_string(),
-            ));
+            combined.append(&mut another_extra);
         }
+        combined.append(&mut another);
+        return Ok(Json(combined));
     } else {
         return Err((
-            StatusCode::BAD_REQUEST,
-            "Frakciójelölés hiányzik!".to_string(),
+            StatusCode::NOT_FOUND,
+            "Ilyen típus nem található!".to_string(),
         ));
     }
 }

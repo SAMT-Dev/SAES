@@ -8,6 +8,7 @@
 	import { locale } from '$lib/time';
 	import { get_status_string, get_type_number, get_type_string } from './types';
 	import { Tooltip } from 'flowbite-svelte';
+	import { Factions } from '$lib/permissions';
 	let multipage = $state(false);
 	interface Props {
 		data: PageData;
@@ -60,15 +61,17 @@
 			<h2 class="m-auto text-black dark:text-white">
 				Összesen {data.potlekok.length} darab.
 			</h2>
-			<a
-				href={`${$page.url.pathname}/upload`}
-				aria-label="Feltöltés"
-				class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-white shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
-				><span class="icon-[material-symbols--upload] h-full w-full"></span></a
-			>
-			<Tooltip class="bg-slate-500">
-				Új {get_type_string(tipus)} feltöltése
-			</Tooltip>
+			{#if data.faction === Factions.Apms}
+				<a
+					href={`${$page.url.pathname}/upload`}
+					aria-label="Feltöltés"
+					class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-white shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+					><span class="icon-[material-symbols--upload] h-full w-full"></span></a
+				>
+				<Tooltip class="bg-slate-500">
+					Új {get_type_string(tipus)} feltöltése
+				</Tooltip>
+			{/if}
 		</div>
 		<div class="mb-3 flex flex-auto flex-wrap items-center justify-center gap-3 align-middle">
 			{#if handled_potleks}
@@ -90,8 +93,13 @@
 								locale
 							})}
 						</h1>
+						{#if data.layout?.name !== potle.owner}
+							<h1 class="drop-shadow-xl">Feltöltő: {potle.owner}</h1>
+						{/if}
 						{#if potle.reason}
-							<h1 class="drop-shadow-xl">Megjegyzés: {potle.reason}</h1>
+							<h1 class="drop-shadow-xl">
+								{data.faction === Factions.Apms ? 'Kedvezményezett neve' : 'Megjegyzés'}: {potle.reason}
+							</h1>
 						{/if}
 
 						{#if tipus === get_type_number('leintés')}
