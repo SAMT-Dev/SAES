@@ -20,7 +20,7 @@ use sha2::Digest;
 use tokio::fs::remove_file;
 
 use crate::{
-    config::loader::get_config,
+    config::{loader::get_config, structs::ItemAccess},
     logging::db_log,
     utils::{
         factions::{get_faction_id, Factions},
@@ -61,12 +61,20 @@ pub async fn ucp_items_get(
     let config = get_config().await;
     if ext.faction.is_some() {
         if cucc.tipus == types.supplements.id
-            && config
+            && (config
                 .factions
                 .get(&ext.faction.unwrap())
                 .unwrap()
                 .access
                 .supplements
+                == ItemAccess::Read
+                || config
+                    .factions
+                    .get(&ext.faction.unwrap())
+                    .unwrap()
+                    .access
+                    .supplements
+                    == ItemAccess::Write)
         {
             let items = supplements::Entity::find()
                 .filter(supplements::Column::Owner.eq(&ext.name))
@@ -93,12 +101,20 @@ pub async fn ucp_items_get(
                 .collect();
             return Ok(Json(another));
         } else if cucc.tipus == types.hails.id
-            && config
+            && (config
                 .factions
                 .get(&ext.faction.unwrap())
                 .unwrap()
                 .access
                 .hails
+                == ItemAccess::Read
+                || config
+                    .factions
+                    .get(&ext.faction.unwrap())
+                    .unwrap()
+                    .access
+                    .hails
+                    == ItemAccess::Write)
         {
             let items = hails::Entity::find()
                 .filter(hails::Column::Owner.eq(&ext.name))
@@ -125,12 +141,20 @@ pub async fn ucp_items_get(
                 .collect();
             return Ok(Json(another));
         } else if cucc.tipus == types.bills.id
-            && config
+            && (config
                 .factions
                 .get(&ext.faction.unwrap())
                 .unwrap()
                 .access
                 .bills
+                == ItemAccess::Read
+                || config
+                    .factions
+                    .get(&ext.faction.unwrap())
+                    .unwrap()
+                    .access
+                    .bills
+                    == ItemAccess::Write)
         {
             let items = bills::Entity::find()
                 .filter(bills::Column::Owner.eq(&ext.name))
@@ -234,6 +258,7 @@ pub async fn ucp_items_post(
                                 .unwrap()
                                 .access
                                 .hails
+                                == ItemAccess::Write
                         {
                             if files_for_leintes.len().eq(&1) {
                                 let img = images::ActiveModel {
@@ -336,6 +361,7 @@ pub async fn ucp_items_post(
                                 .unwrap()
                                 .access
                                 .supplements
+                                == ItemAccess::Write
                         {
                             let img = images::ActiveModel {
                                 owner: Set(ext.name.clone()),
@@ -400,6 +426,7 @@ pub async fn ucp_items_post(
                                 .unwrap()
                                 .access
                                 .bills
+                                == ItemAccess::Write
                         {
                             let img = images::ActiveModel {
                                 owner: Set(ext.name.clone()),

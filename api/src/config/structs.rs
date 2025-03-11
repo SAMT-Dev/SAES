@@ -16,6 +16,18 @@ impl Default for ShiftAccess {
         Self::SameShift
     }
 }
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum ItemAccess {
+    None,
+    Read,
+    Write,
+}
+
+impl Default for ItemAccess {
+    fn default() -> Self {
+        Self::Write
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GlobalConfig {
@@ -60,9 +72,9 @@ pub struct FactionConfig {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FactionAccessConfig {
-    pub supplements: bool,
-    pub hails: bool,
-    pub bills: bool,
+    pub supplements: ItemAccess,
+    pub hails: ItemAccess,
+    pub bills: ItemAccess,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -79,9 +91,9 @@ impl Default for FactionConfig {
         Self {
             shift_access: ShiftAccess::default(),
             access: FactionAccessConfig {
-                supplements: true,
-                hails: true,
-                bills: true,
+                supplements: ItemAccess::default(),
+                hails: ItemAccess::default(),
+                bills: ItemAccess::default(),
             },
             site_access: FactionSiteAccessConfig {
                 ucp: true,

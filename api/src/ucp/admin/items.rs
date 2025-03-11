@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 
 use crate::{
-    config::loader::get_config,
+    config::{loader::get_config, structs::ItemAccess},
     logging::db_log,
     utils::{
         factions::get_faction_id,
@@ -47,12 +47,20 @@ pub async fn admin_items_get(
     let config = get_config().await;
     let types = get_types();
     if quer.tipus == types.supplements.id
-        && config
+        && (config
             .factions
             .get(&ext.faction.unwrap())
             .unwrap()
             .access
             .supplements
+            == ItemAccess::Read
+            || config
+                .factions
+                .get(&ext.faction.unwrap())
+                .unwrap()
+                .access
+                .supplements
+                == ItemAccess::Write)
     {
         let statreturn = supplements::Entity::find()
             .filter(supplements::Column::Status.eq(quer.status.clone()))
@@ -82,12 +90,20 @@ pub async fn admin_items_get(
             .collect();
         return Ok(Json(StatDBAll { items: ret }));
     } else if quer.tipus == types.hails.id
-        && config
+        && (config
             .factions
             .get(&ext.faction.unwrap())
             .unwrap()
             .access
             .hails
+            == ItemAccess::Read
+            || config
+                .factions
+                .get(&ext.faction.unwrap())
+                .unwrap()
+                .access
+                .hails
+                == ItemAccess::Write)
     {
         let statreturn = hails::Entity::find()
             .filter(hails::Column::Status.eq(quer.status.clone()))
@@ -117,12 +133,20 @@ pub async fn admin_items_get(
             .collect();
         return Ok(Json(StatDBAll { items: ret }));
     } else if quer.tipus == types.bills.id
-        && config
+        && (config
             .factions
             .get(&ext.faction.unwrap())
             .unwrap()
             .access
             .bills
+            == ItemAccess::Read
+            || config
+                .factions
+                .get(&ext.faction.unwrap())
+                .unwrap()
+                .access
+                .bills
+                == ItemAccess::Write)
     {
         let statreturn = bills::Entity::find()
             .filter(bills::Column::Status.eq(quer.status.clone()))
@@ -177,6 +201,7 @@ pub async fn admin_items_post(
                 .unwrap()
                 .access
                 .supplements
+                == ItemAccess::Write
         {
             let old_model = supplements::Entity::find()
                 .filter(supplements::Column::Id.eq(body.id))
@@ -281,6 +306,7 @@ pub async fn admin_items_post(
                 .unwrap()
                 .access
                 .hails
+                == ItemAccess::Write
         {
             let old_model = hails::Entity::find()
                 .filter(hails::Column::Id.eq(body.id))
@@ -361,6 +387,7 @@ pub async fn admin_items_post(
                 .unwrap()
                 .access
                 .bills
+                == ItemAccess::Write
         {
             let old_model = bills::Entity::find()
                 .filter(bills::Column::Id.eq(body.id))
