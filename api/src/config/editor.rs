@@ -1,3 +1,12 @@
+use std::path::Path;
+
+use serde_json::to_string_pretty;
+use tokio::{fs::OpenOptions, io::AsyncWriteExt};
+
+use crate::SOCKET_IO;
+
+use super::structs::MainConfig;
+
 pub async fn write_config(config: &MainConfig) {
     let config_file = Path::new("./config/main.json");
     let mut file = OpenOptions::new()

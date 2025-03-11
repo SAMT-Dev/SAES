@@ -2,11 +2,9 @@ use std::path::Path;
 
 use serde_json::to_string_pretty;
 use tokio::{
-    fs::{self, File, OpenOptions},
+    fs::{self, File},
     io::AsyncWriteExt,
 };
-
-use crate::SOCKET_IO;
 
 use super::structs::MainConfig;
 

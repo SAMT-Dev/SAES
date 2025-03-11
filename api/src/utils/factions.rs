@@ -15,6 +15,14 @@ pub fn get_faction_id(faction: Factions) -> i8 {
     }
 }
 
+pub fn get_faction_string(faction: Factions) -> String {
+    match faction {
+        Factions::SCKK => "taxi".to_string(),
+        Factions::APMS => "apms".to_string(),
+        Factions::TOW => "tow".to_string(),
+    }
+}
+
 // pub fn get_faction_by_id(id: i8) -> Factions {
 //     match id {
 //         1 => Factions::SCKK,
