@@ -1,10 +1,7 @@
 use axum::{debug_handler, response::IntoResponse, Json};
 use http::StatusCode;
 
-use crate::config::{
-    loader::{get_config, write_config},
-    structs::GlobalConfig,
-};
+use crate::config::{editor::write_config, loader::get_config, structs::GlobalConfig};
 
 #[debug_handler]
 pub async fn sys_get_configs() -> Result<impl IntoResponse, (StatusCode, String)> {
