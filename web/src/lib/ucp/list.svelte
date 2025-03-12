@@ -61,17 +61,17 @@
 			<h2 class="m-auto text-black dark:text-white">
 				Összesen {data.potlekok.length} darab.
 			</h2>
-			{#if data.faction === Factions.Apms || tipus !== get_type_number('számla')}
-				<a
-					href={`${page.url.pathname}/upload`}
-					aria-label="Feltöltés"
-					class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-white shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
-					><span class="icon-[material-symbols--upload] h-full w-full"></span></a
-				>
-				<Tooltip class="bg-slate-500">
-					Új {get_type_string(tipus)} feltöltése
-				</Tooltip>
-			{/if}
+			<!-- {#if data.faction === Factions.Apms || tipus !== get_type_number('számla')} -->
+			<a
+				href={`${page.url.pathname}/upload`}
+				aria-label="Feltöltés"
+				class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-white shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+				><span class="icon-[material-symbols--upload] h-full w-full"></span></a
+			>
+			<Tooltip class="bg-slate-500">
+				Új {get_type_string(tipus)} feltöltése
+			</Tooltip>
+			<!-- {/if} -->
 		</div>
 		<div class="mb-3 flex flex-auto flex-wrap items-center justify-center gap-3 align-middle">
 			{#if handled_potleks}
