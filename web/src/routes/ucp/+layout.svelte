@@ -42,11 +42,7 @@
 			});
 			$socket.on('maintenance', (data) => {
 				if (data !== '') {
-					if (data === 'nincs') {
-						maintenance = true;
-					} else {
-						maintenance = data;
-					}
+					maintenance = data;
 				}
 			});
 			$socket.on('announcement', (data) => {
@@ -69,7 +65,7 @@
 </script>
 
 <svelte:head>
-	{#if !maintenance && !data.maintenance && !data.noauth && !data.error && !data.nofact}
+	{#if !maintenance && !data.noauth && !data.error && !data.nofact}
 		{#if !navigating.type}
 			{#if page.url.pathname.includes('shift')}
 				<title>Műszakvezetői felület - {tip}</title>
@@ -228,7 +224,7 @@
 				</div>
 			</div>
 		</main>
-	{:else if !maintenance || data.maintenance}
+	{:else if !maintenance || data.layout?.admin || allowPerms(data, [Permissions.SaesMaintenance])}
 		{#if nosocket}
 			<header>
 				<div

@@ -127,11 +127,6 @@ export const load = (async ({ cookies, request, url }) => {
 							layout: jeson,
 							auth: cookies.get('auth_token')!,
 							api: apiUrlPublic,
-							maintenance: cookies.get('maintenance')
-								? jeson.admin
-									? cookies.get('maintenance')
-									: false
-								: false,
 							nofact: true
 						};
 					}
@@ -173,12 +168,7 @@ export const load = (async ({ cookies, request, url }) => {
 							: (request.headers.get('cf-ipcountry') as string),
 					auth: cookies.get('auth_token')!,
 					offset: process.env.SUMMER_TIMEZONE === 'true' ? -60 * 60 * 1000 * 2 : -60 * 60 * 1000,
-					agent: request.headers.get('user-agent') as string,
-					maintenance: cookies.get('maintenance')
-						? jeson.admin
-							? cookies.get('maintenance')
-							: false
-						: false
+					agent: request.headers.get('user-agent') as string
 				};
 			} else {
 				return {
