@@ -1,7 +1,6 @@
 use std::{env, fs, path::Path, process::Command};
 
 pub fn main() {
-    init_dir();
     init_ffmpeg();
     init_error_dir();
 }
@@ -15,6 +14,7 @@ fn init_dir() {
 
 fn init_ffmpeg() {
     if env::consts::OS == "windows" {
+        init_dir();
         let exec = Path::new("exec/ffmpeg.exe");
         if !exec.exists() {
             panic!("ffmpeg.exe nem található")
