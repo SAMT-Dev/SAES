@@ -1,5 +1,6 @@
 FROM node:22-alpine AS build
 WORKDIR /usr/src/web/dev
+USER web
 
 # install dependencies into temp directory
 # this will cache them and speed up future builds
@@ -26,6 +27,5 @@ RUN apk add --no-cache curl
 HEALTHCHECK CMD curl --fail http://localhost:3000 || exit 1
 
 # run the app
-USER root
 EXPOSE 3000
 ENTRYPOINT [ "node", "build" ]

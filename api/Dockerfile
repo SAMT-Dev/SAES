@@ -1,5 +1,6 @@
 FROM rust:alpine AS build
 WORKDIR /usr/src/api/dev
+USER api
 
 #* Dependencies
 
@@ -30,7 +31,6 @@ COPY --from=build /usr/src/api/dev/target/release/saes-api /usr/src/api/prod/
 RUN apk add --no-cache curl
 HEALTHCHECK CMD curl --fail http://localhost:3000 || exit 1
 
-USER deno
 RUN touch .env
 EXPOSE 3000
 ENTRYPOINT ["./saes-api"]
