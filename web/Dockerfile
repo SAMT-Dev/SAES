@@ -1,6 +1,5 @@
 FROM node:22-alpine AS build
 WORKDIR /usr/src/web/dev
-USER web
 
 # install dependencies into temp directory
 # this will cache them and speed up future builds

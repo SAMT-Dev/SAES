@@ -1,6 +1,5 @@
 FROM rust:alpine AS build
 WORKDIR /usr/src/api/dev
-USER api
 
 #* Dependencies
 
