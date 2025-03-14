@@ -53,12 +53,10 @@
 </script>
 
 <Error {data}>
-	<div
-		class="grid grid-cols-1 content-center items-center justify-center text-center text-black dark:text-white"
-	>
+	<div class="grid grid-cols-1 content-center items-center justify-center text-center text-white">
 		<h1 class="mt-5 text-5xl font-bold drop-shadow-xl">{display}:</h1>
 		<div class="m-auto mb-5 flex gap-5">
-			<h2 class="m-auto text-black dark:text-white">
+			<h2 class="m-auto text-white">
 				Összesen {data.potlekok.length} darab.
 			</h2>
 			<!-- {#if data.faction === Factions.Apms || tipus !== get_type_number('számla')} -->

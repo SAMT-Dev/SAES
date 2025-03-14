@@ -40,7 +40,7 @@
 					: ''
 	} z-30`}
 >
-	<div class="relative z-20 border-b bg-white dark:bg-gray-700 dark:text-white">
+	<div class="relative z-20 border-b bg-gray-700 text-white">
 		<div class="mx-0 px-0 xl:container lg:mx-auto lg:py-4">
 			<div class="flex items-center justify-between gap-2">
 				<div class="m-auto flex items-center justify-center gap-2">
@@ -116,7 +116,7 @@
 					</label>
 
 					<div
-						class="fixed inset-0 z-20 w-[calc(100%-4.5rem)] translate-x-[-100%] border-r bg-white shadow-xl transition duration-300 peer-checked:translate-x-0 lg:static lg:w-auto lg:translate-x-0 lg:border-r-0 lg:shadow-none dark:bg-gray-700"
+						class="fixed inset-0 z-20 w-[calc(100%-4.5rem)] translate-x-[-100%] border-r bg-gray-700 shadow-xl transition duration-300 peer-checked:translate-x-0 lg:static lg:w-auto lg:translate-x-0 lg:border-r-0 lg:shadow-none"
 					>
 						<div class="flex h-full flex-col justify-between lg:flex-row lg:items-center">
 							<ul

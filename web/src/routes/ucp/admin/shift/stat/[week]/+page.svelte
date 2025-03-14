@@ -77,7 +77,7 @@
 						{/if} ({`${new Date(data.date?.prev).getMonth() + 1}.${new Date(data.date?.prev).getDate()}. - ${new Date(data.date?.next).getMonth() + 1}.${new Date(data.date.next).getDate()}.`})
 					</h1>
 					{#if data.week === 'current'}
-						<h2 class="font-itim mb-5 text-black dark:text-gray-400">
+						<h2 class="font-itim mb-5 text-gray-400">
 							A jelenlegi hétnél nincsen link, péntek 22:00-után az előző heti linkek ezeket az
 							értékeket fogják mutatni
 						</h2>

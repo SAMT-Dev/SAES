@@ -358,7 +358,7 @@
 </dialog>
 
 <div class="flex">
-	<div class="m-auto text-center text-black dark:text-white">
+	<div class="m-auto text-center text-white">
 		{#if potleks && !potleks.error}
 			<div class="flex items-end justify-center gap-1 text-end">
 				<h1 class="text-2xl font-bold">{title}</h1>
@@ -368,7 +368,7 @@
 			</div>
 			<h1 class="mb-2 text-xl text-gray-400">{des}</h1>
 			<div class="flex items-center justify-center gap-2 text-center">
-				<h2 class="text-xl font-bold text-black dark:text-white">Filter</h2>
+				<h2 class="text-xl font-bold text-white">Filter</h2>
 				<Select
 					placeholder="Kérlek válassz"
 					id="potlek-type"

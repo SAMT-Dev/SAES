@@ -104,7 +104,7 @@
 		<main>
 			<div class="flex h-screen">
 				<div class="m-auto text-center">
-					<h1 class="animate-pulse text-3xl font-bold text-black dark:text-white">
+					<h1 class="animate-pulse text-3xl font-bold text-white">
 						Az oldal használatához kérlek lépj be!
 					</h1>
 					<button
