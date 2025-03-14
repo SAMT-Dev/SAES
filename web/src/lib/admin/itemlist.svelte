@@ -382,7 +382,7 @@
 				</Select>
 			</div>
 			<Table class="mt-5 table-auto p-10 text-center text-white">
-				<TableHead class="rounded-xl">
+				<TableHead class="rounded-xl bg-gray-700">
 					<TableHeadCell>ID</TableHeadCell>
 					<TableHeadCell>Dátum</TableHeadCell>
 					<TableHeadCell>IG Név</TableHeadCell>
@@ -453,12 +453,14 @@
 							</TableBodyCell>
 							<TableBodyCell>{get_status_string(potle.status)}</TableBodyCell>
 							<TableBodyCell>{potle.reason ? potle.reason : 'nincs'}</TableBodyCell>
-							<TableBodyCell
-								>{potle.target_faction
-									? get_faction_by_id(potle.target_faction)
-									: 'nincs'}</TableBodyCell
-							>
-							<TableBodyCell>{potle.driver ? potle.driver : 'nincs'}</TableBodyCell>
+							{#if type === get_type_number('számla')}
+								<TableBodyCell
+									>{potle.target_faction
+										? get_faction_by_id(potle.target_faction)
+										: 'nincs'}</TableBodyCell
+								>
+								<TableBodyCell>{potle.driver ? potle.driver : 'nincs'}</TableBodyCell>
+							{/if}
 							{#if extraText}
 								<TableBodyCell
 									>{potle.price

@@ -229,7 +229,7 @@
 			{/if}
 		</div>
 		<Table class="mt-5 table-auto p-10 text-center text-white">
-			<TableHead class="rounded-xl">
+			<TableHead class="rounded-xl bg-gray-700">
 				<TableHeadCell>Kép</TableHeadCell>
 				<TableHeadCell>Dátum</TableHeadCell>
 				<TableHeadCell>Esemény létrehozója</TableHeadCell>
