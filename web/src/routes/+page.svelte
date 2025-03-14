@@ -1,4 +1,4 @@
-<div class="flex h-screen text-center text-white">
+<div class="flex h-screen text-center text-black dark:text-white">
 	<a
 		href="/ucp"
 		class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
@@ -20,6 +20,6 @@
 			RÉGI GOMB
 			<a
 						href="user"
-						class="text-white bg-green-500 text-2xl font-bold px-3 rounded-xl mt-2 hover:bg-green-800 transition-all duration-200"
+						class="text-black dark:text-white bg-green-500 text-2xl font-bold px-3 rounded-xl mt-2 hover:bg-green-800 transition-all duration-200"
 						>Belépés Discordal</a>
 			-->

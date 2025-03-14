@@ -1,7 +1,0 @@
-services:
-  web:
-    image: ghcr.io/sckk-apms-dev/saes-web:main
-    ports:
-      - 5173:3000
-    environment:
-      - api_prod_url=http://10.55.0.2:3000

@@ -15,7 +15,7 @@
 				'Az SCKK Application kódját felhasználva meg lehet nézni, ki, mikor vitt hívást az adott napon, illetve a műszakok hogyan teljesítettek.',
 			href: '/ucp/admin/tools/app',
 			border: 'border-taxi',
-			background: 'hover:bg-taxi',
+			background: 'bg-yellow-200 hover:bg-taxi',
 			permission: [Permissions.SaesTaxiAdmin]
 		},
 		{
@@ -24,7 +24,7 @@
 				'Akár több .log fájlból meg lehet nézni, ki hány hívást vitt el, akár több napra nézve!',
 			href: '/ucp/admin/tools/call',
 			border: 'border-blue-600',
-			background: 'hover:bg-blue-600',
+			background: 'bg-blue-300 hover:bg-blue-600',
 			permission: [Permissions.SaesTaxiAdmin, Permissions.SaesTowAdmin]
 		}
 	]}

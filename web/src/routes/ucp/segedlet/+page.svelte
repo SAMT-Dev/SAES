@@ -4,17 +4,17 @@
 	let { data } = $props();
 </script>
 
-<div class="text-center text-white">
+<div class="text-center text-black dark:text-white">
 	<h1 class="mb-4 mt-4 text-4xl font-bold">Segédlet az oldal használatához</h1>
 	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
-		<h2 class="text-white">
+		<h2 class="text-black dark:text-white">
 			A segédlet felépítése pontokra bontott, azon belül pedig alpontokra bontott.
 		</h2>
-		<h2 class="text-white">
+		<h2 class="text-black dark:text-white">
 			Az itt feltüntetett pontok betartása kötelező, ellenkező esetben a feltöltött elem
 			elutasításra kerül.
 		</h2>
-		<h2 class="mb-3 text-white">
+		<h2 class="mb-3 text-black dark:text-white">
 			Amennyiben az egyik szabálypontot megszeged a feltöltött elem kezelőjének (elutasítójának)
 			kötelező indokként feltüntetni a sértett szabálypontokat.
 		</h2>

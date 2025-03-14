@@ -285,7 +285,7 @@
 					<Select
 						placeholder="Kérlek válassz"
 						name="type"
-						class="bg-emerald-600 text-xl text-white opacity-80 focus:opacity-100"
+						class="bg-emerald-600 text-xl text-black opacity-80 focus:opacity-100 dark:text-white"
 						bind:value={bindEdit.status}
 					>
 						<option value={1}>feltöltve</option>
@@ -315,7 +315,7 @@
 							placeholder="Kérlek válassz"
 							name="target_faction"
 							bind:value={bindEdit.target_faction}
-							class="bg-emerald-600 text-xl text-white opacity-80 focus:opacity-100"
+							class="bg-emerald-600 text-xl text-black opacity-80 focus:opacity-100 dark:text-white"
 						>
 							{#each Object.values(Factions) as fact}
 								<option value={fact}>{fact}</option>
@@ -328,7 +328,7 @@
 							<Select
 								placeholder="Kérlek válassz"
 								name="potlek-type"
-								class="bg-emerald-600 text-xl text-white opacity-80 focus:opacity-100"
+								class="bg-emerald-600 text-xl text-black opacity-80 focus:opacity-100 dark:text-white"
 								bind:value={bindEdit.type}
 							>
 								<option value={1}>délelőtti</option>
@@ -358,7 +358,7 @@
 </dialog>
 
 <div class="flex">
-	<div class="m-auto text-center text-white">
+	<div class="m-auto text-center text-black dark:text-white">
 		{#if potleks && !potleks.error}
 			<div class="flex items-end justify-center gap-1 text-end">
 				<h1 class="text-2xl font-bold">{title}</h1>
@@ -368,11 +368,11 @@
 			</div>
 			<h1 class="mb-2 text-xl text-gray-400">{des}</h1>
 			<div class="flex items-center justify-center gap-2 text-center">
-				<h2 class="text-xl font-bold text-white">Filter</h2>
+				<h2 class="text-xl font-bold text-black dark:text-white">Filter</h2>
 				<Select
 					placeholder="Kérlek válassz"
 					id="potlek-type"
-					class="bg-emerald-600 font-bold text-white"
+					class="bg-emerald-600 font-bold text-black dark:text-white"
 					bind:value={jona}
 					on:input={(e) => changestatus(e)}
 				>
@@ -381,8 +381,8 @@
 					<option value="3" class="font-bold">Elutasítva</option>
 				</Select>
 			</div>
-			<Table class="mt-5 table-auto p-10 text-center text-white">
-				<TableHead class="rounded-xl bg-gray-700">
+			<Table class="mt-5 table-auto p-10 text-center text-black dark:text-white">
+				<TableHead class="rounded-xl bg-gray-700 text-white">
 					<TableHeadCell>ID</TableHeadCell>
 					<TableHeadCell>Dátum</TableHeadCell>
 					<TableHeadCell>IG Név</TableHeadCell>
@@ -479,7 +479,7 @@
 								<TableBodyCell>
 									{#if tools.includes('délelőtti') && jona === get_status_number('feltöltve').toString()}
 										<Button
-											class="icon-[lucide--sun] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-yellow-300"
+											class="icon-[lucide--sun] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-yellow-300 dark:bg-white"
 											on:click={() => quickTools('de', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
@@ -489,7 +489,7 @@
 									{/if}
 									{#if tools.includes('éjszakai') && jona === get_status_number('feltöltve').toString()}
 										<Button
-											class="icon-[lucide--moon] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-blue-800"
+											class="icon-[lucide--moon] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-blue-800 dark:bg-white"
 											on:click={() => quickTools('du', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
@@ -499,7 +499,7 @@
 									{/if}
 									{#if tools.includes('accept') && jona === get_status_number('feltöltve').toString()}
 										<Button
-											class="icon-[lucide--check] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-green-500"
+											class="icon-[lucide--check] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-green-500 dark:bg-white"
 											on:click={() => quickTools('accept', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
@@ -509,7 +509,7 @@
 									{/if}
 									{#if tools.includes('decline') && jona === get_status_number('feltöltve').toString()}
 										<Button
-											class="icon-[lucide--x] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-red-600"
+											class="icon-[lucide--x] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-red-600 dark:bg-white"
 											on:click={() => quickTools('decline', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
@@ -519,7 +519,7 @@
 									{/if}
 									{#if tools.includes('edit')}
 										<Button
-											class="icon-[lucide--edit] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-slate-500"
+											class="icon-[lucide--edit] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-slate-500 dark:bg-white"
 											on:click={() => edit(potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
@@ -552,7 +552,7 @@
 			<button
 				aria-label="Előző oldal"
 				onclick={() => switchPage('prev')}
-				class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-white duration-300 hover:bg-[position:100%]"
+				class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-black duration-300 hover:bg-[position:100%] dark:text-white"
 				style="width: calc(5vw*2.5); height: 5vh;"
 				><span class="icon-[solar--map-arrow-left-bold] h-full w-full"></span></button
 			>
@@ -561,7 +561,7 @@
 			<button
 				aria-label="Következő oldal"
 				onclick={() => switchPage('next')}
-				class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-white duration-300 hover:bg-[position:100%]"
+				class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-black duration-300 hover:bg-[position:100%] dark:text-white"
 				style="width: calc(5vw*2.5); height: 5vh;"
 				><span class="icon-[solar--map-arrow-right-bold] h-full w-full"></span></button
 			>

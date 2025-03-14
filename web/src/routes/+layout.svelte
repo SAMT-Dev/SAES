@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import '../app.css';
 	import '../snow.css';
 	import { navigating } from '$app/state';

@@ -16,7 +16,7 @@
 			description: 'A délelőtti, és éjszakai pótlékok.',
 			href: '/ucp/admin/items/potlekok',
 			border: 'border-yellow-400',
-			background: 'hover:bg-yellow-400',
+			background: 'bg-yellow-200 hover:bg-yellow-400',
 			permission: [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift]
 		},
 		{
@@ -24,7 +24,7 @@
 			description: 'Nem tablet alapú hívások.',
 			href: '/ucp/admin/items/leintesek',
 			border: 'border-green-400',
-			background: 'hover:bg-green-400',
+			background: 'bg-green-200 hover:bg-green-400',
 			permission: [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift]
 		},
 		{
@@ -32,7 +32,7 @@
 			description: 'Az ütközés papír alapú változatai.',
 			href: '/ucp/admin/items/szamlak',
 			border: 'border-tow',
-			background: 'hover:bg-tow',
+			background: 'bg-blue-200 hover:bg-tow',
 			permission: [
 				Permissions.SaesTaxiAdminShift,
 				Permissions.SaesTowAdminShift,
@@ -44,8 +44,10 @@
 
 {#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
 	<div class="mt-5 text-center">
-		<h1 class="mb-2 text-3xl font-bold text-white">Statisztika</h1>
-		<div class="child:p-2 md:child:p-4 ml-5 mr-5 grid grid-cols-3 gap-5 text-center text-white">
+		<h1 class="mb-2 text-3xl font-bold text-black dark:text-white">Statisztika</h1>
+		<div
+			class="child:p-2 md:child:p-4 ml-5 mr-5 grid grid-cols-3 gap-5 text-center text-black dark:text-white"
+		>
 			{#if allowPerms(data, [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift])}
 				<div
 					class="rounded-lg"

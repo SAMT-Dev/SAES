@@ -66,7 +66,7 @@
 
 <Error {data}>
 	<div class="flex">
-		<div class="m-auto text-center text-white">
+		<div class="m-auto text-center text-black dark:text-white">
 			{#if data.date}
 				<div class="mt-2">
 					<h1 class="text-3xl font-bold">

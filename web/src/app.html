@@ -23,28 +23,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover" class="overflow-x-hidden bg-slate-900">
+	<body
+		data-sveltekit-preload-data="hover"
+		class="scheme-only-dark overflow-x-hidden bg-gray-300 dark:bg-gray-900"
+	>
 		<div style="display: contents">%sveltekit.body%</div>
 		<button
 			type="button"
 			data-twe-ripple-init
 			data-twe-ripple-color="light"
-			class="fixed! focus:outline-hidden bottom-5 end-5 hidden rounded-full bg-red-600 p-3 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:ring-0 active:bg-red-800 active:shadow-lg"
+			class="fixed! focus:outline-hidden bottom-5 end-5 hidden rounded-full bg-red-600 p-3 text-xs font-medium uppercase leading-tight text-black shadow-md transition duration-150 ease-in-out hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:ring-0 active:bg-red-800 active:shadow-lg dark:text-white"
 			id="btn-back-to-top"
 		>
 			<span class="[&>svg]:w-4"> </span>
 		</button>
-		<script>
-			if (
-				localStorage.theme === 'dark' ||
-				(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-			) {
-				document.documentElement.classList.add('dark');
-			} else {
-				// TODO: RENDES FEHÉR TÉMA
-				// document.documentElement.classList.remove('dark');
-				document.documentElement.classList.add('dark');
-			}
-		</script>
 	</body>
 </html>

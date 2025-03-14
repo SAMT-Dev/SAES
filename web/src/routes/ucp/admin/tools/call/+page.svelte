@@ -43,7 +43,7 @@
 	};
 </script>
 
-<div class="mt-5 items-center justify-center text-center text-white">
+<div class="mt-5 items-center justify-center text-center text-black dark:text-white">
 	<h1 class=" mb-2 text-3xl font-bold">SCKK Log alapú hívás számláló</h1>
 	{#if active}
 		<div class="mb-2 mt-1 flex items-center justify-center gap-2">
@@ -55,7 +55,7 @@
 				fájl esetében automatikusan engedélyezve van, több fájlnál csak azonos embertől ajánlott.</Tooltip
 			>
 		</div>
-		<Label class="text-white">Kattints a gombra, hogy kiválaszd a fájlokat</Label>
+		<Label class="text-black dark:text-white">Kattints a gombra, hogy kiválaszd a fájlokat</Label>
 		<Dropzone
 			class="m-auto h-12 w-96"
 			multiple={true}

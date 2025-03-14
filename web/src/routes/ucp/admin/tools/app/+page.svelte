@@ -124,7 +124,7 @@
 	};
 </script>
 
-<div class="flex text-center text-white">
+<div class="flex text-center text-black dark:text-white">
 	<div class="m-auto">
 		{#if timeerror}
 			<h1 class="text-xl font-bold text-red-600">

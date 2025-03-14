@@ -124,7 +124,7 @@
 
 <dialog
 	bind:this={modal}
-	class="h-screen w-screen rounded-3xl bg-black bg-opacity-75 text-center text-white lg:h-[800px] lg:w-[600px]"
+	class="m-auto h-screen w-screen rounded-3xl bg-black/75 text-center text-white lg:h-[800px] lg:w-[600px]"
 >
 	<button
 		aria-label="Bezárás"
@@ -195,7 +195,7 @@
 </dialog>
 
 <div class="flex">
-	<div class="m-auto text-center text-white">
+	<div class="m-auto text-center text-black dark:text-white">
 		<h1 class="font-itim mt-2 text-3xl font-bold">Események</h1>
 		{#if data.layout?.admin}
 			<a href="/ucp/admin/faction/logs/all" class="rounded-lg bg-emerald-700 px-1">Összes esemény</a
@@ -207,7 +207,7 @@
 					bind:checked={selected_filters.login}
 					on:change={filter_check}
 					name="login"
-					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-white"
+					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					>Bejelentkezés</Checkbox
 				>
 			{/if}
@@ -215,7 +215,7 @@
 				<Checkbox
 					bind:checked={selected_filters.upload_item}
 					on:change={filter_check}
-					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-white"
+					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					name="upload item">Elem feltöltés</Checkbox
 				>
 			{/if}
@@ -223,13 +223,13 @@
 				<Checkbox
 					bind:checked={selected_filters.update_item}
 					on:change={filter_check}
-					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-white"
+					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					name="update item">Elem szerkesztés</Checkbox
 				>
 			{/if}
 		</div>
-		<Table class="mt-5 table-auto p-10 text-center text-white">
-			<TableHead class="rounded-xl bg-gray-700">
+		<Table class="mt-5 table-auto p-10 text-center text-black dark:text-white">
+			<TableHead class="rounded-xl bg-gray-700 text-white">
 				<TableHeadCell>Kép</TableHeadCell>
 				<TableHeadCell>Dátum</TableHeadCell>
 				<TableHeadCell>Esemény létrehozója</TableHeadCell>
@@ -300,7 +300,7 @@
 											)}
 										aria-label="More"
 										class="icon-[material-symbols--ad] h-10 w-10 transition-colors duration-150 hover:text-emerald-400"
-									></button><Tooltip>Részletek megnézése</Tooltip>
+									></button><Tooltip class="bg-slate-500">Részletek megnézése</Tooltip>
 								{/if}
 							</TableBodyCell>
 						</TableBodyRow>

@@ -104,7 +104,7 @@
 		<main>
 			<div class="flex h-screen">
 				<div class="m-auto text-center">
-					<h1 class="animate-pulse text-3xl font-bold text-white">
+					<h1 class="animate-pulse text-3xl font-bold text-black dark:text-white">
 						Az oldal használatához kérlek lépj be!
 					</h1>
 					<button
@@ -114,7 +114,7 @@
 						<a
 							href={`${data.api}/auth?path=${page.url.pathname}`}
 							aria-label="Belépés Discord használatával"
-							class="flex w-full justify-end gap-2 text-white transition-colors duration-300 hover:text-black"
+							class="flex w-full justify-end gap-2 text-black transition-colors duration-300 hover:text-black dark:text-white"
 							><span class="icon-[ic--baseline-discord] m-auto h-12 w-12"></span>
 							<h2 class="m-auto text-xl font-bold">Discord</h2></a
 						>
@@ -145,7 +145,7 @@
 					<a
 						href="/logout"
 						data-sveltekit-reload
-						class="bg-linear-to-r mb-5 ml-5 mr-5 mt-5 block rounded-full from-red-500 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-2 py-1 text-center text-lg font-bold text-white drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+						class="bg-linear-to-r mb-5 ml-5 mr-5 mt-5 block rounded-full from-red-500 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-2 py-1 text-center text-lg font-bold text-black drop-shadow-lg transition-all duration-500 hover:bg-[position:100%] dark:text-white"
 						>Kijelentkezés</a
 					>
 				</div>
@@ -153,7 +153,7 @@
 		</main>
 	{:else if data.nofact}
 		<main>
-			<div class="flex h-screen items-center justify-center text-center text-white">
+			<div class="flex h-screen items-center justify-center text-center text-black dark:text-white">
 				<div class="flex items-center justify-center gap-5">
 					{#if allowPerms(data, [Permissions.SaesTaxiUcp])}
 						<a
@@ -228,7 +228,7 @@
 		{#if nosocket}
 			<header>
 				<div
-					class="flex items-center justify-center bg-red-500 text-center text-2xl font-semibold uppercase text-white"
+					class="flex items-center justify-center bg-red-500 text-center text-2xl font-semibold uppercase text-black dark:text-white"
 				>
 					<h1>
 						{#if nosocket !== true}
@@ -243,7 +243,7 @@
 			{#if maintenance}
 				<header>
 					<div
-						class="flex items-center justify-center bg-rose-900 text-center text-2xl font-bold uppercase text-white"
+						class="flex items-center justify-center bg-rose-900 text-center text-2xl font-bold uppercase text-black dark:text-white"
 					>
 						<h1 class="drop-shadow-lg">
 							Karbantartás mód aktív {#if typeof maintenance === 'string'}
@@ -255,7 +255,9 @@
 			{/if}
 			{#if announcement}
 				<header>
-					<div class="flex items-center justify-center bg-blue-500 text-center text-2xl text-white">
+					<div
+						class="flex items-center justify-center bg-blue-500 text-center text-2xl text-black dark:text-white"
+					>
 						{@html marked(announcement.toString())}
 					</div>
 				</header>
@@ -305,7 +307,7 @@
 						<a
 							data-sveltekit-reload
 							href="/ucp/keine"
-							class="bg-linear-to-r mb-5 ml-5 mr-5 mt-5 block rounded-full from-red-500 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-2 py-1 text-center text-lg font-bold text-white drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+							class="bg-linear-to-r mb-5 ml-5 mr-5 mt-5 block rounded-full from-red-500 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-2 py-1 text-center text-lg font-bold text-black drop-shadow-lg transition-all duration-500 hover:bg-[position:100%] dark:text-white"
 							>Továbblépés</a
 						>
 					{/if}

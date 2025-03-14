@@ -13,7 +13,9 @@
 	}
 </script>
 
-<div class="bg-gray-950 h-screen w-screen text-white text-center pointer-events-none select-none">
+<div
+	class="bg-gray-950 h-screen w-screen text-black dark:text-white text-center pointer-events-none select-none"
+>
 	{#if page === 'nothing'}
 		<div class="flex justify-center items-center h-full">
 			<img src="/favicon.png" alt="" />

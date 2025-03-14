@@ -20,9 +20,9 @@
 	} = $props();
 </script>
 
-<div class="flex items-center text-center text-white">
+<div class="flex items-center text-center text-black">
 	<div class="m-auto">
-		<h1 class="font-itim mb-5 mt-5 text-4xl font-bold">{title}</h1>
+		<h1 class="font-itim mb-5 mt-5 text-4xl font-bold dark:text-white">{title}</h1>
 		<div class="flex w-screen items-center justify-center gap-5">
 			{#each items as item}
 				{#if allowPerms(data, item.permission)}

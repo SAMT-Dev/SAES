@@ -67,7 +67,7 @@
 </script>
 
 <Error {data}>
-	<div class="text-center text-white">
+	<div class="text-center text-black dark:text-white">
 		<div
 			class={`via-taxi bg-linear-to-r ml-64 mr-64 mt-16 rounded-lg from-rose-600 to-emerald-500 bg-[size:200%] ${uploading ? 'bg-[position:100%]' : 'bg-[position:0]'} p-2 transition-all duration-300`}
 		>

@@ -65,7 +65,7 @@
 >
 	<div class="flex flex-col absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
 		<img src="/favicon.png" class="w-[200px] m-auto" alt="" />
-		<h1 class="font-bold text-3xl text-white w-screen">SAMT App</h1>
+		<h1 class="font-bold text-3xl text-black dark:text-white w-screen">SAMT App</h1>
 		<h2 class="text-gray-300 font-light">{text}</h2>
 		{#if envserr}
 			<h2 class="text-red-500 font-light">

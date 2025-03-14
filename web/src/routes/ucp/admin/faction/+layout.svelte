@@ -17,7 +17,9 @@
 	};
 </script>
 
-<nav class="grid grid-cols-2 items-center justify-between bg-blue-700 text-white lg:flex">
+<nav
+	class="grid grid-cols-2 items-center justify-between bg-blue-700 text-black lg:flex dark:text-white"
+>
 	<div class="ml-2 flex shrink items-center gap-2 xl:ml-[10vw]">
 		<h1 class="hidden text-3xl font-bold drop-shadow-xl md:block">
 			{data.faction === 'SCKK' ? data.layout?.taxi?.factionname : data.layout?.tow?.factionname}

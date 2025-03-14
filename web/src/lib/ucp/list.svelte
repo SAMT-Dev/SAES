@@ -53,17 +53,19 @@
 </script>
 
 <Error {data}>
-	<div class="grid grid-cols-1 content-center items-center justify-center text-center text-white">
+	<div
+		class="grid grid-cols-1 content-center items-center justify-center text-center text-black dark:text-white"
+	>
 		<h1 class="mt-5 text-5xl font-bold drop-shadow-xl">{display}:</h1>
 		<div class="m-auto mb-5 flex gap-5">
-			<h2 class="m-auto text-white">
+			<h2 class="m-auto text-black dark:text-white">
 				Összesen {data.potlekok.length} darab.
 			</h2>
 			<!-- {#if data.faction === Factions.Apms || tipus !== get_type_number('számla')} -->
 			<a
 				href={`${page.url.pathname}/upload`}
 				aria-label="Feltöltés"
-				class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-white shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+				class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-black shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%] dark:text-white"
 				><span class="icon-[material-symbols--upload] h-full w-full"></span></a
 			>
 			<Tooltip class="bg-slate-500">
@@ -83,7 +85,7 @@
 						class:from-cyan-800={get_status_string(potle.status) === 'feltöltve'}
 						class:to-gray-700={get_status_string(potle.status) === 'feltöltve'}
 					>
-						<h1 class="-mb-2 text-2xl font-bold drop-shadow-xl">
+						<h1 class="-mb-2 text-2xl font-bold text-white drop-shadow-xl">
 							{get_status_string(potle.status).toUpperCase()}
 						</h1>
 						<h1 class="text-gray-200 drop-shadow-xl">
@@ -182,7 +184,7 @@
 				<button
 					aria-label="Előző oldal"
 					onclick={() => switchPage('prev')}
-					class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-white duration-300 hover:bg-[position:100%]"
+					class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-black duration-300 hover:bg-[position:100%] dark:text-white"
 					style="width: calc(5vw*2.5); height: 5vh;"
 					><span class="icon-[solar--map-arrow-left-bold] h-full w-full"></span></button
 				>
@@ -191,7 +193,7 @@
 				<button
 					aria-label="Következő oldal"
 					onclick={() => switchPage('next')}
-					class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-white duration-300 hover:bg-[position:100%]"
+					class="bg-linear-to-r rounded-full from-emerald-500 via-teal-600 to-red-500 bg-[size:200%] bg-[position:0] text-black duration-300 hover:bg-[position:100%] dark:text-white"
 					style="width: calc(5vw*2.5); height: 5vh;"
 					><span class="icon-[solar--map-arrow-right-bold] h-full w-full"></span></button
 				>
