@@ -15,7 +15,8 @@ pub async fn load_envs() {
         "FULL_DOMAIN",
         "FMS_API",
         "FMS_API_KEY",
-        "SCKKAPP_API",
+        "SCKKAPP_API_TAXI",
+        "SCKKAPP_API_TOW",
     ];
     let mut hash = BASE_HASHMAP.write().await;
     for env in envs {

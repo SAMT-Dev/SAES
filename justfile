@@ -21,21 +21,21 @@ r_dev soft:
 
 [windows]
 w_dev:
-    cd web; pnpm dev
+    cd web; deno task dev
 
 [linux]
 w_dev:
-    cd web && pnpm dev
+    cd web && deno task dev
 
-#* pNPM install scripts
+#* deno install scripts
 
 [windows]
 w_i:
-    cd web; pnpm install
+    cd web; deno install
 
 [linux]
 w_i:
-    cd web && pnpm install
+    cd web && deno install
 
 #* Docker image build scripts
 
@@ -44,11 +44,11 @@ d_build soft tag:
 
 [windows]
 w_build:
-    cd web; pnpm run build
+    cd web; deno run build
 
 [linux]
 w_build:
-    cd web && pnpm run build
+    cd web && deno run build
 
 [windows]
 r_build soft:

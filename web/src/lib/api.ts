@@ -1,3 +1,5 @@
+import type { Factions } from './permissions';
+
 export const apiUrl =
 	process.env.NODE_ENV === 'development'
 		? 'http://localhost:3000'
@@ -55,4 +57,14 @@ export function countPerms(
 		if (data.layout?.perms.includes(perm)) i++;
 	}
 	return i;
+}
+
+export function allowFacts(
+	data: {
+		faction?: string;
+	},
+	factions: Factions[]
+) {
+	if (factions.includes(data.faction as Factions)) return true;
+	return false;
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { christmas } from '$lib/api.js';
+	import { allowFacts, christmas } from '$lib/api.js';
 	import { Factions } from '$lib/permissions.js';
 
 	let { data } = $props();
@@ -58,7 +58,7 @@
 			<h1 class="text-2xl drop-shadow-lg md:text-5xl md:font-bold">
 				{greet}, {data.layout?.admin ? 'szöszadmin ' : ''}{data.layout?.name}{end}
 			</h1>
-			{#if data.faction == Factions.Taxi && data.layout?.taxi}
+			{#if allowFacts(data, [Factions.Taxi]) && data.layout?.taxi}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Pozíciód: {data.layout.taxi.positionname}
 				</h2>
@@ -66,7 +66,7 @@
 					Műszakod: {data.layout.taxi.shiftname}
 				</h2>
 			{/if}
-			{#if data.faction == Factions.Tow && data.layout?.tow}
+			{#if allowFacts(data, [Factions.Tow]) && data.layout?.tow}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Pozíciód: {data.layout.tow.positionname}
 				</h2>
@@ -74,7 +74,7 @@
 					Műszakod: {data.layout.tow.shiftname}
 				</h2>
 			{/if}
-			{#if data.faction == Factions.Apms && data.layout?.apms}
+			{#if allowFacts(data, [Factions.Apms]) && data.layout?.apms}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Pozíciód: {data.layout.apms.positionname}
 				</h2>
@@ -82,7 +82,7 @@
 					Műszakod: {data.layout.apms.shiftname}
 				</h2>
 			{/if}
-			{#if data.faction === Factions.Taxi}
+			{#if allowFacts(data, [Factions.Taxi, Factions.Tow])}
 				{#if data.calls?.app === null}
 					<h2 class="text-xl drop-shadow-lg md:text-2xl">
 						Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}
@@ -94,14 +94,12 @@
 						) + Number(data.calls?.leintes)}
 					</h2>
 				{/if}
-			{/if}
-			{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Elfogadott pótlékaid: délelőtti: {data.calls?.potlek.de}, éjszakai: {data.calls?.potlek
 						.du}
 				</h2>
 			{/if}
-			{#if data.faction === Factions.Apms && data.szamlak}
+			{#if allowFacts(data, [Factions.Apms]) && data.szamlak}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Kezelt számlák (feltöltött+elfogadott): {data.szamlak?.uploaded}+{data.szamlak
 						?.accepted}={Number(data.szamlak?.uploaded) + Number(data.szamlak?.accepted)}
