@@ -70,7 +70,7 @@ export const load = (async ({ cookies, request, url }) => {
 					if (Object.values(Factions).includes(sfact as Factions)) {
 						if (
 							sfact === Factions.Taxi &&
-							allowPerms({ layout: jeson }, [factPermissions.SCKK.SaesFactUcp])
+							allowPerms({ layout: jeson }, [factPermissions[Factions.Taxi].SaesFactUcp])
 						) {
 							cookies.set('selected_faction', Factions.Taxi, {
 								path: '/',
@@ -96,7 +96,7 @@ export const load = (async ({ cookies, request, url }) => {
 						}
 						if (
 							sfact === Factions.Tow &&
-							allowPerms({ layout: jeson }, [factPermissions.TOW.SaesFactUcp])
+							allowPerms({ layout: jeson }, [factPermissions[Factions.Tow].SaesFactUcp])
 						) {
 							cookies.set('selected_faction', Factions.Tow, {
 								path: '/',
@@ -129,19 +129,19 @@ export const load = (async ({ cookies, request, url }) => {
 							nofact: true
 						};
 					}
-					if (allowPerms({ layout: jeson }, [factPermissions.SCKK.SaesFactUcp])) {
+					if (allowPerms({ layout: jeson }, [factPermissions[Factions.Taxi].SaesFactUcp])) {
 						throw redirect(303, '?select_faction=SCKK');
 					}
 					if (allowPerms({ layout: jeson }, [factPermissions.APMS.SaesFactUcp])) {
 						throw redirect(303, '?select_faction=APMS');
 					}
-					if (allowPerms({ layout: jeson }, [factPermissions.TOW.SaesFactUcp])) {
+					if (allowPerms({ layout: jeson }, [factPermissions[Factions.Tow].SaesFactUcp])) {
 						throw redirect(303, '?select_faction=TOW');
 					}
 				}
 				switch (cookies.get('selected_faction')) {
 					case Factions.Taxi:
-						if (!allowPerms({ layout: jeson }, [factPermissions.SCKK.SaesFactUcp])) {
+						if (!allowPerms({ layout: jeson }, [factPermissions[Factions.Taxi].SaesFactUcp])) {
 							throw redirect(303, '?clear_faction=true');
 						}
 						break;
@@ -151,7 +151,7 @@ export const load = (async ({ cookies, request, url }) => {
 						}
 						break;
 					case Factions.Tow:
-						if (!allowPerms({ layout: jeson }, [factPermissions.TOW.SaesFactUcp])) {
+						if (!allowPerms({ layout: jeson }, [factPermissions[Factions.Tow].SaesFactUcp])) {
 							throw redirect(303, '?clear_faction=true');
 						}
 						break;

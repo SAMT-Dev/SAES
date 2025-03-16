@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Grid from '$lib/admin/grid.svelte';
-	import { Permissions } from '$lib/permissions.js';
+	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
 
 	let { data } = $props();
 </script>
@@ -15,7 +15,10 @@
 			href: '/ucp/admin/shift/stat/current',
 			border: 'border-violet-600',
 			background: 'bg-violet-300 hover:bg-violet-600',
-			permission: [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift]
+			permission: [
+				factPermissions[Factions.Taxi].SaesFactAdminShift,
+				factPermissions[Factions.Tow].SaesFactAdminShift
+			]
 		},
 		{
 			title: 'Előző hét',
@@ -23,7 +26,10 @@
 			href: '/ucp/admin/shift/stat/previous',
 			border: 'border-rose-600',
 			background: 'bg-rose-300 hover:bg-rose-600',
-			permission: [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift]
+			permission: [
+				factPermissions[Factions.Taxi].SaesFactAdminShift,
+				factPermissions[Factions.Tow].SaesFactAdminShift
+			]
 		}
 	]}
 />

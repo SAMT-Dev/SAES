@@ -155,7 +155,7 @@
 		<main>
 			<div class="flex h-screen items-center justify-center text-center text-black dark:text-white">
 				<div class="flex items-center justify-center gap-5">
-					{#if allowPerms(data, [factPermissions.SCKK.SaesFactUcp])}
+					{#if allowPerms(data, [factPermissions[Factions.Taxi].SaesFactUcp])}
 						<a
 							href="?select_faction=SCKK"
 							data-sveltekit-reload
@@ -177,7 +177,7 @@
 							</h1>
 						</a>
 					{/if}
-					{#if allowPerms(data, [factPermissions.TOW.SaesFactUcp])}
+					{#if allowPerms(data, [factPermissions[Factions.Tow].SaesFactUcp])}
 						<a
 							href="?select_faction=TOW"
 							data-sveltekit-reload
@@ -269,9 +269,9 @@
 					{tip}
 					faction={data.faction!}
 					isAdmin={data.faction === Factions.Taxi
-						? allowPerms(data, [factPermissions.SCKK.SaesFactAdmin])
+						? allowPerms(data, [factPermissions[Factions.Taxi].SaesFactAdmin])
 						: data.faction === Factions.Tow
-							? allowPerms(data, [factPermissions.TOW.SaesFactAdmin])
+							? allowPerms(data, [factPermissions[Factions.Tow].SaesFactAdmin])
 							: data.faction === Factions.Apms
 								? allowPerms(data, [Permissions.SaesFactAdmin])
 								: false}

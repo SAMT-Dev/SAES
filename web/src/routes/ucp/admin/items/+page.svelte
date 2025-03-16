@@ -17,7 +17,10 @@
 			href: '/ucp/admin/items/potlekok',
 			border: 'border-yellow-400',
 			background: 'bg-yellow-200 hover:bg-yellow-400',
-			permission: [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift]
+			permission: [
+				factPermissions[Factions.Taxi].SaesFactAdminShift,
+				factPermissions[Factions.Tow].SaesFactAdminShift
+			]
 		},
 		{
 			title: 'Leintések',
@@ -25,7 +28,10 @@
 			href: '/ucp/admin/items/leintesek',
 			border: 'border-green-400',
 			background: 'bg-green-200 hover:bg-green-400',
-			permission: [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift]
+			permission: [
+				factPermissions[Factions.Taxi].SaesFactAdminShift,
+				factPermissions[Factions.Tow].SaesFactAdminShift
+			]
 		},
 		{
 			title: 'Szereltetési számlák',
@@ -34,8 +40,8 @@
 			border: 'border-tow',
 			background: 'bg-blue-200 hover:bg-tow',
 			permission: [
-				factPermissions.SCKK.SaesFactAdminShift,
-				factPermissions.TOW.SaesFactAdminShift,
+				factPermissions[Factions.Taxi].SaesFactAdminShift,
+				factPermissions[Factions.Tow].SaesFactAdminShift,
 				factPermissions.APMS.SaesFactAdmin
 			]
 		}
@@ -48,7 +54,7 @@
 		<div
 			class="child:p-2 md:child:p-4 ml-5 mr-5 grid grid-cols-3 gap-5 text-center text-black dark:text-white"
 		>
-			{#if allowPerms( data, [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift] )}
+			{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminShift, factPermissions[Factions.Tow].SaesFactAdminShift] )}
 				<div
 					class="rounded-lg"
 					class:bg-red-700={color === 'HU'}
