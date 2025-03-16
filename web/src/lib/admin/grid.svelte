@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { allowPerms } from '$lib/api';
-	import type { Permissions } from '$lib/permissions';
 
 	let {
 		data,
@@ -14,7 +13,7 @@
 			description: string;
 			border: string;
 			background: string;
-			permission: Permissions[];
+			permission: string[];
 			href: string;
 		}[];
 	} = $props();

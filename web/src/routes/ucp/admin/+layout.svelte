@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { allowPerms } from '$lib/api';
-	import { Permissions } from '$lib/permissions';
+	import { factPermissions, Permissions } from '$lib/permissions';
 
 	let { children, data } = $props();
 	let nav: HTMLDivElement = $state()!;
@@ -39,7 +39,7 @@
 			class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.endsWith('/admin') ? 'bg-emerald-600' : ''}`}
 			>Főoldal</a
 		>
-		{#if allowPerms(data, [Permissions.SaesTaxiAdmin, Permissions.SaesTowAdmin])}
+		{#if allowPerms(data, [factPermissions.SCKK.SaesFactAdmin, factPermissions.TOW.SaesFactAdmin])}
 			<a
 				href="/ucp/admin/tools"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.endsWith('/admin/tools') ? 'bg-emerald-600' : ''}`}
@@ -51,21 +51,21 @@
 			class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/items') ? 'bg-emerald-600' : ''}`}
 			>Feltöltött elemek</a
 		>
-		{#if allowPerms( data, [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift, Permissions.SaesTaxiAdminFaction, Permissions.SaesTowAdminFaction] )}
+		{#if allowPerms( data, [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift] )}
 			<a
 				href="/ucp/admin/shift"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/shift') ? 'bg-emerald-600' : ''}`}
 				>Műszakvezetés</a
 			>
 		{/if}
-		{#if allowPerms( data, [Permissions.SaesTaxiAdminFleet, Permissions.SaesTowAdminFleet, Permissions.SaesTaxiAdminFaction, Permissions.SaesTowAdminFaction] )}
+		{#if allowPerms( data, [factPermissions.SCKK.SaesFactAdminFleet, factPermissions.TOW.SaesFactAdminFleet] )}
 			<a
 				href="/ucp/admin/fleet"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/fleet') ? 'bg-emerald-600' : ''}`}
 				>Flottakezelés</a
 			>
 		{/if}
-		{#if allowPerms(data, [Permissions.SaesTaxiAdminFaction, Permissions.SaesTowAdminFaction])}
+		{#if allowPerms( data, [factPermissions.SCKK.SaesFactAdminFaction, factPermissions.TOW.SaesFactAdminFaction] )}
 			<a
 				href="/ucp/admin/faction"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/faction') ? 'bg-emerald-600' : ''}`}

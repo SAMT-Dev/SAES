@@ -10,7 +10,7 @@
 	import ViewTransition from '$lib/navigation.svelte';
 	import Header from '$lib/ucp/header.svelte';
 	import { allowPerms } from '$lib/api.js';
-	import { Factions, Permissions } from '$lib/permissions.js';
+	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	let { data, children } = $props();
@@ -155,7 +155,7 @@
 		<main>
 			<div class="flex h-screen items-center justify-center text-center text-black dark:text-white">
 				<div class="flex items-center justify-center gap-5">
-					{#if allowPerms(data, [Permissions.SaesTaxiUcp])}
+					{#if allowPerms(data, [factPermissions.SCKK.SaesFactUcp])}
 						<a
 							href="?select_faction=SCKK"
 							data-sveltekit-reload
@@ -177,7 +177,7 @@
 							</h1>
 						</a>
 					{/if}
-					{#if allowPerms(data, [Permissions.SaesTowUcp])}
+					{#if allowPerms(data, [factPermissions.TOW.SaesFactUcp])}
 						<a
 							href="?select_faction=TOW"
 							data-sveltekit-reload
@@ -199,7 +199,7 @@
 							</h1>
 						</a>
 					{/if}
-					{#if allowPerms(data, [Permissions.SaesApmsUcp])}
+					{#if allowPerms(data, [factPermissions.APMS.SaesFactUcp])}
 						<a
 							href="?select_faction=APMS"
 							data-sveltekit-reload
@@ -269,11 +269,11 @@
 					{tip}
 					faction={data.faction!}
 					isAdmin={data.faction === Factions.Taxi
-						? allowPerms(data, [Permissions.SaesTaxiAdmin])
+						? allowPerms(data, [factPermissions.SCKK.SaesFactAdmin])
 						: data.faction === Factions.Tow
-							? allowPerms(data, [Permissions.SaesTowAdmin])
+							? allowPerms(data, [factPermissions.TOW.SaesFactAdmin])
 							: data.faction === Factions.Apms
-								? allowPerms(data, [Permissions.SaesApmsAdmin])
+								? allowPerms(data, [Permissions.SaesFactAdmin])
 								: false}
 					{data}
 					{nosocket}

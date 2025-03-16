@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Grid from '$lib/admin/grid.svelte';
 	import { allowPerms } from '$lib/api.js';
-	import { Factions, Permissions } from '$lib/permissions.js';
+	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
 
 	let { data } = $props();
 	const supportCountries = ['HU', 'SK', 'RO'];
@@ -17,7 +17,7 @@
 			href: '/ucp/admin/items/potlekok',
 			border: 'border-yellow-400',
 			background: 'bg-yellow-200 hover:bg-yellow-400',
-			permission: [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift]
+			permission: [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift]
 		},
 		{
 			title: 'Leintések',
@@ -25,7 +25,7 @@
 			href: '/ucp/admin/items/leintesek',
 			border: 'border-green-400',
 			background: 'bg-green-200 hover:bg-green-400',
-			permission: [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift]
+			permission: [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift]
 		},
 		{
 			title: 'Szereltetési számlák',
@@ -34,9 +34,9 @@
 			border: 'border-tow',
 			background: 'bg-blue-200 hover:bg-tow',
 			permission: [
-				Permissions.SaesTaxiAdminShift,
-				Permissions.SaesTowAdminShift,
-				Permissions.SaesApmsAdmin
+				factPermissions.SCKK.SaesFactAdminShift,
+				factPermissions.TOW.SaesFactAdminShift,
+				factPermissions.APMS.SaesFactAdmin
 			]
 		}
 	]}
@@ -48,7 +48,7 @@
 		<div
 			class="child:p-2 md:child:p-4 ml-5 mr-5 grid grid-cols-3 gap-5 text-center text-black dark:text-white"
 		>
-			{#if allowPerms(data, [Permissions.SaesTaxiAdminShift, Permissions.SaesTowAdminShift])}
+			{#if allowPerms( data, [factPermissions.SCKK.SaesFactAdminShift, factPermissions.TOW.SaesFactAdminShift] )}
 				<div
 					class="rounded-lg"
 					class:bg-red-700={color === 'HU'}

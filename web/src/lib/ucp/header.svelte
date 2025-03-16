@@ -3,7 +3,7 @@
 	import { pages } from './public';
 	import { page as statepage } from '$app/state';
 	import { Tooltip } from 'flowbite-svelte';
-	import { Factions, Permissions } from '$lib/permissions';
+	import { Factions, getAllFactionPermissions, Permissions } from '$lib/permissions';
 
 	interface Props {
 		tip: any;
@@ -22,9 +22,7 @@
 
 	let { tip, isAdmin = false, faction = 'SAMT', data, nosocket }: Props = $props();
 
-	let multifact =
-		countPerms(data, [Permissions.SaesTaxiUcp, Permissions.SaesTowUcp, Permissions.SaesApmsUcp]) >=
-		2;
+	let multifact = countPerms(data, getAllFactionPermissions(Permissions.SaesFactUcp)) >= 2;
 
 	let pagesz = pages(faction);
 </script>

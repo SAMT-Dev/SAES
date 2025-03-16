@@ -1,7 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 import { allowPerms, apiUrl, apiUrlPublic, cdnUrl, countPerms } from '$lib/api';
 import { isRedirect, redirect } from '@sveltejs/kit';
-import { Factions, Permissions } from '$lib/permissions';
+import { Factions, factPermissions, getAllFactionPermissions, Permissions } from '$lib/permissions';
 
 export const load = (async ({ cookies, request, url }) => {
 	if (!cookies.get('auth_token')) {
@@ -70,7 +70,7 @@ export const load = (async ({ cookies, request, url }) => {
 					if (Object.values(Factions).includes(sfact as Factions)) {
 						if (
 							sfact === Factions.Taxi &&
-							allowPerms({ layout: jeson }, [Permissions.SaesTaxiUcp])
+							allowPerms({ layout: jeson }, [factPermissions.SCKK.SaesFactUcp])
 						) {
 							cookies.set('selected_faction', Factions.Taxi, {
 								path: '/',
@@ -83,7 +83,7 @@ export const load = (async ({ cookies, request, url }) => {
 						}
 						if (
 							sfact === Factions.Apms &&
-							allowPerms({ layout: jeson }, [Permissions.SaesApmsUcp])
+							allowPerms({ layout: jeson }, [factPermissions.APMS.SaesFactUcp])
 						) {
 							cookies.set('selected_faction', Factions.Apms, {
 								path: '/',
@@ -94,7 +94,10 @@ export const load = (async ({ cookies, request, url }) => {
 							});
 							throw redirect(303, url.pathname);
 						}
-						if (sfact === Factions.Tow && allowPerms({ layout: jeson }, [Permissions.SaesTowUcp])) {
+						if (
+							sfact === Factions.Tow &&
+							allowPerms({ layout: jeson }, [factPermissions.TOW.SaesFactUcp])
+						) {
 							cookies.set('selected_faction', Factions.Tow, {
 								path: '/',
 								maxAge: 360 * 24 * 30,
@@ -117,11 +120,7 @@ export const load = (async ({ cookies, request, url }) => {
 				}
 				if (!cookies.get('selected_faction')) {
 					if (
-						countPerms({ layout: jeson }, [
-							Permissions.SaesTaxiUcp,
-							Permissions.SaesTowUcp,
-							Permissions.SaesApmsUcp
-						]) >= 2
+						countPerms({ layout: jeson }, getAllFactionPermissions(Permissions.SaesFactUcp)) >= 2
 					) {
 						return {
 							layout: jeson,
@@ -130,29 +129,29 @@ export const load = (async ({ cookies, request, url }) => {
 							nofact: true
 						};
 					}
-					if (allowPerms({ layout: jeson }, [Permissions.SaesTaxiUcp])) {
+					if (allowPerms({ layout: jeson }, [factPermissions.SCKK.SaesFactUcp])) {
 						throw redirect(303, '?select_faction=SCKK');
 					}
-					if (allowPerms({ layout: jeson }, [Permissions.SaesApmsUcp])) {
+					if (allowPerms({ layout: jeson }, [factPermissions.APMS.SaesFactUcp])) {
 						throw redirect(303, '?select_faction=APMS');
 					}
-					if (allowPerms({ layout: jeson }, [Permissions.SaesTowUcp])) {
+					if (allowPerms({ layout: jeson }, [factPermissions.TOW.SaesFactUcp])) {
 						throw redirect(303, '?select_faction=TOW');
 					}
 				}
 				switch (cookies.get('selected_faction')) {
 					case Factions.Taxi:
-						if (!allowPerms({ layout: jeson }, [Permissions.SaesTaxiUcp])) {
+						if (!allowPerms({ layout: jeson }, [factPermissions.SCKK.SaesFactUcp])) {
 							throw redirect(303, '?clear_faction=true');
 						}
 						break;
 					case Factions.Apms:
-						if (!allowPerms({ layout: jeson }, [Permissions.SaesApmsUcp])) {
+						if (!allowPerms({ layout: jeson }, [factPermissions.APMS.SaesFactUcp])) {
 							throw redirect(303, '?clear_faction=true');
 						}
 						break;
 					case Factions.Tow:
-						if (!allowPerms({ layout: jeson }, [Permissions.SaesTowUcp])) {
+						if (!allowPerms({ layout: jeson }, [factPermissions.TOW.SaesFactUcp])) {
 							throw redirect(303, '?clear_faction=true');
 						}
 						break;
