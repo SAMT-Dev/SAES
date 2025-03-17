@@ -32,7 +32,7 @@
 			aria-label="leave"
 			class="icon-[material-symbols--logout-rounded] min-h-6 min-w-6 transition-colors duration-500 hover:text-red-600"
 		></a>
-		<Tooltip placement="bottom">Kilépés</Tooltip>
+		<Tooltip placement="bottom" class="bg-gray-600">Kilépés</Tooltip>
 	</div>
 	<button
 		aria-label="mv-menu"

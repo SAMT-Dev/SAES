@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Dropzone, Label, Checkbox, Tooltip } from 'flowbite-svelte';
 
-	let files: FileList = $state();
+	let files: FileList | undefined = $state();
 	interface Drivers {
 		[key: string]: Calls;
 	}
@@ -13,10 +13,10 @@
 	let samecall = $state(false);
 	const zoneChange = async () => {
 		active = false;
-		if (files.length === 1) {
+		if (files?.length === 1) {
 			samecall = true;
 		}
-		for (const file of files) {
+		for (const file of files!) {
 			let lines = (await file.text()).split('\n');
 			for (const line of lines) {
 				let elements = line.split(' ');
@@ -50,7 +50,7 @@
 			<Checkbox bind:checked={samecall} />
 			<h2>Ismétlődő hívásszám engedélyezése</h2>
 			<h2 class="text-taxi font-bold">?</h2>
-			<Tooltip
+			<Tooltip class="bg-gray-600"
 				>Ez abban az esetben hasznos, mikor egy hívás számot egy ember lehet többször is elvitt. Egy
 				fájl esetében automatikusan engedélyezve van, több fájlnál csak azonos embertől ajánlott.</Tooltip
 			>

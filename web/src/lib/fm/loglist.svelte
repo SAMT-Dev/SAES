@@ -283,7 +283,7 @@
 										onclick={() => get_details(log.message!, log.action)}
 										aria-label="More"
 										class="icon-[material-symbols--ad] h-10 w-10 transition-colors duration-150 hover:text-emerald-400"
-									></button><Tooltip>Részletek megnézése</Tooltip>
+									></button><Tooltip class="bg-gray-600">Részletek megnézése</Tooltip>
 								{/if}
 								{#if log.action === 'UPLOAD ITEM'}<button
 										onclick={() =>

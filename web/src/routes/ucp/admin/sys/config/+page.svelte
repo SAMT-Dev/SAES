@@ -61,7 +61,7 @@
 				onclick={async () => changeState()}
 				class="icon-[material-symbols--save-as] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-slate-500"
 			></Button>
-			<Tooltip>Változás mentése</Tooltip>
+			<Tooltip class="bg-gray-600">Változás mentése</Tooltip>
 		{/if}
 		<label for="maintenance" class="text-xl font-bold">Karbantartás: </label>
 		<input
@@ -77,7 +77,7 @@
 				onclick={async () => changeState()}
 				class="icon-[material-symbols--save-as] h-6 w-6 rounded-xl bg-white font-bold transition-all duration-150 hover:bg-slate-500"
 			></Button>
-			<Tooltip>Változás mentése</Tooltip>
+			<Tooltip class="bg-gray-600">Változás mentése</Tooltip>
 		{/if}
 	</div>
 	{#each factions as f}
