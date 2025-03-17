@@ -36,7 +36,7 @@ pub struct GetUserRes {
     pub factionrecords: Vec<FactionRecord>,
     pub issysadmin: bool,
     pub permissions: Vec<String>,
-    pub id: i8,
+    pub id: i32,
     pub username: String,
 }
 
@@ -48,7 +48,7 @@ pub struct SAMTAuth {
 #[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Driver {
     pub discordid: String,
-    pub driverid: i8,
+    pub driverid: i32,
     pub name: String,
     pub admin: bool,
     pub perms: Vec<String>,
