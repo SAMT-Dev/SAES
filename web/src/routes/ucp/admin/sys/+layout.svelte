@@ -42,6 +42,11 @@
 			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys/config') ? 'bg-rose-700' : ''}`}
 			>Config</a
 		>
+		<a
+			href="/ucp/admin/sys/logs"
+			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys/logs') ? 'bg-rose-700' : ''}`}
+			>Logs</a
+		>
 	</div>
 </nav>
 {@render children?.()}

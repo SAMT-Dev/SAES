@@ -1,6 +1,6 @@
 import { apiUrl } from '$lib/api';
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 import type { Logs } from '$lib/types';
 
 export const load = (async ({ cookies }) => {

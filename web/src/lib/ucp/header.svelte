@@ -82,7 +82,7 @@
 						{/if}
 					</a>
 					{#if multifact}
-						<Tooltip>Frakcióváltás</Tooltip>
+						<Tooltip class="bg-gray-600">Frakcióváltás</Tooltip>
 					{/if}
 					<a href="/ucp/settings" aria-label="Beállítások" class="group hidden"
 						><span
@@ -95,7 +95,7 @@
 							}`}
 						></span></a
 					>
-					<Tooltip>Beállítások</Tooltip>
+					<Tooltip class="bg-gray-600">Beállítások</Tooltip>
 				</div>
 				<div class="flex items-center justify-end border-l lg:border-l-0">
 					<input type="checkbox" name="hamburger" id="hamburger" class="peer opacity-0" hidden />
