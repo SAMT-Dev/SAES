@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Grid from '$lib/admin/grid.svelte';
-	import { Permissions } from '$lib/permissions.js';
+	import { Factions, factPermissions } from '$lib/permissions.js';
 
 	let { data } = $props();
 </script>
@@ -16,7 +16,10 @@
 			href: '/s/app',
 			border: 'border-taxi',
 			background: 'bg-yellow-200 hover:bg-taxi',
-			permission: [Permissions.SaesTaxiAdmin]
+			permission: [
+				factPermissions[Factions.Taxi].SaesFactUcp,
+				factPermissions[Factions.Tow].SaesFactUcp
+			]
 		},
 		{
 			title: 'Steam csoport',
@@ -24,7 +27,10 @@
 			href: '/s/steam',
 			border: 'border-blue-600',
 			background: 'bg-blue-300 hover:bg-blue-600',
-			permission: [Permissions.SaesTaxiAdmin, Permissions.SaesTowAdmin]
+			permission: [
+				factPermissions[Factions.Taxi].SaesFactUcp,
+				factPermissions[Factions.Tow].SaesFactUcp
+			]
 		}
 	]}
 />
