@@ -67,7 +67,7 @@
 </script>
 
 <Error {data}>
-	<div class="text-center text-black dark:text-white">
+	<div class="text-center text-white">
 		<div
 			class={`via-taxi bg-linear-to-r ml-64 mr-64 mt-16 rounded-lg from-rose-600 to-emerald-500 bg-[size:200%] ${uploading ? 'bg-[position:100%]' : 'bg-[position:0]'} p-2 transition-all duration-300`}
 		>
@@ -119,7 +119,9 @@
 					<h2 class="font-bold">Kiválaszottt fájlok:</h2>
 					<div class="flex flex-wrap items-center justify-center gap-2">
 						{#each selectedFiles as file}
-							<h2 class="rounded-lg bg-black bg-opacity-30 px-2 font-light">{file}</h2>
+							<h2 class="rounded-lg bg-black/30 px-2 font-light">
+								{file}
+							</h2>
 						{/each}
 					</div>
 				{/if}
@@ -127,7 +129,9 @@
 		</div>
 		<div class="flex-row items-center justify-center align-middle">
 			{#if !agent.includes('Firefox')}
-				<h2 class="font-bold">Ha sikeresen feltöltötted őket akkor itt fognak megjelenni:</h2>
+				<h2 class="font-bold text-black dark:text-white">
+					Ha sikeresen feltöltötted őket akkor itt fognak megjelenni:
+				</h2>
 			{/if}
 			{#each fileas as nyam}
 				{#if tipus === get_type_number('leintés')}
