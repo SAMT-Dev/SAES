@@ -2,7 +2,6 @@ use axum::extract::Query;
 use axum::{debug_handler, response::Redirect};
 use base64::engine::general_purpose;
 use base64::Engine;
-use lazy_static::lazy_static;
 use random_string::{charsets, generate};
 use tokio::sync::RwLock;
 use tower_cookies::cookie::time::Duration;
@@ -11,11 +10,11 @@ use url_builder::URLBuilder;
 
 use serde::{Deserialize, Serialize};
 
+use crate::utils::structs::StateList;
 use crate::{BASE_HASHMAP, WEB_CLIENT};
 
-lazy_static! {
-    static ref GLOBAL_ARRAY: RwLock<Vec<String>> = RwLock::new(Vec::new());
-}
+static STATE_MANAGEMENT: RwLock<Vec<StateList>> = RwLock::const_new(Vec::new());
+
 pub struct DiscordAuth {
     pub api_endpoint: String,
     pub discord_base: String,
@@ -61,6 +60,39 @@ struct TokenResponse {
 #[debug_handler]
 pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redirect {
     let ds = get_discord_envs().await;
+    let path = String::from_utf8(general_purpose::STANDARD.decode(query.state).unwrap()).unwrap();
+    let path_full: AuthState = serde_json::from_str(&path).expect("Nem megy");
+    let session = cookies.get("oauth-session");
+    if session.is_none() {
+        return Redirect::to(&ds.fdomain);
+    }
+    let session = session.unwrap();
+    let item = {
+        let states = STATE_MANAGEMENT.read().await;
+        let state = states
+            .iter()
+            .find(|p| p.token == session.value() && p.id == path_full.id);
+        if state.is_none() {
+            None
+        } else {
+            Some(StateList {
+                id: state.unwrap().id,
+                token: state.unwrap().token.clone(),
+            })
+        }
+    };
+    if item.is_none() {
+        return Redirect::to(&ds.fdomain);
+    }
+    {
+        let pos = STATE_MANAGEMENT
+            .read()
+            .await
+            .iter()
+            .position(|p| p.id == p.id)
+            .unwrap();
+        STATE_MANAGEMENT.write().await.remove(pos);
+    }
     let data = [
         ("grant_type", "authorization_code"),
         ("code", &query.code),
@@ -80,35 +112,22 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         .expect("Átalakítás sikertelen");
     let object: TokenResponse =
         serde_json::from_str(&token_response).expect("Átalakítás sikertelen");
-    let path = String::from_utf8(general_purpose::STANDARD.decode(query.state).unwrap()).unwrap();
-    let path_full: AuthState = serde_json::from_str(&path).expect("Nem megy");
     if path_full.mode == "app".to_string() {
         return Redirect::to(&format!(
             "http://localhost:31313/app-auth/cb?code={}",
             object.access_token
         ));
     }
-    if GLOBAL_ARRAY.read().await.contains(&path_full.truestate) {
-        cookies.add(
-            Cookie::build(("auth_token", object.access_token))
-                .max_age(Duration::seconds(object.expires_in))
-                .http_only(true)
-                .secure(true)
-                .domain(ds.domain.clone())
-                .path("/")
-                .build(),
-        );
-        let id = GLOBAL_ARRAY
-            .read()
-            .await
-            .iter()
-            .position(|x| x == &path_full.truestate)
-            .unwrap();
-        GLOBAL_ARRAY.write().await.remove(id);
-        return Redirect::to(&format!("{}{}", &ds.fdomain, path_full.path));
-    }
-
-    Redirect::to("https://google.com")
+    cookies.add(
+        Cookie::build(("auth_token", object.access_token))
+            .max_age(Duration::seconds(object.expires_in))
+            .http_only(true)
+            .secure(true)
+            .domain(ds.domain.clone())
+            .path("/")
+            .build(),
+    );
+    return Redirect::to(&format!("{}{}", &ds.fdomain, path_full.path));
 }
 
 fn base_path() -> String {
@@ -125,24 +144,44 @@ pub struct AuthHomeCode {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AuthState {
     path: String,
-    truestate: String,
+    id: i32,
     mode: String,
 }
 
 #[debug_handler]
-pub async fn auth_home(Query(q): Query<AuthHomeCode>) -> Redirect {
+pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redirect {
+    let ds = get_discord_envs().await;
     let mut ub = URLBuilder::new();
     let rstate = generate(256, charsets::ALPHANUMERIC);
+    let id = loop {
+        let r = rand::random_range(0..1000);
+        if !STATE_MANAGEMENT.read().await.iter().any(|s| s.id == r) {
+            break r;
+        }
+    };
+    {
+        STATE_MANAGEMENT.write().await.push(StateList {
+            id,
+            token: rstate.clone(),
+        });
+    };
+    cookies.add(
+        Cookie::build(("oauth-session", rstate))
+            .domain(ds.domain)
+            .http_only(true)
+            .secure(true)
+            .path("/")
+            .build(),
+    );
     let state = AuthState {
         path: q.path,
-        truestate: rstate.clone(),
+        id,
         mode: if q.mode.is_some() {
             q.mode.unwrap()
         } else {
             "web".to_string()
         },
     };
-    GLOBAL_ARRAY.write().await.push(rstate);
     let state_str = serde_json::to_string(&state).expect("Sikertelen átalakítás");
     let ds = get_discord_envs().await;
     ub.set_protocol("https")
@@ -151,7 +190,7 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>) -> Redirect {
         .add_param("state", &general_purpose::STANDARD.encode(state_str))
         .add_param("client_id", &ds.discord_id)
         .add_param("scope", "identify")
-        .add_param("prompt", "none")
+        // .add_param("prompt", "none")
         .add_param("redirect_uri", &ds.redirect_url);
     let built_url = ub.build();
     Redirect::to(&built_url)

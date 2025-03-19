@@ -24,3 +24,9 @@ pub struct AppUser {
     pub usertoken: String,
     pub authcode: String,
 }
+
+#[derive(Debug)]
+pub struct StateList {
+    pub id: i32,
+    pub token: String,
+}
