@@ -2,44 +2,41 @@ use axum::extract::Query;
 use axum::{debug_handler, response::Redirect};
 use base64::engine::general_purpose;
 use base64::Engine;
+use cookie::time::OffsetDateTime;
 use random_string::{charsets, generate};
+use sha2::{Digest, Sha256};
 use tokio::sync::RwLock;
-use tower_cookies::cookie::time::Duration;
 use tower_cookies::{Cookie, Cookies};
 use url_builder::URLBuilder;
 
 use serde::{Deserialize, Serialize};
 
-use crate::utils::structs::StateList;
+use crate::utils::structs::{AuthJWT, StateList};
 use crate::{BASE_HASHMAP, WEB_CLIENT};
 
 static STATE_MANAGEMENT: RwLock<Vec<StateList>> = RwLock::const_new(Vec::new());
 
-pub struct DiscordAuth {
+pub struct AuthEnvs {
     pub api_endpoint: String,
-    pub discord_base: String,
-    pub discord_id: String,
-    pub discord_secret: String,
-    pub redirect_url: String,
+    pub client_id: String,
+    pub base_url: String,
     pub domain: String,
     pub fdomain: String,
 }
 
-pub async fn get_discord_envs() -> DiscordAuth {
+pub async fn get_auth_envs() -> AuthEnvs {
     let hash = BASE_HASHMAP.read().await;
-    let id = hash.get("env_discord_id").unwrap();
-    let secret = hash.get("env_discord_secret").unwrap();
-    let cb = hash.get("env_redirect_url").unwrap();
+    let id = hash.get("env_authapi_client_id").unwrap();
+    let url = hash.get("env_authapi_url").unwrap();
     let domain = hash.get("env_domain").unwrap();
+    let base_url = hash.get("env_api_base_url").unwrap();
     let fdomain = hash.get("env_full_domain").unwrap();
-    DiscordAuth {
-        api_endpoint: String::from("https://discord.com/api/v10"),
-        discord_id: id.to_owned(),
-        discord_secret: secret.to_owned(),
+    AuthEnvs {
+        api_endpoint: url.to_owned(),
         domain: domain.to_owned(),
         fdomain: fdomain.to_owned(),
-        redirect_url: cb.to_owned(),
-        discord_base: String::from("discord.com/oauth2/authorize"),
+        client_id: id.to_owned(),
+        base_url: base_url.to_owned(),
     }
 }
 
@@ -51,27 +48,24 @@ pub struct Code {
 
 #[derive(Debug, Deserialize)]
 struct TokenResponse {
-    expires_in: i64,
-    // refresh_token: String,
     access_token: String,
-    // Add other relevant fields from the response here (e.g., token_type, expires_in)
 }
 
 #[debug_handler]
 pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redirect {
-    let ds = get_discord_envs().await;
+    let ds = get_auth_envs().await;
     let path = String::from_utf8(general_purpose::STANDARD.decode(query.state).unwrap()).unwrap();
     let path_full: AuthState = serde_json::from_str(&path).expect("Nem megy");
-    let session = cookies.get("oauth-session");
-    if session.is_none() {
+    let code_verifier = cookies.get("oauth-session");
+    if code_verifier.is_none() {
         return Redirect::to(&ds.fdomain);
     }
-    let session = session.unwrap();
+    let code_verifier = code_verifier.unwrap();
     let item = {
         let states = STATE_MANAGEMENT.read().await;
         let state = states
             .iter()
-            .find(|p| p.token == session.value() && p.id == path_full.id);
+            .find(|p| p.token == code_verifier.value() && p.id == path_full.id);
         if state.is_none() {
             None
         } else {
@@ -93,23 +87,23 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             .unwrap();
         STATE_MANAGEMENT.write().await.remove(pos);
     }
+    let code_verifier = code_verifier.value();
+    println!("{}", code_verifier);
     let data = [
         ("grant_type", "authorization_code"),
         ("code", &query.code),
-        ("redirect_uri", &ds.redirect_url),
+        ("redirect_uri", &format!("{}/auth/cb", ds.base_url)),
+        ("client_id", &ds.client_id),
+        ("code_verifier", code_verifier),
     ];
-    let url = format!("{}/oauth2/token", ds.api_endpoint);
-    let response = WEB_CLIENT
-        .post(&url)
-        .basic_auth(ds.discord_id, Some(ds.discord_secret.to_string()))
-        .form(&data)
-        .send()
-        .await;
+    let url = format!("{}/token", ds.api_endpoint);
+    let response = WEB_CLIENT.post(&url).form(&data).send().await;
     let token_response: String = response
         .expect("Lekérés sikertelen")
         .text()
         .await
         .expect("Átalakítás sikertelen");
+    println!("{}", token_response);
     let object: TokenResponse =
         serde_json::from_str(&token_response).expect("Átalakítás sikertelen");
     if path_full.mode == "app".to_string() {
@@ -118,9 +112,13 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             object.access_token
         ));
     }
+    let parts: Vec<&str> = object.access_token.split(".").collect();
+    let payload = parts[1];
+    let decoded = general_purpose::STANDARD_NO_PAD.decode(payload).unwrap();
+    let jwt_token: AuthJWT = serde_json::from_slice(&decoded).unwrap();
     cookies.add(
         Cookie::build(("auth_token", object.access_token))
-            .max_age(Duration::seconds(object.expires_in))
+            .expires(OffsetDateTime::from_unix_timestamp(jwt_token.exp).unwrap())
             .http_only(true)
             .secure(true)
             .domain(ds.domain.clone())
@@ -150,9 +148,9 @@ pub struct AuthState {
 
 #[debug_handler]
 pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redirect {
-    let ds = get_discord_envs().await;
+    let auth_envs = get_auth_envs().await;
     let mut ub = URLBuilder::new();
-    let rstate = generate(256, charsets::ALPHANUMERIC);
+    let code_verifier = generate(32, charsets::ALPHANUMERIC);
     let id = loop {
         let r = rand::random_range(0..1000);
         if !STATE_MANAGEMENT.read().await.iter().any(|s| s.id == r) {
@@ -162,12 +160,12 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
     {
         STATE_MANAGEMENT.write().await.push(StateList {
             id,
-            token: rstate.clone(),
+            token: code_verifier.clone(),
         });
     };
     cookies.add(
-        Cookie::build(("oauth-session", rstate))
-            .domain(ds.domain)
+        Cookie::build(("oauth-session", code_verifier.clone()))
+            .domain(auth_envs.domain)
             .http_only(true)
             .secure(true)
             .path("/")
@@ -183,15 +181,22 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
         },
     };
     let state_str = serde_json::to_string(&state).expect("Sikertelen átalakítás");
-    let ds = get_discord_envs().await;
-    ub.set_protocol("https")
-        .set_host(&ds.discord_base.as_str())
+    let mut hasher = Sha256::new();
+    hasher.update(code_verifier.clone());
+    let code_challenge = hasher.finalize();
+    let code_challenge = &general_purpose::URL_SAFE_NO_PAD.encode(code_challenge);
+    println!("{} // {}", code_verifier, code_challenge);
+    ub.set_host(&format!("{}/authorize", auth_envs.api_endpoint))
         .add_param("response_type", "code")
         .add_param("state", &general_purpose::STANDARD.encode(state_str))
-        .add_param("client_id", &ds.discord_id)
-        .add_param("scope", "identify")
-        .add_param("prompt", "none")
-        .add_param("redirect_uri", &ds.redirect_url);
-    let built_url = ub.build();
+        .add_param("client_id", &auth_envs.client_id)
+        .add_param("scope", "openid%20profile")
+        .add_param("redirect_uri", &format!("{}/auth/cb", auth_envs.base_url))
+        .add_param("code_challenge_method", "S256")
+        .add_param("code_challenge", code_challenge);
+    let mut built_url = ub.build();
+    built_url.remove(0);
+    built_url.remove(0);
+    built_url.remove(0);
     Redirect::to(&built_url)
 }

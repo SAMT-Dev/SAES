@@ -3,7 +3,7 @@ use socketioxide::extract::SocketRef;
 use tracing::{info, warn};
 
 use crate::{
-    auth::get_discord_envs,
+    auth::get_auth_envs,
     config::loader::get_config,
     logging::db_log,
     utils::{
@@ -25,7 +25,7 @@ pub async fn on_connect(socket: SocketRef, data: InitialData) {
         socket.ns(),
         data,
     );
-    let ds = get_discord_envs().await;
+    let ds = get_auth_envs().await;
     let envs = get_api_envs().await;
     let dcuserget = WEB_CLIENT
         .get(format!("{}/users/@me", ds.api_endpoint))

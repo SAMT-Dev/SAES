@@ -3,7 +3,7 @@ use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    auth::get_discord_envs,
+    auth::get_auth_envs,
     config::{loader::get_config, structs::AccessConfig},
     WEB_CLIENT,
 };
@@ -100,7 +100,7 @@ pub async fn ucp_auth(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let auth = headers.get("cookie");
     let faction = headers.get("faction");
-    let ds = get_discord_envs().await;
+    let ds = get_auth_envs().await;
     let envs = get_api_envs().await;
     let config = get_config().await;
     if auth.is_some() {
