@@ -14,6 +14,7 @@ pub async fn load_envs() {
         "FMS_API",
         "FMS_API_KEY",
         "AUTHAPI_URL",
+        "AUTHAPI_KEY",
         "AUTHAPI_CLIENT_ID",
         "SCKKAPP_API_TAXI",
         "SCKKAPP_API_TOW",
