@@ -3,9 +3,8 @@ use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    auth::get_auth_envs,
+    auth::{get_auth_envs, get_jwt_value, validate_jwt},
     config::{loader::get_config, structs::AccessConfig},
-    WEB_CLIENT,
 };
 
 use super::{
@@ -47,15 +46,12 @@ pub struct SAMTAuth {
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Driver {
-    pub discordid: String,
-    pub driverid: i32,
+    pub driverid: isize,
     pub name: String,
     pub admin: bool,
     pub perms: Vec<String>,
-    pub taxi: Option<FactionRecord>,
-    pub tow: Option<FactionRecord>,
-    pub apms: Option<FactionRecord>,
     pub faction: Option<Factions>,
+    pub factions: Option<FactionRecord>,
 }
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
@@ -103,210 +99,137 @@ pub async fn ucp_auth(
     let ds = get_auth_envs().await;
     let envs = get_api_envs().await;
     let config = get_config().await;
-    if auth.is_some() {
-        let dcuserget = WEB_CLIENT
-            .get(format!("{}/users/@me", ds.api_endpoint))
-            .header(
-                "Authorization",
-                format!("Bearer {}", auth.unwrap().to_str().unwrap()),
-            )
-            .send()
-            .await
-            .expect("Lekérés sikertelen");
-        if dcuserget.status().as_u16() == 200 {
-            let handled_user = dcuserget.text().await.expect("Átalakítás sikertelen");
-            let parsed_user = serde_json::from_str(&handled_user);
-            if parsed_user.is_ok() {
-                let real_user: DiscordUser = parsed_user.unwrap();
-                let getuser = WEB_CLIENT
-                    .get(format!("{}/authenticate", envs.fms,))
-                    .query(&[("dcid", real_user.id.clone())])
-                    .header("authkey", envs.fms_key)
-                    .send()
-                    .await
-                    .expect("Lekérés sikertelen");
-                let status = getuser.status();
-                let resp = getuser.text().await;
-                if status == StatusCode::OK {
-                    let parsed_tag = serde_json::from_str(&resp.unwrap());
-                    if parsed_tag.is_ok() {
-                        let real_tag: GetUserRes = parsed_tag.unwrap();
-                        let env_mode = get_env_mode().await;
-                        if (env_mode == EnvModes::Testing)
-                            && !real_tag
-                                .permissions
-                                .contains(&get_perm(Permissions::SaesTest))
-                            && !real_tag.issysadmin
-                        {
-                            return Err((
-                                StatusCode::FORBIDDEN,
-                                "Nincs jogod a teszt oldalhoz! (saes.test)".to_string(),
-                            ));
-                        }
-                        if (env_mode == EnvModes::Devel) && !real_tag.issysadmin {
-                            return Err((
-                                StatusCode::FORBIDDEN,
-                                "Nincs jogod a dev oldalhoz!".to_string(),
-                            ));
-                        }
+    if auth.is_none() {
+        return Err((StatusCode::NOT_FOUND, "Nincs kuki".to_string()));
+    }
+
+    let is_valid = validate_jwt(auth.unwrap().to_str().unwrap().to_owned()).await;
+    if !is_valid {
+        return Err((StatusCode::NOT_ACCEPTABLE, "Invalid JWT Token".to_string()));
+    }
+    let real_tag = get_jwt_value(auth.unwrap().to_str().unwrap().to_owned());
+    let env_mode = get_env_mode().await;
+    if (env_mode == EnvModes::Testing)
+        && !real_tag
+            .permissions
+            .contains(&get_perm(Permissions::SaesTest))
+        && !real_tag.is_sys_admin
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            "Nincs jogod a teszt oldalhoz! (saes.test)".to_string(),
+        ));
+    }
+    if (env_mode == EnvModes::Devel) && !real_tag.is_sys_admin {
+        return Err((
+            StatusCode::FORBIDDEN,
+            "Nincs jogod a dev oldalhoz!".to_string(),
+        ));
+    }
+    if real_tag
+        .permissions
+        .contains(&get_perm(Permissions::SaesLogin))
+        || real_tag.is_sys_admin
+    {
+        let fact = match faction {
+            None => None,
+            Some(val) => {
+                if val.to_str().is_ok() {
+                    if val.to_str().unwrap() == "SCKK" {
                         if real_tag
                             .permissions
-                            .contains(&get_perm(Permissions::SaesLogin))
-                            || real_tag.issysadmin
+                            .contains(&get_perm(Permissions::SaesUcp(Factions::SCKK)))
+                            || real_tag.is_sys_admin
                         {
-                            let taxi = real_tag
-                                .factionrecords
-                                .iter()
-                                .find(|fact| fact.factionid == 1)
-                                .cloned();
-                            let tow = real_tag
-                                .factionrecords
-                                .iter()
-                                .find(|fact| fact.factionid == 3)
-                                .cloned();
-                            let apms = real_tag
-                                .factionrecords
-                                .iter()
-                                .find(|fact| fact.factionid == 2)
-                                .cloned();
-                            let fact = match faction {
-                                None => None,
-                                Some(val) => {
-                                    if val.to_str().is_ok() {
-                                        if val.to_str().unwrap() == "SCKK" {
-                                            if real_tag.permissions.contains(&get_perm(
-                                                Permissions::SaesUcp(Factions::SCKK),
-                                            )) || real_tag.issysadmin
-                                            {
-                                                Some(Factions::SCKK)
-                                            } else {
-                                                None
-                                            }
-                                        } else if val.to_str().unwrap() == "TOW" {
-                                            if real_tag.permissions.contains(&get_perm(
-                                                Permissions::SaesUcp(Factions::TOW),
-                                            )) || real_tag.issysadmin
-                                            {
-                                                Some(Factions::TOW)
-                                            } else {
-                                                None
-                                            }
-                                        } else if val.to_str().unwrap() == "APMS" {
-                                            if real_tag.permissions.contains(&get_perm(
-                                                Permissions::SaesUcp(Factions::APMS),
-                                            )) || real_tag.issysadmin
-                                            {
-                                                Some(Factions::APMS)
-                                            } else {
-                                                None
-                                            }
-                                        } else {
-                                            None
-                                        }
-                                    } else {
-                                        None
-                                    }
-                                }
-                            };
-                            if fact.is_some() {
-                                match fact.unwrap() {
-                                    Factions::SCKK => {
-                                        if !config
-                                            .factions
-                                            .get(&Factions::SCKK)
-                                            .unwrap()
-                                            .site_access
-                                            .ucp
-                                        {
-                                            return Err((
-                                                StatusCode::FORBIDDEN,
-                                                "Frakciód nem rendelkezik ezzel a jogosultsággal!"
-                                                    .to_string(),
-                                            ));
-                                        }
-                                    }
-                                    Factions::TOW => {
-                                        if !config
-                                            .factions
-                                            .get(&Factions::TOW)
-                                            .unwrap()
-                                            .site_access
-                                            .ucp
-                                        {
-                                            return Err((
-                                                StatusCode::FORBIDDEN,
-                                                "Frakciód nem rendelkezik ezzel a jogosultsággal!"
-                                                    .to_string(),
-                                            ));
-                                        }
-                                    }
-                                    Factions::APMS => {
-                                        if !config
-                                            .factions
-                                            .get(&Factions::APMS)
-                                            .unwrap()
-                                            .site_access
-                                            .ucp
-                                        {
-                                            return Err((
-                                                StatusCode::FORBIDDEN,
-                                                "Frakciód nem rendelkezik ezzel a jogosultsággal!"
-                                                    .to_string(),
-                                            ));
-                                        }
-                                    }
-                                }
-                            }
-                            let tag = Driver {
-                                discordid: real_user.id,
-                                name: real_tag.username,
-                                driverid: real_tag.id,
-                                admin: real_tag.issysadmin,
-                                perms: real_tag.permissions,
-                                faction: fact,
-                                taxi,
-                                tow,
-                                apms,
-                            };
-                            request.extensions_mut().insert(tag);
-                            return Ok(next.run(request).await);
+                            Some(Factions::SCKK)
                         } else {
-                            return Err((
-                                StatusCode::FORBIDDEN,
-                                "Nincs jogod a belépéshez! (saes.login)".to_string(),
-                            ));
+                            None
+                        }
+                    } else if val.to_str().unwrap() == "TOW" {
+                        if real_tag
+                            .permissions
+                            .contains(&get_perm(Permissions::SaesUcp(Factions::TOW)))
+                            || real_tag.is_sys_admin
+                        {
+                            Some(Factions::TOW)
+                        } else {
+                            None
+                        }
+                    } else if val.to_str().unwrap() == "APMS" {
+                        if real_tag
+                            .permissions
+                            .contains(&get_perm(Permissions::SaesUcp(Factions::APMS)))
+                            || real_tag.is_sys_admin
+                        {
+                            Some(Factions::APMS)
+                        } else {
+                            None
                         }
                     } else {
-                        return Err((
-                            StatusCode::FORBIDDEN,
-                            "Nem sikerült informatikai tudásunkat alkalmazni ehhez a lekéréshez!"
-                                .to_string(),
-                        ));
+                        None
                     }
                 } else {
-                    if status == StatusCode::NOT_FOUND {
-                        return Err((StatusCode::FORBIDDEN, "Nincs jogod ehhez!".to_string()));
-                    } else if status == StatusCode::INTERNAL_SERVER_ERROR {
+                    None
+                }
+            }
+        };
+        if fact.is_some() {
+            match fact.unwrap() {
+                Factions::SCKK => {
+                    if !config
+                        .factions
+                        .get(&Factions::SCKK)
+                        .unwrap()
+                        .site_access
+                        .ucp
+                    {
                         return Err((
-                            StatusCode::PAYMENT_REQUIRED,
-                            format!("SAMT API lekérés sikertelen! {:?}", resp.unwrap()),
-                        ));
-                    } else {
-                        return Err((
-                            StatusCode::PAYMENT_REQUIRED,
-                            "SAMT API-t nem értük el. 🥺".to_string(),
+                            StatusCode::FORBIDDEN,
+                            "Frakciód nem rendelkezik ezzel a jogosultsággal!".to_string(),
                         ));
                     }
                 }
-            } else {
-                return Err((StatusCode::BAD_REQUEST, "Érvénytelen lekérés!".to_string()));
+                Factions::TOW => {
+                    if !config.factions.get(&Factions::TOW).unwrap().site_access.ucp {
+                        return Err((
+                            StatusCode::FORBIDDEN,
+                            "Frakciód nem rendelkezik ezzel a jogosultsággal!".to_string(),
+                        ));
+                    }
+                }
+                Factions::APMS => {
+                    if !config
+                        .factions
+                        .get(&Factions::APMS)
+                        .unwrap()
+                        .site_access
+                        .ucp
+                    {
+                        return Err((
+                            StatusCode::FORBIDDEN,
+                            "Frakciód nem rendelkezik ezzel a jogosultsággal!".to_string(),
+                        ));
+                    }
+                }
             }
         } else {
-            return Err((StatusCode::UNAUTHORIZED, "Discord Auth failed".to_string()));
+            let tag = Driver {
+                name: real_tag.username,
+                driverid: real_tag.id,
+                admin: real_tag.is_sys_admin,
+                perms: real_tag.permissions,
+                faction: None,
+                factions: None,
+            };
+            request.extensions_mut().insert(tag);
         }
+        return Ok(next.run(request).await);
     } else {
-        return Err((StatusCode::NOT_FOUND, "Nincs kuki".to_string()));
-    };
+        return Err((
+            StatusCode::FORBIDDEN,
+            "Nincs jogod a belépéshez! (saes.login)".to_string(),
+        ));
+    }
 }
 
 pub async fn shift_auth(

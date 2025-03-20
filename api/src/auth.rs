@@ -3,6 +3,7 @@ use axum::{debug_handler, response::Redirect};
 use base64::engine::general_purpose;
 use base64::Engine;
 use cookie::time::OffsetDateTime;
+use jsonwebtoken::{decode, DecodingKey, Validation};
 use random_string::{charsets, generate};
 use sha2::{Digest, Sha256};
 use tokio::sync::RwLock;
@@ -130,6 +131,24 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
 
 fn base_path() -> String {
     "/ucp".to_string()
+}
+
+pub fn get_jwt_value(token: String) -> AuthJWT {
+    let parts: Vec<&str> = token.split(".").collect();
+    let payload = parts[1];
+    let decoded = general_purpose::STANDARD_NO_PAD.decode(payload).unwrap();
+    serde_json::from_slice(&decoded).unwrap()
+}
+
+pub async fn validate_jwt(token: String) -> bool {
+    let hash = BASE_HASHMAP.read().await;
+    let key = hash.get("env_authapi_key").unwrap();
+    let jwt = decode::<AuthJWT>(
+        &token,
+        &DecodingKey::from_secret(key.as_bytes()),
+        &Validation::new(jsonwebtoken::Algorithm::ES256),
+    );
+    jwt.is_ok()
 }
 
 #[derive(Debug, Deserialize, Serialize)]
