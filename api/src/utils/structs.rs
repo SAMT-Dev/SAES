@@ -1,5 +1,5 @@
 use chrono::Utc;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
 pub struct SMGetItemsFull {
