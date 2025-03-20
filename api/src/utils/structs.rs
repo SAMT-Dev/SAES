@@ -57,17 +57,17 @@ pub struct AuthJWT {
     #[serde(rename = "UserName")]
     pub username: String,
     #[serde(rename = "FactionId")]
-    pub faction_id: OneOrMany<i32>,
+    pub faction_id: OneOrMany<i8>,
     #[serde(rename = "FactionName")]
     pub faction_name: OneOrMany<String>,
     #[serde(rename = "FactionShortName")]
     pub faction_short_name: OneOrMany<String>,
     #[serde(rename = "ShiftId")]
-    pub shift_id: OneOrMany<i32>,
+    pub shift_id: OneOrMany<i8>,
     #[serde(rename = "ShiftName")]
     pub shift_name: OneOrMany<String>,
     #[serde(rename = "PositionId")]
-    pub position_id: OneOrMany<i32>,
+    pub position_id: OneOrMany<i8>,
     #[serde(rename = "PositionName")]
     pub position_name: OneOrMany<String>,
     #[serde(rename = "Permission")]

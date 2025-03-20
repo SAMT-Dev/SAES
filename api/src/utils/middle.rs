@@ -135,7 +135,7 @@ pub async fn ucp_auth(
             None => None,
             Some(val) => {
                 if val.to_str().is_ok() {
-                    if val.to_str().unwrap() == "SCKK" {
+                    if val.to_str().unwrap() == Factions::SCKK.to_string() {
                         if real_tag
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::SCKK)))
@@ -145,7 +145,7 @@ pub async fn ucp_auth(
                         } else {
                             None
                         }
-                    } else if val.to_str().unwrap() == "TOW" {
+                    } else if val.to_str().unwrap() == Factions::TOW.to_string() {
                         if real_tag
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::TOW)))
@@ -155,7 +155,7 @@ pub async fn ucp_auth(
                         } else {
                             None
                         }
-                    } else if val.to_str().unwrap() == "APMS" {
+                    } else if val.to_str().unwrap() == Factions::APMS.to_string() {
                         if real_tag
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::APMS)))
@@ -175,36 +175,8 @@ pub async fn ucp_auth(
         };
         if fact.is_some() {
             match fact.unwrap() {
-                Factions::SCKK => {
-                    if !config
-                        .factions
-                        .get(&Factions::SCKK)
-                        .unwrap()
-                        .site_access
-                        .ucp
-                    {
-                        return Err((
-                            StatusCode::FORBIDDEN,
-                            "Frakciód nem rendelkezik ezzel a jogosultsággal!".to_string(),
-                        ));
-                    }
-                }
-                Factions::TOW => {
-                    if !config.factions.get(&Factions::TOW).unwrap().site_access.ucp {
-                        return Err((
-                            StatusCode::FORBIDDEN,
-                            "Frakciód nem rendelkezik ezzel a jogosultsággal!".to_string(),
-                        ));
-                    }
-                }
-                Factions::APMS => {
-                    if !config
-                        .factions
-                        .get(&Factions::APMS)
-                        .unwrap()
-                        .site_access
-                        .ucp
-                    {
+                facto => {
+                    if !config.factions.get(&facto).unwrap().site_access.ucp {
                         return Err((
                             StatusCode::FORBIDDEN,
                             "Frakciód nem rendelkezik ezzel a jogosultsággal!".to_string(),
