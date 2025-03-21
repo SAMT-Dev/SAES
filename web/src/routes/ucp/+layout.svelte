@@ -14,7 +14,6 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	let { data, children } = $props();
-	console.log(data);
 	let maintenance = $state(false);
 	let initial_socket = $state(false);
 	let announcement = $state(false);

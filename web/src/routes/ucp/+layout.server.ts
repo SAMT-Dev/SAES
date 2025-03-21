@@ -44,6 +44,7 @@ export const load = (async ({ cookies, request, url }) => {
 				factions?: {
 					factionid: number;
 					factionname: string;
+					factionshortname: string;
 					positionid: number;
 					positionname: string;
 					shiftid: number;
