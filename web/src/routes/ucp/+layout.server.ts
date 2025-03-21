@@ -13,7 +13,8 @@ export const load = (async ({ cookies, request, url }) => {
 	try {
 		const aha = await fetch(`${apiUrl}/ucp`, {
 			headers: {
-				cookie: cookies.get('auth_token')!
+				cookie: cookies.get('auth_token')!,
+				faction: cookies.get('selected_faction') ? cookies.get('selected_faction')! : ''
 			}
 		});
 		if (aha.status === 404 || aha.status === 406) {
@@ -39,23 +40,8 @@ export const load = (async ({ cookies, request, url }) => {
 				name: string;
 				admin: boolean;
 				perms: string[];
-				taxi?: {
-					factionid: number;
-					factionname: string;
-					positionid: number;
-					positionname: string;
-					shiftid: number;
-					shiftname: string;
-				};
-				tow?: {
-					factionid: number;
-					factionname: string;
-					positionid: number;
-					positionname: string;
-					shiftid: number;
-					shiftname: string;
-				};
-				apms?: {
+				faction?: string;
+				factions?: {
 					factionid: number;
 					factionname: string;
 					positionid: number;

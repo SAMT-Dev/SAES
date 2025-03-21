@@ -8,13 +8,14 @@ pub async fn load_envs() {
     info!("ENV Precheck");
     let envs: Vec<&str> = vec![
         "DATABASE_URL",
-        "DISCORD_ID",
-        "DISCORD_SECRET",
-        "REDIRECT_URL",
+        "API_BASE_URL",
         "DOMAIN",
         "FULL_DOMAIN",
         "FMS_API",
         "FMS_API_KEY",
+        "AUTHAPI_URL",
+        "AUTHAPI_KEY",
+        "AUTHAPI_CLIENT_ID",
         "SCKKAPP_API_TAXI",
         "SCKKAPP_API_TOW",
     ];
