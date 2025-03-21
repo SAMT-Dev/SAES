@@ -133,22 +133,18 @@ fn base_path() -> String {
     "/ucp".to_string()
 }
 
-pub fn get_jwt_value(token: String) -> AuthJWT {
-    let parts: Vec<&str> = token.split(".").collect();
-    let payload = parts[1];
-    let decoded = general_purpose::STANDARD_NO_PAD.decode(payload).unwrap();
-    serde_json::from_slice(&decoded).unwrap()
-}
-
-pub async fn validate_jwt(token: String) -> bool {
+pub async fn validate_jwt(token: String) -> Option<AuthJWT> {
     let hash = BASE_HASHMAP.read().await;
     let key = hash.get("env_authapi_key").unwrap();
     let jwt = decode::<AuthJWT>(
         &token,
         &DecodingKey::from_secret(key.as_bytes()),
-        &Validation::new(jsonwebtoken::Algorithm::ES256),
+        &Validation::new(jsonwebtoken::Algorithm::HS256),
     );
-    jwt.is_ok()
+    if jwt.is_err() {
+        return None;
+    }
+    return Some(jwt.unwrap().claims);
 }
 
 #[derive(Debug, Deserialize, Serialize)]

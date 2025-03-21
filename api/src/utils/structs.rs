@@ -48,7 +48,7 @@ impl<T> From<OneOrMany<T>> for Vec<T> {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthJWT {
     #[serde(rename = "Id")]
     pub id: isize,

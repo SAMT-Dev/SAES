@@ -3,21 +3,15 @@ use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    auth::{get_auth_envs, get_jwt_value, validate_jwt},
+    auth::validate_jwt,
     config::{loader::get_config, structs::AccessConfig},
 };
 
 use super::{
-    api::get_api_envs,
-    factions::Factions,
+    factions::{get_faction_from_jwt, Factions},
     functions::{get_env_mode, EnvModes},
     permissions::{get_perm, Permissions},
 };
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct DiscordUser {
-    pub id: String,
-}
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct FactionRecord {
@@ -28,15 +22,6 @@ pub struct FactionRecord {
     pub positionname: String,
     pub shiftid: i8,
     pub shiftname: String,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct GetUserRes {
-    pub factionrecords: Vec<FactionRecord>,
-    pub issysadmin: bool,
-    pub permissions: Vec<String>,
-    pub id: i32,
-    pub username: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -96,70 +81,62 @@ pub async fn ucp_auth(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let auth = headers.get("cookie");
     let faction = headers.get("faction");
-    let ds = get_auth_envs().await;
-    let envs = get_api_envs().await;
     let config = get_config().await;
     if auth.is_none() {
         return Err((StatusCode::NOT_FOUND, "Nincs kuki".to_string()));
     }
 
-    let is_valid = validate_jwt(auth.unwrap().to_str().unwrap().to_owned()).await;
-    if !is_valid {
+    let jwt = validate_jwt(auth.unwrap().to_str().unwrap().to_owned()).await;
+    if jwt.is_none() {
         return Err((StatusCode::NOT_ACCEPTABLE, "Invalid JWT Token".to_string()));
     }
-    let real_tag = get_jwt_value(auth.unwrap().to_str().unwrap().to_owned());
+    let jwt = jwt.unwrap();
     let env_mode = get_env_mode().await;
     if (env_mode == EnvModes::Testing)
-        && !real_tag
-            .permissions
-            .contains(&get_perm(Permissions::SaesTest))
-        && !real_tag.is_sys_admin
+        && !jwt.permissions.contains(&get_perm(Permissions::SaesTest))
+        && !jwt.is_sys_admin
     {
         return Err((
             StatusCode::FORBIDDEN,
             "Nincs jogod a teszt oldalhoz! (saes.test)".to_string(),
         ));
     }
-    if (env_mode == EnvModes::Devel) && !real_tag.is_sys_admin {
+    if (env_mode == EnvModes::Devel) && !jwt.is_sys_admin {
         return Err((
             StatusCode::FORBIDDEN,
             "Nincs jogod a dev oldalhoz!".to_string(),
         ));
     }
-    if real_tag
-        .permissions
-        .contains(&get_perm(Permissions::SaesLogin))
-        || real_tag.is_sys_admin
-    {
+    if jwt.permissions.contains(&get_perm(Permissions::SaesLogin)) || jwt.is_sys_admin {
         let fact = match faction {
             None => None,
             Some(val) => {
                 if val.to_str().is_ok() {
                     if val.to_str().unwrap() == Factions::SCKK.to_string() {
-                        if real_tag
+                        if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::SCKK)))
-                            || real_tag.is_sys_admin
+                            || jwt.is_sys_admin
                         {
                             Some(Factions::SCKK)
                         } else {
                             None
                         }
                     } else if val.to_str().unwrap() == Factions::TOW.to_string() {
-                        if real_tag
+                        if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::TOW)))
-                            || real_tag.is_sys_admin
+                            || jwt.is_sys_admin
                         {
                             Some(Factions::TOW)
                         } else {
                             None
                         }
                     } else if val.to_str().unwrap() == Factions::APMS.to_string() {
-                        if real_tag
+                        if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::APMS)))
-                            || real_tag.is_sys_admin
+                            || jwt.is_sys_admin
                         {
                             Some(Factions::APMS)
                         } else {
@@ -174,6 +151,8 @@ pub async fn ucp_auth(
             }
         };
         if fact.is_some() {
+            println!("van fact");
+            let records = get_faction_from_jwt(jwt.clone(), fact.unwrap());
             match fact.unwrap() {
                 facto => {
                     if !config.factions.get(&facto).unwrap().site_access.ucp {
@@ -184,12 +163,22 @@ pub async fn ucp_auth(
                     }
                 }
             }
-        } else {
             let tag = Driver {
-                name: real_tag.username,
-                driverid: real_tag.id,
-                admin: real_tag.is_sys_admin,
-                perms: real_tag.permissions,
+                name: jwt.username,
+                driverid: jwt.id,
+                admin: jwt.is_sys_admin,
+                perms: jwt.permissions,
+                faction: fact,
+                factions: records,
+            };
+            request.extensions_mut().insert(tag);
+        } else {
+            println!("nincs fact");
+            let tag = Driver {
+                name: jwt.username,
+                driverid: jwt.id,
+                admin: jwt.is_sys_admin,
+                perms: jwt.permissions,
                 faction: None,
                 factions: None,
             };

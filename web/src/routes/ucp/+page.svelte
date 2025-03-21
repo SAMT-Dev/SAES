@@ -58,28 +58,13 @@
 			<h1 class="text-2xl drop-shadow-lg md:text-5xl md:font-bold">
 				{greet}, {data.layout?.admin ? 'szöszadmin ' : ''}{data.layout?.name}{end}
 			</h1>
-			{#if allowFacts(data, [Factions.Taxi]) && data.layout?.taxi}
+			<a href="/logout" data-sveltekit-reload>Kijelentkezés</a>
+			{#if data.layout?.factions}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Pozíciód: {data.layout.taxi.positionname}
+					Pozíciód: {data.layout.factions.positionname}
 				</h2>
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Műszakod: {data.layout.taxi.shiftname}
-				</h2>
-			{/if}
-			{#if allowFacts(data, [Factions.Tow]) && data.layout?.tow}
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Pozíciód: {data.layout.tow.positionname}
-				</h2>
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Műszakod: {data.layout.tow.shiftname}
-				</h2>
-			{/if}
-			{#if allowFacts(data, [Factions.Apms]) && data.layout?.apms}
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Pozíciód: {data.layout.apms.positionname}
-				</h2>
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Műszakod: {data.layout.apms.shiftname}
+					Műszakod: {data.layout.factions.shiftname}
 				</h2>
 			{/if}
 			{#if allowFacts(data, [Factions.Taxi, Factions.Tow])}
