@@ -3,19 +3,11 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "images")]
+#[sea_orm(table_name = "legacy_names")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(column_type = "Text")]
-    pub filename: String,
-    pub checksum: Option<String>,
-    pub owner: i32,
-    pub owner_type: i8,
-    pub tmp: i8,
-    pub converted: i8,
-    pub faction: i8,
-    pub date: DateTimeUtc,
+    pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

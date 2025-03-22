@@ -4,7 +4,7 @@ use sea_orm::{EntityTrait, Set};
 use crate::DB_CLIENT;
 
 pub async fn db_log(
-    owner: String,
+    owner: i32,
     faction: Option<i8>,
     item_id: Option<i32>,
     item_type: Option<i8>,

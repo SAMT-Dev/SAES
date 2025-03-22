@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize)]
 pub struct SMGetItemsFull {
     pub id: i32,
-    pub owner: String,
+    pub owner: i32,
     pub img_1: i32,
     pub img_2: Option<i32>,
     pub target_faction: Option<i8>,
@@ -14,7 +14,7 @@ pub struct SMGetItemsFull {
     pub r#type: Option<i8>,
     pub price: Option<i32>,
     pub faction: i8,
-    pub handled_by: Option<String>,
+    pub handled_by: Option<i32>,
     pub date: chrono::DateTime<Utc>,
     pub item_type: i8,
 }
@@ -51,7 +51,7 @@ impl<T> From<OneOrMany<T>> for Vec<T> {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthJWT {
     #[serde(rename = "Id")]
-    pub id: isize,
+    pub id: i32,
     #[serde(rename = "IsSysAdmin")]
     pub is_sys_admin: bool,
     #[serde(rename = "UserName")]

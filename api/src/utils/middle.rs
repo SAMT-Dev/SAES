@@ -31,7 +31,7 @@ pub struct SAMTAuth {
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Driver {
-    pub driverid: isize,
+    pub driverid: i32,
     pub name: String,
     pub admin: bool,
     pub perms: Vec<String>,

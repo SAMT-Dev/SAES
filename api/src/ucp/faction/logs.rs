@@ -12,7 +12,7 @@ use crate::{
 
 #[derive(Debug, Serialize)]
 pub struct Logs {
-    owner: String,
+    owner: i32,
     item_id: Option<i32>,
     item_type: Option<i8>,
     action: String,
