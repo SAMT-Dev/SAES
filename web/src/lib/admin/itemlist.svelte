@@ -14,7 +14,6 @@
 		TableHeadCell,
 		TableBodyCell
 	} from 'flowbite-svelte';
-	import { page } from '$app/stores';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import type { PageData } from '../../routes/ucp/admin/items/leintesek/$types';
 	import {
@@ -24,6 +23,7 @@
 		get_type_string
 	} from '$lib/ucp/types';
 	import { Factions, get_faction_by_id } from '$lib/permissions';
+	import { page } from '$app/state';
 	let haveadmin = $state(false);
 	interface Props {
 		title?: string;
@@ -177,7 +177,7 @@
 	}
 	let pagee = $state(data.page as number);
 	function switchPage(mode: 'next' | 'prev') {
-		let url = new URL($page.url);
+		let url = new URL(page.url);
 		if (mode === 'next') {
 			url.searchParams.set('page', String(Number(pagee) + 1));
 			goto(`?${url.searchParams.toString()}`);
@@ -193,7 +193,7 @@
 	}
 	function changestatus(ev: Event) {
 		if (ev.target) {
-			let url = new URL($page.url);
+			let url = new URL(page.url);
 			// @ts-expect-error
 			url.searchParams.set('status', ev.target[ev.target.selectedIndex].value);
 			url.searchParams.delete('page', pagee.toString());
