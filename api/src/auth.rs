@@ -136,6 +136,29 @@ fn base_path() -> String {
     "/ucp".to_string()
 }
 
+#[derive(Deserialize, Debug)]
+pub struct WebtransferQuery {
+    pub jwt: String,
+}
+
+pub async fn webtransfer(q: Query<WebtransferQuery>, c: Cookies) -> Redirect {
+    let ds = get_auth_envs().await;
+    let jwt = validate_jwt(q.jwt.clone()).await;
+    if jwt.is_some() {
+        let jwt = jwt.unwrap();
+        c.add(
+            Cookie::build(("auth_token", q.jwt.clone()))
+                .expires(OffsetDateTime::from_unix_timestamp(jwt.exp).unwrap())
+                .http_only(true)
+                .secure(true)
+                .domain(ds.domain.clone())
+                .path("/")
+                .build(),
+        );
+    }
+    Redirect::to(&format!("{}/ucp", ds.fdomain.clone()))
+}
+
 pub async fn validate_jwt(token: String) -> Option<AuthJWT> {
     let hash = BASE_HASHMAP.read().await;
     let key = hash.get("env_authapi_key").unwrap();
