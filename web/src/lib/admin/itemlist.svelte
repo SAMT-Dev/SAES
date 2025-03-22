@@ -72,6 +72,7 @@
 	let jona = $state(data.status);
 	let multipage = $state(false);
 	let bindEdit: any = $state({});
+	let usernames: Record<string, { name: string }> = $state({});
 	let editid = 0;
 	let bajvan = $state(false);
 	async function render() {
@@ -86,7 +87,22 @@
 			let handled = [];
 			potleks.data.items = [];
 			let ret = await fatcs.json();
-
+			let ids: number[] = [];
+			for (const elem of ret.data.items) {
+				if (elem.owner_type === 1 && !usernames[elem.owner]) {
+					ids.push(elem.owner);
+				}
+				if (elem.handled_by !== null && !usernames[elem.handled_by]) {
+					ids.push(elem.handled_by);
+				}
+			}
+			const fetcs = await fetch('/web-api/getusernames', {
+				headers: {
+					ids: JSON.stringify(ids)
+				}
+			});
+			let names = await fetcs.json();
+			usernames = names;
 			if (ret.data.items.length > 10 && ret.data.items.length > 0) {
 				multipage = true;
 				for (let i = pagee * 10; i < (pagee as number) * 10 + 10; i++) {
@@ -415,7 +431,7 @@
 								)}</TableBodyCell
 							>
 							<TableBodyCell
-								>{potle.owner}
+								>{usernames[potle.owner].name}
 								{#if potle.am}
 									(TOW)
 								{/if}</TableBodyCell

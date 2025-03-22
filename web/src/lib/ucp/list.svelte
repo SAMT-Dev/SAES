@@ -90,7 +90,7 @@
 								locale
 							})}
 						</h1>
-						{#if data.layout?.name !== potle.owner}
+						{#if data.layout?.driverid !== potle.owner}
 							<h1 class="drop-shadow-xl">Feltöltő: {potle.owner}</h1>
 						{/if}
 						{#if tipus === get_type_number('számla') && data.layout?.name !== potle.driver}
