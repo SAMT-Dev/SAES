@@ -144,17 +144,27 @@ pub struct WebtransferQuery {
 pub async fn webtransfer(q: Query<WebtransferQuery>, c: Cookies) -> Redirect {
     let ds = get_auth_envs().await;
     let jwt = validate_jwt(q.jwt.clone()).await;
+    let mut setcookie = true;
     if jwt.is_some() {
         let jwt = jwt.unwrap();
-        c.add(
-            Cookie::build(("auth_token", q.jwt.clone()))
-                .expires(OffsetDateTime::from_unix_timestamp(jwt.exp).unwrap())
-                .http_only(true)
-                .secure(true)
-                .domain(ds.domain.clone())
-                .path("/")
-                .build(),
-        );
+        let old_jwt = c.get("auth_token");
+        if old_jwt.is_some() {
+            let old_jwt = validate_jwt(old_jwt.unwrap().value().to_string()).await;
+            if old_jwt.is_some() {
+                setcookie = false;
+            }
+        }
+        if setcookie {
+            c.add(
+                Cookie::build(("auth_token", q.jwt.clone()))
+                    .expires(OffsetDateTime::from_unix_timestamp(jwt.exp).unwrap())
+                    .http_only(true)
+                    .secure(true)
+                    .domain(ds.domain.clone())
+                    .path("/")
+                    .build(),
+            );
+        }
     }
     Redirect::to(&format!("{}/ucp", ds.fdomain.clone()))
 }
