@@ -151,7 +151,6 @@ pub async fn ucp_auth(
             }
         };
         if fact.is_some() {
-            println!("van fact");
             let records = get_faction_from_jwt(jwt.clone(), fact.unwrap());
             match fact.unwrap() {
                 facto => {
@@ -173,7 +172,6 @@ pub async fn ucp_auth(
             };
             request.extensions_mut().insert(tag);
         } else {
-            println!("nincs fact");
             let tag = Driver {
                 name: jwt.username,
                 driverid: jwt.id,

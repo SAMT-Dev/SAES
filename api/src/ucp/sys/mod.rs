@@ -24,5 +24,9 @@ pub fn routes() -> Router {
             "/config/global-post",
             post(config_api::sys_post_global_config),
         )
+        .route(
+            "/config/faction-post",
+            post(config_api::sys_post_faction_config),
+        )
         .layer(middleware::from_fn(sysadmin_auth))
 }

@@ -4,11 +4,12 @@ import type { PageServerLoad } from './$types';
 import type { Factions } from '$lib/permissions';
 
 export type ShiftAccess = 'SameShift' | 'OtherManager' | 'OtherShift';
+export type FactionAccess = 'None' | 'Read' | 'Write';
 
 export interface FactionAccessConfig {
-	supplements: boolean;
-	hails: boolean;
-	bills: boolean;
+	supplements: FactionAccess;
+	hails: FactionAccess;
+	bills: FactionAccess;
 }
 
 export interface FactionSiteAccessConfig {
