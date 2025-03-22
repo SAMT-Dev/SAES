@@ -2,7 +2,7 @@ use serde::Deserialize;
 use socketioxide::extract::SocketRef;
 use tracing::{info, warn};
 
-use crate::{ auth::validate_jwt, config::loader::get_config, logging::db_log};
+use crate::{auth::validate_jwt, config::loader::get_config, logging::db_log};
 
 #[derive(Debug, Deserialize)]
 pub struct InitialData {
@@ -24,7 +24,7 @@ pub async fn on_connect(socket: SocketRef, data: InitialData) {
             "Socket {} authenticated: {} / {}",
             socket.id, jwt.username, jwt.id,
         );
-        db_log(jwt.username.clone(), None, None, None, "LOGIN", None).await;
+        db_log(jwt.id, None, None, None, "LOGIN", None).await;
         let mama = get_config().await;
         if jwt.is_sys_admin {
             socket.join("sysadmin");

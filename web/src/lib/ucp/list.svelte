@@ -15,7 +15,6 @@
 		tipus: number;
 		display?: string;
 	}
-
 	let { data, tipus, display = '' }: Props = $props();
 	let handled_potleks: any = $state([]);
 	let pagee = $state(data.page as number);

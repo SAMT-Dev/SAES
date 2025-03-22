@@ -21,7 +21,7 @@ pub struct ListReturn {
     pub img_1: i32,
     pub img_2: Option<i32>,
     pub desc: Option<String>,
-    pub handled_by: Option<String>,
+    pub handled_by: Option<i32>,
     pub price: Option<i32>,
 }
 

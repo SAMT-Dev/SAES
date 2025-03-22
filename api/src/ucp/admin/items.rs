@@ -265,7 +265,7 @@ pub async fn admin_items_post(
                 .as_str();
             }
             db_log(
-                ext.name.clone(),
+                ext.driverid,
                 Some(get_faction_id(ext.faction.unwrap())),
                 Some(body.id.clone()),
                 Some(types.supplements.id),
@@ -285,7 +285,7 @@ pub async fn admin_items_post(
                 } else {
                     None
                 }),
-                handled_by: Set(Some(ext.name.clone())),
+                handled_by: Set(Some(ext.driverid)),
                 ..Default::default()
             };
             let statreturn = supplements::Entity::update(activemodel)
@@ -355,7 +355,7 @@ pub async fn admin_items_post(
                 .as_str();
             }
             db_log(
-                ext.name.clone(),
+                ext.driverid,
                 Some(get_faction_id(ext.faction.unwrap())),
                 Some(body.id.clone()),
                 Some(types.hails.id),
@@ -368,7 +368,7 @@ pub async fn admin_items_post(
                 faction: Set(get_faction_id(ext.faction.unwrap())),
                 status: Set(body.status),
                 reason: Set(body.reason),
-                handled_by: Set(Some(ext.name.clone())),
+                handled_by: Set(Some(ext.driverid)),
                 ..Default::default()
             };
             let statreturn = hails::Entity::update(activemodel)
@@ -491,7 +491,7 @@ pub async fn admin_items_post(
                 }
             }
             db_log(
-                ext.name.clone(),
+                ext.driverid,
                 Some(get_faction_id(ext.faction.unwrap())),
                 Some(body.id.clone()),
                 Some(types.bills.id),
@@ -511,7 +511,7 @@ pub async fn admin_items_post(
                 }),
                 driver: Set(body.driver),
                 price: Set(body.price),
-                handled_by: Set(Some(ext.name.clone())),
+                handled_by: Set(Some(ext.driverid)),
                 ..Default::default()
             };
             let statreturn = bills::Entity::update(activemodel)

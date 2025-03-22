@@ -34,13 +34,13 @@ use crate::{
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ItemsStruct {
     pub id: i32,
-    pub owner: String,
+    pub owner: i32,
     pub img_1: i32,
     pub img_2: Option<i32>,
     pub status: i8,
     pub reason: Option<String>,
     pub faction: Factions,
-    pub handled_by: Option<String>,
+    pub handled_by: Option<i32>,
     pub price: Option<i32>,
     pub date: chrono::DateTime<Utc>,
 }
@@ -83,7 +83,7 @@ pub async fn ucp_items_get(
                 == ItemAccess::Write)
     {
         let items = supplements::Entity::find()
-            .filter(supplements::Column::Owner.eq(&ext.name))
+            .filter(supplements::Column::Owner.eq(ext.driverid))
             .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
             .order_by(supplements::Column::Date, Order::Desc)
             .all(db)
@@ -124,7 +124,7 @@ pub async fn ucp_items_get(
                 == ItemAccess::Write)
     {
         let items = hails::Entity::find()
-            .filter(hails::Column::Owner.eq(&ext.name))
+            .filter(hails::Column::Owner.eq(ext.driverid))
             .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
             .order_by(hails::Column::Date, Order::Desc)
             .all(db)
@@ -167,15 +167,14 @@ pub async fn ucp_items_get(
         let items = bills::Entity::find()
             .filter(
                 bills::Column::Owner
-                    .eq(&ext.name)
-                    .or(bills::Column::Driver.eq(&ext.name)),
+                    .eq(ext.driverid)
+                    .or(bills::Column::Driver.eq(ext.driverid)),
             )
             .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
             .order_by(bills::Column::Date, Order::Desc)
             .all(db)
             .await
             .expect("Pótlékok lekérése sikertelen az adatbázisból");
-
         let another: Vec<ItemsStruct> = items
             .iter()
             .map(|strucc| -> ItemsStruct {
@@ -270,7 +269,7 @@ pub async fn ucp_items_post(
                         {
                             if files_for_leintes.len().eq(&1) {
                                 let img = images::ActiveModel {
-                                    owner: Set(ext.name.clone()),
+                                    owner: Set(ext.driverid),
                                     tmp: Set(1),
                                     faction: Set(get_faction_id(ext.faction.unwrap())),
                                     filename: Set(real_file_name[1].clone()),
@@ -297,7 +296,7 @@ pub async fn ucp_items_post(
                                         ditas[i].parse().unwrap(),
                                     )
                                     .unwrap()),
-                                    owner: Set(ext.name.clone()),
+                                    owner: Set(ext.driverid),
                                     status: Set(statuses.uploaded.id),
                                     image_1: Set(files_for_leintes[0]),
                                     image_2: Set(new_img),
@@ -328,7 +327,7 @@ pub async fn ucp_items_post(
                                     .await
                                     .expect("BIND Create failed");
                                 db_log(
-                                    ext.name.clone(),
+                                    ext.driverid,
                                     Some(get_faction_id(ext.faction.unwrap())),
                                     Some(newitem.last_insert_id),
                                     Some(types.hails.id),
@@ -340,7 +339,7 @@ pub async fn ucp_items_post(
                                 files_for_leintes.clear();
                             } else {
                                 let img = images::ActiveModel {
-                                    owner: Set(ext.name.clone()),
+                                    owner: Set(ext.driverid),
                                     filename: Set(real_file_name[1].clone()),
                                     checksum: Set(Some(hash_text)),
                                     faction: Set(get_faction_id(ext.faction.unwrap())),
@@ -372,7 +371,7 @@ pub async fn ucp_items_post(
                                 == ItemAccess::Write
                         {
                             let img = images::ActiveModel {
-                                owner: Set(ext.name.clone()),
+                                owner: Set(ext.driverid),
                                 tmp: Set(1),
                                 filename: Set(real_file_name[1].clone()),
                                 checksum: Set(Some(hash_text)),
@@ -398,7 +397,7 @@ pub async fn ucp_items_post(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()),
-                                owner: Set(ext.name.clone()),
+                                owner: Set(ext.driverid),
                                 status: Set(statuses.uploaded.id),
                                 image: Set(new_img),
                                 ..Default::default()
@@ -418,7 +417,7 @@ pub async fn ucp_items_post(
                                 .await
                                 .expect("BIND Create failed");
                             db_log(
-                                ext.name.clone(),
+                                ext.driverid,
                                 Some(get_faction_id(ext.faction.unwrap())),
                                 Some(newitem.last_insert_id),
                                 Some(types.supplements.id),
@@ -437,7 +436,7 @@ pub async fn ucp_items_post(
                                 == ItemAccess::Write
                         {
                             let img = images::ActiveModel {
-                                owner: Set(ext.name.clone()),
+                                owner: Set(ext.driverid),
                                 faction: Set(get_faction_id(ext.faction.unwrap())),
                                 checksum: Set(Some(hash_text)),
                                 tmp: Set(1),
@@ -463,7 +462,7 @@ pub async fn ucp_items_post(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()),
-                                owner: Set(ext.name.clone()),
+                                owner: Set(ext.driverid),
                                 status: Set(statuses.uploaded.id),
                                 image: Set(new_img),
                                 ..Default::default()
@@ -483,7 +482,7 @@ pub async fn ucp_items_post(
                                 .await
                                 .expect("BIND Create failed");
                             db_log(
-                                ext.name.clone(),
+                                ext.driverid,
                                 Some(get_faction_id(ext.faction.unwrap())),
                                 Some(newitem.last_insert_id),
                                 Some(types.bills.id),

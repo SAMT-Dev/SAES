@@ -8,12 +8,13 @@ use serde::Serialize;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub owner: String,
+    pub owner: i32,
+    pub owner_type: i8,
     pub image_1: i32,
     pub image_2: i32,
     pub status: i8,
     pub reason: Option<String>,
-    pub handled_by: Option<String>,
+    pub handled_by: Option<i32>,
     pub faction: i8,
     pub date: DateTimeUtc,
     pub modified: DateTimeUtc,
