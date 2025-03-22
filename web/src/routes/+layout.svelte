@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import '../snow.css';
-	import { navigating } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import { loading } from '$lib/loading.svelte';
 	import { fade } from 'svelte/transition';
 	import Snow from '$lib/snow.svelte';
@@ -10,6 +10,7 @@
 	$effect(() => {
 		loading.value = !!navigating.type;
 	});
+	let error = page.url.searchParams.get('error');
 </script>
 
 <svelte:head>
@@ -24,7 +25,22 @@
 {#if snow}
 	<Snow />
 {/if}
-{@render children?.()}
+{#if !error}
+	{@render children?.()}
+{/if}
+{#if error === 'noperm'}
+	<div class="flex h-screen">
+		<div class="m-auto text-center text-white">
+			<h1 class="text-center text-3xl font-bold">Nincs jogod az oldal használatához!</h1>
+			<a
+				href="/"
+				data-sveltekit-reload
+				class="rounded-xl bg-rose-900 px-2 uppercase text-rose-400 transition-all duration-300 hover:bg-rose-950 hover:text-white"
+				>Visszalépés</a
+			>
+		</div>
+	</div>
+{/if}
 
 {#if loading.value}
 	<div
