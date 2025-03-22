@@ -105,8 +105,11 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         .await
         .expect("Átalakítás sikertelen");
     println!("{}", token_response);
-    let object: TokenResponse =
-        serde_json::from_str(&token_response).expect("Átalakítás sikertelen");
+    let object = serde_json::from_str(&token_response);
+    if object.is_err() {
+        return Redirect::to(&format!("{}?error=noperm", &ds.fdomain));
+    }
+    let object: TokenResponse = object.unwrap();
     if path_full.mode == "app".to_string() {
         return Redirect::to(&format!(
             "http://localhost:31313/app-auth/cb?code={}",
