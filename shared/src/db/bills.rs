@@ -10,7 +10,7 @@ pub struct Model {
     pub id: i32,
     pub owner: i32,
     pub owner_type: i8,
-    pub driver: Option<String>,
+    pub driver: Option<i32>,
     pub image: i32,
     pub status: i8,
     pub price: Option<i32>,
