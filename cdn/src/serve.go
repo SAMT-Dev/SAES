@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
@@ -18,7 +19,7 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	var tmp int8
 	err := db.QueryRow("SELECT filename,tmp FROM images WHERE id = ?", imgid).Scan(&filename, &tmp)
 	if err != nil {
-		fmt.Printf("Error: %v", err)
+		log.Printf("Error: %v", err)
 		http.Error(w, "IMG running by that ID has not been found", http.StatusNotFound)
 		return
 	}
