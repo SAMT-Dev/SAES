@@ -8,6 +8,7 @@ alias wd := w_dev
 alias dtt := dev_to_test
 alias td := t_dev
 alias dbg := db_gen
+alias cdnd := cdn_dev
 
 #* DEV scripts
 
@@ -86,3 +87,12 @@ db_gen:
 [linux]
 db_gen:
     cd api && sea-orm-cli generate entity -o ../shared/src/db
+
+#* CDN Server
+[windows]
+cdn_dev:
+    cd cdn; air
+
+[linux]
+cdn_dev:
+    cd cdn && air
