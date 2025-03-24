@@ -27,6 +27,7 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	if tmp == 1 {
 		directory += "/tmp"
 	}
+	db.Close()
 	http.ServeFile(w, r, directory+"/"+filename)
 
 }
