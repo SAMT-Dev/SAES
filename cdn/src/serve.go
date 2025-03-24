@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 func ServeHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,15 +13,10 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "No img ID provided")
 		return
 	}
-	imgidi, converr := strconv.Atoi(imgid)
-	if converr != nil {
-		http.Error(w, "Invalid ID has been specified", http.StatusBadRequest)
-		return
-	}
 	db := SQLConn()
 	var filename string
 	var tmp int8
-	err := db.QueryRow("SELECT filename,tmp FROM images WHERE id = ?", imgidi).Scan(&filename, &tmp)
+	err := db.QueryRow("SELECT filename,tmp FROM images WHERE id = ?", imgid).Scan(&filename, &tmp)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 		http.Error(w, "IMG running by that ID has not been found", http.StatusNotFound)
