@@ -1,11 +1,37 @@
-package serve
+package src
 
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func ServeHandler(w http.ResponseWriter, r *http.Request) {
+	dir := os.Getenv("PARENT_IMAGE_DIR")
 	imgid := r.URL.Query().Get("id")
-	fmt.Fprintf(w,"Hello serve, %q", imgid)
+	if imgid == "" {
+		fmt.Fprintf(w, "No img ID provided")
+		return
+	}
+	imgidi, converr := strconv.Atoi(imgid)
+	if converr != nil {
+		http.Error(w, "Invalid ID has been specified", http.StatusBadRequest)
+		return
+	}
+	db := SQLConn()
+	var filename string
+	var tmp int8
+	err := db.QueryRow("SELECT filename,tmp FROM images WHERE id = ?", imgidi).Scan(&filename, &tmp)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		http.Error(w, "IMG running by that ID has not been found", http.StatusNotFound)
+		return
+	}
+	directory := dir
+	if tmp == 1 {
+		directory += "/tmp"
+	}
+	http.ServeFile(w, r, directory+"/"+filename)
+
 }
