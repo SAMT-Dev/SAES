@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"saes-cdn/src/utils"
 )
 
 func ServeHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,10 +15,9 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "No img ID provided")
 		return
 	}
-	db := SQLConn()
 	var filename string
 	var tmp int8
-	err := db.QueryRow("SELECT filename,tmp FROM images WHERE id = ?", imgid).Scan(&filename, &tmp)
+	err := utils.GlobalSQL.QueryRow("SELECT filename,tmp FROM images WHERE id = ?", imgid).Scan(&filename, &tmp)
 	if err != nil {
 		log.Printf("Error: %v", err)
 		http.Error(w, "IMG running by that ID has not been found", http.StatusNotFound)
@@ -27,7 +27,6 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	if tmp == 1 {
 		directory += "/tmp"
 	}
-	db.Close()
 	http.ServeFile(w, r, directory+"/"+filename)
 
 }
