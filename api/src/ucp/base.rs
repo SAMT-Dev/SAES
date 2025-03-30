@@ -5,7 +5,6 @@ use http::HeaderMap;
 use saes_shared::db::{legacy_names, prelude::LegacyNames};
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
-use tracing::info;
 
 use crate::{
     utils::{api::get_api_envs, middle::Driver},
@@ -66,6 +65,27 @@ pub async fn ucp_getlegacyusernames(h: HeaderMap) -> Json<UserArrs> {
             },
         );
     }
-    info!("{:?}", arrs);
     Json(arrs)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserId {
+    userid: i32,
+}
+
+#[debug_handler]
+pub async fn ucp_getuserid(h: HeaderMap) -> Json<UserId> {
+    let apis = get_api_envs().await;
+    let username = h.get("username").unwrap().to_str().unwrap();
+    let req = WEB_CLIENT
+        .get(format!(
+            "{}/saes/user/getid?username={}",
+            apis.fms, username
+        ))
+        .header("authkey", apis.fms_key)
+        .send()
+        .await
+        .unwrap();
+    let res = req.json().await.unwrap();
+    Json(res)
 }

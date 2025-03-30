@@ -174,10 +174,14 @@
 		if (potleks.data.items[id].target_faction) {
 			bindEdit.target_faction = get_faction_by_id(potleks.data.items[id].target_faction);
 		}
+		if (type === get_type_number('számla') && bindEdit.driver) {
+			bindEdit.driver = usernames[bindEdit.driver].name;
+		}
 		bindEdit.custombg = false;
 		editid = id;
 		editing = true;
 	}
+
 	async function quickTools(timpo: string, id: number) {
 		const fatcs = await fetch('/web-api/items', {
 			headers: {
@@ -243,6 +247,20 @@
 		bindbtn?.classList.add('cursor-not-allowed');
 		bindbtn?.classList.add('bg-emerald-700');
 		bindbtn!.disabled = true;
+		if (type === get_type_number('számla') && bindEdit.driver) {
+			const targetid = await fetch('/web-api/getuserid', {
+				headers: {
+					username: bindEdit.driver
+				}
+			});
+			if (!targetid.ok) {
+				alert('Rossz név megadva!');
+				editing = false;
+				modal?.close();
+			} else {
+				bindEdit.driver = (await targetid.json()).userid;
+			}
+		}
 		const fatcs = await fetch('/web-api/items', {
 			headers: {
 				'Content-Type': 'application/json'
@@ -312,8 +330,14 @@
 		<div class="z-20 m-auto h-max w-max rounded-3xl bg-black/25 p-5 lg:w-[500px]">
 			<form onsubmit={() => editDone()}>
 				<div class="grid grid-cols-2 items-center gap-3">
-					<h1 class=" col-span-2 mx-2 text-3xl font-bold">
-						{bindEdit.owner}
+					<h1 class="col-span-2 mx-2 text-3xl font-bold">
+						{bindEdit.owner_type === 1
+							? usernames[bindEdit.owner]
+								? usernames[bindEdit.owner].name
+								: bindEdit.owner
+							: legacyusernames[bindEdit.owner]
+								? legacyusernames[bindEdit.owner].name
+								: bindEdit.owner}
 						{editdes} szerkesztése
 					</h1>
 					<label for="type" class="text-xl">Státusz</label>

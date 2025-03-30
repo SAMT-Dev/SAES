@@ -15,6 +15,7 @@ pub fn routes() -> Router {
         .route("/", get(base::ucp_home))
         .route("/getusernames", get(base::ucp_getusernames))
         .route("/getlegacynames", get(base::ucp_getlegacyusernames))
+        .route("/getuserid", get(base::ucp_getuserid))
         .route("/apms_calls", get(calls::ucp_apms_calls))
         .route("/calls", get(calls::ucp_calls))
         .nest("/admin", admin::routes())
