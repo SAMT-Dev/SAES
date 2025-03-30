@@ -49,16 +49,20 @@
 		let ids: number[] = [];
 		let legacy_ids: number[] = [];
 		for (const elem of handled_potleks) {
-			if (elem.owner !== data.layout?.driverid && elem.owner_type === 1 && !usernames[elem.owner]) {
+			if (
+				elem.owner !== data.layout?.driverid &&
+				elem.owner_type === 1 &&
+				!ids.includes(elem.owner)
+			) {
 				ids.push(elem.owner);
 			}
-			if (elem.owner_type === 2 && !legacyusernames[elem.owner]) {
+			if (elem.owner_type === 2 && !ids.includes(elem.owner)) {
 				legacy_ids.push(elem.owner);
 			}
-			if (elem.handled_by !== null && !usernames[elem.handled_by]) {
+			if (elem.handled_by !== null && !ids.includes(elem.handled_by)) {
 				ids.push(elem.handled_by);
 			}
-			if (elem.driver && !usernames[elem.driver]) {
+			if (elem.driver && !ids.includes(elem.driver)) {
 				ids.push(elem.driver);
 			}
 		}
@@ -136,7 +140,7 @@
 										: potle.owner}
 							</h1>
 						{/if}
-						{#if tipus === get_type_number('számla') && potle.driver && data.layout?.name !== potle.driver}
+						{#if tipus === get_type_number('számla') && potle.driver && data.layout?.driverid !== potle.driver}
 							<h1 class="drop-shadow-xl">
 								Kedvezményezett: {usernames[potle.driver]
 									? usernames[potle.driver].name
