@@ -165,21 +165,18 @@ pub async fn ucp_items_get(
                 == ItemAccess::Write)
     {
         let items = bills::Entity::find()
-            .filter(bills::Column::Owner.eq(&ext.name))
+            .filter(
+                bills::Column::Owner
+                    .eq(&ext.name)
+                    .or(bills::Column::Driver.eq(&ext.name)),
+            )
             .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
             .order_by(bills::Column::Date, Order::Desc)
             .all(db)
             .await
             .expect("Pótlékok lekérése sikertelen az adatbázisból");
-        let items_extra = bills::Entity::find()
-            .filter(bills::Column::TargetFaction.eq(get_faction_id(ext.faction.unwrap())))
-            .filter(bills::Column::Driver.eq(&ext.name))
-            .order_by(bills::Column::Date, Order::Desc)
-            .all(db)
-            .await
-            .expect("No bills :(");
 
-        let mut another: Vec<ItemsStruct> = items
+        let another: Vec<ItemsStruct> = items
             .iter()
             .map(|strucc| -> ItemsStruct {
                 ItemsStruct {
@@ -196,28 +193,7 @@ pub async fn ucp_items_get(
                 }
             })
             .collect();
-        let mut combined: Vec<ItemsStruct> = vec![];
-        let mut another_extra: Vec<ItemsStruct> = items_extra
-            .iter()
-            .map(|strucc| -> ItemsStruct {
-                ItemsStruct {
-                    faction: ext.faction.unwrap(),
-                    owner: strucc.owner.clone(),
-                    img_1: strucc.image,
-                    img_2: None,
-                    reason: strucc.reason.clone(),
-                    status: strucc.status,
-                    date: strucc.date,
-                    id: strucc.id,
-                    price: strucc.price,
-                    handled_by: strucc.handled_by.clone(),
-                }
-            })
-            .collect();
-        combined.append(&mut another_extra);
-
-        combined.append(&mut another);
-        return Ok(Json(combined));
+        return Ok(Json(another));
     } else {
         return Err((
             StatusCode::NOT_FOUND,
