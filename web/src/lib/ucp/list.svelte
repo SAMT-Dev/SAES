@@ -61,7 +61,6 @@
 			<h2 class="m-auto text-black dark:text-white">
 				Összesen {data.potlekok.length} darab.
 			</h2>
-			<!-- {#if data.faction === Factions.Apms || tipus !== get_type_number('számla')} -->
 			<a
 				href={`${page.url.pathname}/upload`}
 				aria-label="Feltöltés"
@@ -71,7 +70,6 @@
 			<Tooltip class="bg-slate-500">
 				Új {get_type_string(tipus)} feltöltése
 			</Tooltip>
-			<!-- {/if} -->
 		</div>
 		<div class="mb-3 flex flex-auto flex-wrap items-center justify-center gap-3 align-middle">
 			{#if handled_potleks}
@@ -95,6 +93,9 @@
 						</h1>
 						{#if data.layout?.name !== potle.owner}
 							<h1 class="drop-shadow-xl">Feltöltő: {potle.owner}</h1>
+						{/if}
+						{#if data.layout?.name !== potle.driver}
+							<h1 class="drop-shadow-xl">Kedvezményezett: {potle.driver}</h1>
 						{/if}
 						{#if tipus === get_type_number('számla') && potle.price}
 							<h1 class="drop-shadow-xl">Végösszeg: {potle.price}$</h1>
