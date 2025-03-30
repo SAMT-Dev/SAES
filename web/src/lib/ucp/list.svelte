@@ -5,7 +5,7 @@
 	import type { PageData } from '../../routes/ucp/potlekok/$types';
 	import { formatRelative } from 'date-fns';
 	import { locale } from '$lib/time';
-	import { get_status_string, get_type_number, get_type_string } from './types';
+	import { get_status_string, get_type_en_string, get_type_number, get_type_string } from './types';
 	import { Tooltip } from 'flowbite-svelte';
 	import { page } from '$app/state';
 	let multipage = $state(false);
@@ -105,9 +105,11 @@
 				class="from-taxi bg-linear-to-r h-8 w-16 rounded-full via-teal-400 to-green-600 bg-[size:200%] bg-[position:0] text-center text-xl font-bold text-black shadow-2xl drop-shadow-lg transition-all duration-500 hover:bg-[position:100%] dark:text-white"
 				><span class="icon-[material-symbols--upload] h-full w-full"></span></a
 			>
-			<Tooltip class="bg-slate-500">
-				Új {get_type_string(tipus)} feltöltése
-			</Tooltip>
+			{#if data.layout?.access[get_type_en_string(tipus)] === 'Write'}
+				<Tooltip class="bg-slate-500">
+					Új {get_type_string(tipus)} feltöltése
+				</Tooltip>
+			{/if}
 		</div>
 		<div class="mb-3 flex flex-auto flex-wrap items-center justify-center gap-3 align-middle">
 			{#if handled_potleks}

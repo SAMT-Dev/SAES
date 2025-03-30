@@ -157,6 +157,9 @@
 		</div>
 	{/if}
 	{#if data.faction === Factions.Apms}
-		<h2 class="text-3xl">APMS dolgozzon, ne olvasson!</h2>
+		<h2 class="text-3xl">
+			Fel kell tölteni a szereltetési számlákhoz az adott szereltetésről a képet. (F12)
+		</h2>
+		<h2 class="text-3xl font-bold">CSAK aznap lefotózott képet lehet feltölteni!</h2>
 	{/if}
 </div>

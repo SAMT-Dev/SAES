@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     auth::validate_jwt,
-    config::{loader::get_config, structs::AccessConfig},
+    config::{
+        loader::get_config,
+        structs::{AccessConfig, FactionAccessConfig, FactionSiteAccessConfig},
+    },
 };
 
 use super::{
@@ -35,6 +38,8 @@ pub struct Driver {
     pub name: String,
     pub admin: bool,
     pub perms: Vec<String>,
+    pub access: Option<FactionAccessConfig>,
+    pub site_access: Option<FactionSiteAccessConfig>,
     pub faction: Option<Factions>,
     pub factions: Option<FactionRecord>,
 }
@@ -162,11 +167,14 @@ pub async fn ucp_auth(
                     }
                 }
             }
+            let factconf = config.factions.get(&fact.unwrap()).unwrap();
             let tag = Driver {
                 name: jwt.username,
                 driverid: jwt.id,
                 admin: jwt.is_sys_admin,
                 perms: jwt.permissions,
+                access: Some(factconf.access.clone()),
+                site_access: Some(factconf.site_access.clone()),
                 faction: fact,
                 factions: records,
             };
@@ -176,6 +184,8 @@ pub async fn ucp_auth(
                 name: jwt.username,
                 driverid: jwt.id,
                 admin: jwt.is_sys_admin,
+                access: None,
+                site_access: None,
                 perms: jwt.permissions,
                 faction: None,
                 factions: None,

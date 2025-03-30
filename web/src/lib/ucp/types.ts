@@ -36,6 +36,19 @@ export function get_type_string(tip: number) {
     }
 }
 
+export function get_type_en_string(tip: number) {
+    switch (tip) {
+        case 1:
+            return "supplements";
+        case 2:
+            return "hails";
+        case 3:
+            return "bills";
+        default:
+            return "supplements";
+    }
+}
+
 export function get_status_number(tip: string) {
     switch (tip) {
         case "feltöltve":
