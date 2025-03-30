@@ -92,16 +92,16 @@
 			let ids: number[] = [];
 			let legacy_ids: number[] = [];
 			for (const elem of ret.data.items) {
-				if (elem.owner_type === 1 && !usernames[elem.owner]) {
+				if (elem.owner_type === 1 && !ids.includes(elem.owner)) {
 					ids.push(elem.owner);
 				}
-				if (elem.owner_type === 2 && !legacyusernames[elem.owner]) {
+				if (elem.owner_type === 2 && !legacy_ids.includes(elem.owner)) {
 					legacy_ids.push(elem.owner);
 				}
-				if (elem.handled_by !== null && !usernames[elem.handled_by]) {
+				if (elem.handled_by !== null && !ids.includes(elem.handled_by)) {
 					ids.push(elem.handled_by);
 				}
-				if (elem.driver && !usernames[elem.driver]) {
+				if (elem.driver && !ids.includes(elem.driver)) {
 					ids.push(elem.driver);
 				}
 			}
