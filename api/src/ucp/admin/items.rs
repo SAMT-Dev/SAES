@@ -29,7 +29,7 @@ pub struct SMPostItemsBody {
     pub status: i8,
     pub price: Option<i32>,
     pub target_faction: Option<Factions>,
-    pub driver: Option<String>,
+    pub driver: Option<i32>,
     pub supp_type: Option<i8>,
     pub reason: Option<String>,
     pub tipus: i8,
@@ -87,7 +87,8 @@ pub async fn admin_items_get(
                     reason: item.reason.clone(),
                     driver: None,
                     target_faction: None,
-                    owner: item.owner.clone(),
+                    owner: item.owner,
+                    owner_type: item.owner_type,
                     item_type: types.supplements.id,
                 }
             })
@@ -130,7 +131,8 @@ pub async fn admin_items_get(
                     r#type: None,
                     handled_by: item.handled_by.clone(),
                     reason: item.reason.clone(),
-                    owner: item.owner.clone(),
+                    owner: item.owner,
+                    owner_type: item.owner_type,
                     driver: None,
                     target_faction: None,
                     item_type: types.hails.id,
@@ -175,7 +177,8 @@ pub async fn admin_items_get(
                     date: item.date,
                     handled_by: item.handled_by.clone(),
                     reason: item.reason.clone(),
-                    owner: item.owner.clone(),
+                    owner: item.owner,
+                    owner_type: item.owner_type,
                     driver: item.driver.clone(),
                     target_faction: item.target_faction,
                     item_type: types.bills.id,
@@ -265,7 +268,7 @@ pub async fn admin_items_post(
                 .as_str();
             }
             db_log(
-                ext.name.clone(),
+                ext.driverid,
                 Some(get_faction_id(ext.faction.unwrap())),
                 Some(body.id.clone()),
                 Some(types.supplements.id),
@@ -285,7 +288,7 @@ pub async fn admin_items_post(
                 } else {
                     None
                 }),
-                handled_by: Set(Some(ext.name.clone())),
+                handled_by: Set(Some(ext.driverid)),
                 ..Default::default()
             };
             let statreturn = supplements::Entity::update(activemodel)
@@ -302,6 +305,7 @@ pub async fn admin_items_post(
                 img_1: statreturn.image,
                 img_2: None,
                 owner: statreturn.owner,
+                owner_type: statreturn.owner_type,
                 price: None,
                 r#type: statreturn.r#type,
                 target_faction: None,
@@ -355,7 +359,7 @@ pub async fn admin_items_post(
                 .as_str();
             }
             db_log(
-                ext.name.clone(),
+                ext.driverid,
                 Some(get_faction_id(ext.faction.unwrap())),
                 Some(body.id.clone()),
                 Some(types.hails.id),
@@ -368,7 +372,7 @@ pub async fn admin_items_post(
                 faction: Set(get_faction_id(ext.faction.unwrap())),
                 status: Set(body.status),
                 reason: Set(body.reason),
-                handled_by: Set(Some(ext.name.clone())),
+                handled_by: Set(Some(ext.driverid)),
                 ..Default::default()
             };
             let statreturn = hails::Entity::update(activemodel)
@@ -385,6 +389,7 @@ pub async fn admin_items_post(
                 img_1: statreturn.image_1,
                 img_2: Some(statreturn.image_2),
                 owner: statreturn.owner,
+                owner_type: statreturn.owner_type,
                 r#type: None,
                 price: None,
                 target_faction: None,
@@ -459,12 +464,12 @@ pub async fn admin_items_post(
                     "{}driver FROM {} TO {}",
                     if act.len() > 0 { "; " } else { "" },
                     if old_model.driver.is_some() {
-                        old_model.driver.unwrap()
+                        old_model.driver.unwrap().to_string()
                     } else {
                         String::from("null")
                     },
                     if body.driver.is_some() {
-                        body.driver.clone().unwrap()
+                        body.driver.clone().unwrap().to_string()
                     } else {
                         String::from("null")
                     }
@@ -491,7 +496,7 @@ pub async fn admin_items_post(
                 }
             }
             db_log(
-                ext.name.clone(),
+                ext.driverid,
                 Some(get_faction_id(ext.faction.unwrap())),
                 Some(body.id.clone()),
                 Some(types.bills.id),
@@ -511,7 +516,7 @@ pub async fn admin_items_post(
                 }),
                 driver: Set(body.driver),
                 price: Set(body.price),
-                handled_by: Set(Some(ext.name.clone())),
+                handled_by: Set(Some(ext.driverid)),
                 ..Default::default()
             };
             let statreturn = bills::Entity::update(activemodel)
@@ -528,6 +533,7 @@ pub async fn admin_items_post(
                 img_1: statreturn.image,
                 img_2: None,
                 owner: statreturn.owner,
+                owner_type: statreturn.owner_type,
                 price: statreturn.price,
                 driver: statreturn.driver,
                 target_faction: statreturn.target_faction,

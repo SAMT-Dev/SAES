@@ -7,6 +7,7 @@ pub mod bills;
 pub mod hails;
 pub mod images;
 pub mod images_bind;
+pub mod legacy_names;
 pub mod logs;
 pub mod shorts;
 pub mod supplements;

@@ -15,9 +15,12 @@
 	}
 	let { data } = $props();
 	let aha: tipus = $state({});
-	onMount(() => {
+	let usernames: Record<string, { name: string }> = $state({});
+	onMount(async () => {
 		if (data.date) {
+			let ids: number[] = [];
 			for (const potlek of data.stats.potlekok) {
+				if (!ids.includes(potlek.owner)) ids.push(potlek.owner);
 				if (potlek.type === 1) {
 					if (!aha['pótlék_délelőtti']) aha['pótlék_délelőtti'] = {};
 					if (aha['pótlék_délelőtti'][potlek.owner]) {
@@ -37,6 +40,7 @@
 			}
 
 			for (const leintes of data.stats.leintesek) {
+				if (!ids.includes(leintes.owner)) ids.push(leintes.owner);
 				if (!aha['leintés']) aha['leintés'] = {};
 				if (aha['leintés'][leintes.owner]) {
 					aha['leintés'][leintes.owner]++;
@@ -46,12 +50,22 @@
 			}
 
 			for (const szamla of data.stats.szamlak) {
+				if (!ids.includes(szamla.owner)) ids.push(szamla.owner);
 				if (!aha['számla']) aha['számla'] = {};
 				if (aha['számla'][szamla.driver!]) {
 					aha['számla'][szamla.driver!] += Number(szamla.price);
 				} else {
 					aha['számla'][szamla.driver!] = Number(szamla.price);
 				}
+			}
+			if (ids.length > 0) {
+				const fetcs = await fetch('/web-api/getusernames', {
+					headers: {
+						ids: JSON.stringify(ids)
+					}
+				});
+				let names = await fetcs.json();
+				usernames = names;
 			}
 		}
 	});
@@ -88,7 +102,9 @@
 							{#if data.week === 'previous'}
 								<div class="flex items-center justify-center">
 									<h2 class="text-2xl">
-										{key2}: {key.endsWith('számla') ? value2 + '$' : value2 + ' db'}
+										{usernames[key2] ? usernames[key2].name : key2}: {key.endsWith('számla')
+											? value2 + '$'
+											: value2 + ' db'}
 									</h2>
 									<button
 										class="ml-1 flex items-center justify-center rounded-full bg-gray-600 p-1 transition-colors duration-200 hover:bg-gray-800"

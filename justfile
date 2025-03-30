@@ -22,21 +22,21 @@ r_dev soft:
 
 [windows]
 w_dev:
-    cd web; deno task dev
+    cd web; bun dev
 
 [linux]
 w_dev:
-    cd web && deno task dev
+    cd web && bun dev
 
 #* deno install scripts
 
 [windows]
 w_i:
-    cd web; deno install
+    cd web; bun install
 
 [linux]
 w_i:
-    cd web && deno install
+    cd web && bun install
 
 #* Docker image build scripts
 

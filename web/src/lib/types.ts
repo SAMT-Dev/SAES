@@ -4,7 +4,7 @@ export interface FullDBType {
 	price: null | number;
 	id: number;
 	image: string;
-	owner: string;
+	owner: number;
 	reason: null | string;
 	driver: null | string;
 	target_faction: null | string;

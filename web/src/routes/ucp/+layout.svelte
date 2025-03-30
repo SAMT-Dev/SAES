@@ -5,7 +5,6 @@
 	import { Reeler_keys, Reeler_vals } from '$lib/ucp/public.js';
 	import { onMount } from 'svelte';
 	import { loading } from '$lib/loading.svelte';
-	import { io } from 'socket.io-client';
 	import { socket } from '$lib/socket.js';
 	import ViewTransition from '$lib/navigation.svelte';
 	import Header from '$lib/ucp/header.svelte';
@@ -13,6 +12,7 @@
 	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { io } from 'socket.io-client';
 	let { data, children } = $props();
 	let maintenance = $state(false);
 	let initial_socket = $state(false);

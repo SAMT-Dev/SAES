@@ -7,7 +7,6 @@
 	import { locale } from '$lib/time';
 	import { get_status_string, get_type_number, get_type_string } from './types';
 	import { Tooltip } from 'flowbite-svelte';
-	import { Factions } from '$lib/permissions';
 	import { page } from '$app/state';
 	let multipage = $state(false);
 	interface Props {
@@ -15,10 +14,11 @@
 		tipus: number;
 		display?: string;
 	}
-
 	let { data, tipus, display = '' }: Props = $props();
 	let handled_potleks: any = $state([]);
 	let pagee = $state(data.page as number);
+	let usernames: Record<string, { name: string }> = $state({});
+	let legacyusernames: Record<string, { name: string }> = $state({});
 	function switchPage(mode: 'next' | 'prev') {
 		let url = new URL(page.url);
 		if (mode === 'next') {
@@ -34,7 +34,7 @@
 			render();
 		}
 	}
-	function render() {
+	async function render() {
 		handled_potleks = [];
 		if (data.potlekok.length > 10 && data.potlekok.length > 0) {
 			multipage = true;
@@ -46,9 +46,43 @@
 		} else {
 			handled_potleks = data.potlekok;
 		}
+		let ids: number[] = [];
+		let legacy_ids: number[] = [];
+		for (const elem of handled_potleks) {
+			if (elem.owner !== data.layout?.driverid && elem.owner_type === 1 && !usernames[elem.owner]) {
+				ids.push(elem.owner);
+			}
+			if (elem.owner_type === 2 && !legacyusernames[elem.owner]) {
+				legacy_ids.push(elem.owner);
+			}
+			if (elem.handled_by !== null && !usernames[elem.handled_by]) {
+				ids.push(elem.handled_by);
+			}
+			if (elem.driver && !usernames[elem.driver]) {
+				ids.push(elem.driver);
+			}
+		}
+		if (ids.length > 0) {
+			const fetcs = await fetch('/web-api/getusernames', {
+				headers: {
+					ids: JSON.stringify(ids)
+				}
+			});
+			let names = await fetcs.json();
+			usernames = names;
+		}
+		if (legacy_ids.length > 0) {
+			const fetcs = await fetch('/web-api/getusernames/legacy', {
+				headers: {
+					ids: JSON.stringify(legacy_ids)
+				}
+			});
+			let names = await fetcs.json();
+			legacyusernames = names;
+		}
 	}
-	onMount(() => {
-		render();
+	onMount(async () => {
+		await render();
 	});
 </script>
 
@@ -91,18 +125,30 @@
 								locale
 							})}
 						</h1>
-						{#if data.layout?.name !== potle.owner}
-							<h1 class="drop-shadow-xl">Feltöltő: {potle.owner}</h1>
+						{#if data.layout?.driverid !== potle.owner}
+							<h1 class="drop-shadow-xl">
+								Feltöltő: {potle.owner_type === 1
+									? usernames[potle.owner]
+										? usernames[potle.owner].name
+										: potle.owner
+									: legacyusernames[potle.owner]
+										? legacyusernames[potle.owner].name
+										: potle.owner}
+							</h1>
 						{/if}
-						{#if tipus === get_type_number('számla') && data.layout?.name !== potle.driver}
-							<h1 class="drop-shadow-xl">Kedvezményezett: {potle.driver}</h1>
+						{#if tipus === get_type_number('számla') && potle.driver && data.layout?.name !== potle.driver}
+							<h1 class="drop-shadow-xl">
+								Kedvezményezett: {usernames[potle.driver]
+									? usernames[potle.driver].name
+									: potle.driver}
+							</h1>
 						{/if}
 						{#if tipus === get_type_number('számla') && potle.price}
 							<h1 class="drop-shadow-xl">Végösszeg: {potle.price}$</h1>
 						{/if}
 						{#if potle.reason}
 							<h1 class="drop-shadow-xl">
-								{data.faction === Factions.Apms ? 'Kedvezményezett neve' : 'Megjegyzés'}: {potle.reason}
+								Megjegyzés: {potle.reason}
 							</h1>
 						{/if}
 
@@ -170,7 +216,11 @@
 						{/if}
 
 						{#if potle.handled_by}
-							<h1 class="drop-shadow-xl">Kezelte: {potle.handled_by}</h1>
+							<h1 class="drop-shadow-xl">
+								Kezelte: {usernames[potle.handled_by]
+									? usernames[potle.handled_by].name
+									: potle.handled_by}
+							</h1>
 						{/if}
 					</div>
 				{/each}
