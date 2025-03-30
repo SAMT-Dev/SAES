@@ -54,6 +54,7 @@
 				date: Date;
 				id: number;
 				owner: string;
+				owner_type: number;
 				reason: string | null;
 				status: number;
 				type: number;
@@ -73,6 +74,7 @@
 	let multipage = $state(false);
 	let bindEdit: any = $state({});
 	let usernames: Record<string, { name: string }> = $state({});
+	let legacyusernames: Record<string, { name: string }> = $state({});
 	let editid = 0;
 	let bajvan = $state(false);
 	async function render() {
@@ -88,21 +90,39 @@
 			potleks.data.items = [];
 			let ret = await fatcs.json();
 			let ids: number[] = [];
+			let legacy_ids: number[] = [];
 			for (const elem of ret.data.items) {
 				if (elem.owner_type === 1 && !usernames[elem.owner]) {
 					ids.push(elem.owner);
 				}
+				if (elem.owner_type === 2 && !legacyusernames[elem.owner]) {
+					legacy_ids.push(elem.owner);
+				}
 				if (elem.handled_by !== null && !usernames[elem.handled_by]) {
 					ids.push(elem.handled_by);
 				}
-			}
-			const fetcs = await fetch('/web-api/getusernames', {
-				headers: {
-					ids: JSON.stringify(ids)
+				if (elem.driver && !usernames[elem.driver]) {
+					ids.push(elem.driver);
 				}
-			});
-			let names = await fetcs.json();
-			usernames = names;
+			}
+			if (ids.length > 0) {
+				const fetcs = await fetch('/web-api/getusernames', {
+					headers: {
+						ids: JSON.stringify(ids)
+					}
+				});
+				let names = await fetcs.json();
+				usernames = names;
+			}
+			if (legacy_ids.length > 0) {
+				const fetcs = await fetch('/web-api/getusernames/legacy', {
+					headers: {
+						ids: JSON.stringify(legacy_ids)
+					}
+				});
+				let names = await fetcs.json();
+				legacyusernames = names;
+			}
 			if (ret.data.items.length > 10 && ret.data.items.length > 0) {
 				multipage = true;
 				for (let i = pagee * 10; i < (pagee as number) * 10 + 10; i++) {
@@ -157,7 +177,6 @@
 		bindEdit.custombg = false;
 		editid = id;
 		editing = true;
-		console.log(bindEdit);
 	}
 	async function quickTools(timpo: string, id: number) {
 		const fatcs = await fetch('/web-api/items', {
@@ -431,10 +450,13 @@
 								)}</TableBodyCell
 							>
 							<TableBodyCell
-								>{usernames[potle.owner].name}
-								{#if potle.am}
-									(TOW)
-								{/if}</TableBodyCell
+								>{potle.owner_type === 1
+									? usernames[potle.owner]
+										? usernames[potle.owner].name
+										: potle.owner
+									: legacyusernames[potle.owner]
+										? legacyusernames[potle.owner].name
+										: potle.owner}</TableBodyCell
 							>
 							<TableBodyCell>
 								{#if type == get_type_number('leintés')}
@@ -475,7 +497,11 @@
 										? get_faction_by_id(potle.target_faction)
 										: 'nincs'}</TableBodyCell
 								>
-								<TableBodyCell>{potle.driver ? potle.driver : 'nincs'}</TableBodyCell>
+								<TableBodyCell
+									>{potle.driver && usernames[potle.driver]
+										? usernames[potle.driver].name
+										: potle.driver}</TableBodyCell
+								>
 							{/if}
 							{#if extraText}
 								<TableBodyCell
@@ -489,7 +515,13 @@
 								>
 							{/if}
 							{#if haveadmin}
-								<TableBodyCell>{potle.handled_by ? potle.handled_by : '-'}</TableBodyCell>
+								<TableBodyCell
+									>{potle.handled_by && usernames[potle.handled_by]
+										? usernames[potle.handled_by].name
+										: potle.handled_by
+											? potle.handled_by
+											: '-'}</TableBodyCell
+								>
 							{/if}
 							{#if tools.length > 0}
 								<TableBodyCell>
