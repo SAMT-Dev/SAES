@@ -35,7 +35,6 @@ use crate::{
 pub struct ItemsStruct {
     pub id: i32,
     pub owner: i32,
-    pub owner_type: i8,
     pub img_1: i32,
     pub img_2: Option<i32>,
     pub status: i8,
@@ -96,7 +95,6 @@ pub async fn ucp_items_get(
             .map(|strucc| -> ItemsStruct {
                 ItemsStruct {
                     owner: strucc.owner.clone(),
-                    owner_type: strucc.owner_type,
                     img_1: strucc.image,
                     faction: ext.faction.unwrap(),
                     img_2: None,
@@ -140,7 +138,6 @@ pub async fn ucp_items_get(
                 ItemsStruct {
                     faction: ext.faction.unwrap(),
                     owner: strucc.owner.clone(),
-                    owner_type: strucc.owner_type,
                     img_1: strucc.image_1,
                     img_2: Some(strucc.image_2),
                     reason: strucc.reason.clone(),
@@ -187,7 +184,6 @@ pub async fn ucp_items_get(
                 ItemsStruct {
                     faction: ext.faction.unwrap(),
                     owner: strucc.owner,
-                    owner_type: strucc.owner_type,
                     img_1: strucc.image,
                     img_2: None,
                     reason: strucc.reason.clone(),

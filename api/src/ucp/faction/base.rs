@@ -47,7 +47,6 @@ pub async fn get_images_by_id(query: Query<GetImageQuery>) -> impl IntoResponse 
                 date: ret.date,
                 faction: ret.faction,
                 handled_by: ret.handled_by,
-                owner_type: ret.owner_type,
                 reason: ret.reason,
                 target_faction: None,
                 driver: None,
@@ -80,7 +79,6 @@ pub async fn get_images_by_id(query: Query<GetImageQuery>) -> impl IntoResponse 
                 driver: None,
                 reason: ret.reason,
                 owner: ret.owner,
-                owner_type: ret.owner_type,
                 status: ret.status,
                 item_type: types.hails.id,
             };
@@ -109,7 +107,6 @@ pub async fn get_images_by_id(query: Query<GetImageQuery>) -> impl IntoResponse 
                 target_faction: ret.target_faction,
                 reason: ret.reason,
                 owner: ret.owner,
-                owner_type: ret.owner_type,
                 status: ret.status,
                 item_type: types.bills.id,
             };

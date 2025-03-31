@@ -74,7 +74,6 @@
 	let multipage = $state(false);
 	let bindEdit: any = $state({});
 	let usernames: Record<string, { name: string }> = $state({});
-	let legacyusernames: Record<string, { name: string }> = $state({});
 	let editid = 0;
 	let bajvan = $state(false);
 	async function render() {
@@ -90,13 +89,9 @@
 			potleks.data.items = [];
 			let ret = await fatcs.json();
 			let ids: number[] = [];
-			let legacy_ids: number[] = [];
 			for (const elem of ret.data.items) {
-				if (elem.owner_type === 1 && !ids.includes(elem.owner)) {
+				if (!ids.includes(elem.owner)) {
 					ids.push(elem.owner);
-				}
-				if (elem.owner_type === 2 && !legacy_ids.includes(elem.owner)) {
-					legacy_ids.push(elem.owner);
 				}
 				if (elem.handled_by !== null && !ids.includes(elem.handled_by)) {
 					ids.push(elem.handled_by);
@@ -113,15 +108,6 @@
 				});
 				let names = await fetcs.json();
 				usernames = names;
-			}
-			if (legacy_ids.length > 0) {
-				const fetcs = await fetch('/web-api/getusernames/legacy', {
-					headers: {
-						ids: JSON.stringify(legacy_ids)
-					}
-				});
-				let names = await fetcs.json();
-				legacyusernames = names;
 			}
 			if (ret.data.items.length > 10 && ret.data.items.length > 0) {
 				multipage = true;
@@ -331,13 +317,7 @@
 			<form onsubmit={() => editDone()}>
 				<div class="grid grid-cols-2 items-center gap-3">
 					<h1 class="col-span-2 mx-2 text-3xl font-bold">
-						{bindEdit.owner_type === 1
-							? usernames[bindEdit.owner]
-								? usernames[bindEdit.owner].name
-								: bindEdit.owner
-							: legacyusernames[bindEdit.owner]
-								? legacyusernames[bindEdit.owner].name
-								: bindEdit.owner}
+						{usernames[bindEdit.owner] ? usernames[bindEdit.owner].name : bindEdit.owner}
 						{editdes} szerkesztése
 					</h1>
 					<label for="type" class="text-xl">Státusz</label>
@@ -474,13 +454,7 @@
 								)}</TableBodyCell
 							>
 							<TableBodyCell
-								>{potle.owner_type === 1
-									? usernames[potle.owner]
-										? usernames[potle.owner].name
-										: potle.owner
-									: legacyusernames[potle.owner]
-										? legacyusernames[potle.owner].name
-										: potle.owner}</TableBodyCell
+								>{usernames[potle.owner] ? usernames[potle.owner].name : potle.owner}</TableBodyCell
 							>
 							<TableBodyCell>
 								{#if type == get_type_number('leintés')}

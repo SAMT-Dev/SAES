@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 pub struct SMGetItemsFull {
     pub id: i32,
     pub owner: i32,
-    pub owner_type: i8,
     pub img_1: i32,
     pub img_2: Option<i32>,
     pub target_faction: Option<i8>,

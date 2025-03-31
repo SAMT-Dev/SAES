@@ -10,7 +10,6 @@ pub struct Model {
     pub id: i32,
     pub r#type: Option<i8>,
     pub owner: i32,
-    pub owner_type: i8,
     pub image: i32,
     pub status: i8,
     pub reason: Option<String>,

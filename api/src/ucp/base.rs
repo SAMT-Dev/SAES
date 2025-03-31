@@ -2,13 +2,11 @@ use std::collections::HashMap;
 
 use axum::{debug_handler, extract::Request, Json};
 use http::HeaderMap;
-use saes_shared::db::{legacy_names, prelude::LegacyNames};
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 
 use crate::{
     utils::{api::get_api_envs, middle::Driver},
-    DB_CLIENT, WEB_CLIENT,
+    WEB_CLIENT,
 };
 
 #[debug_handler]
@@ -44,28 +42,6 @@ pub async fn ucp_getusernames(h: HeaderMap) -> Json<UserArrs> {
         .unwrap();
     let res = req.json().await.unwrap();
     Json(res)
-}
-
-#[debug_handler]
-pub async fn ucp_getlegacyusernames(h: HeaderMap) -> Json<UserArrs> {
-    let ids_str = h.get("ids").unwrap().to_str().unwrap();
-    let ids: Vec<i32> = serde_json::from_str(ids_str).unwrap();
-    let db = DB_CLIENT.get().unwrap();
-    let users = LegacyNames::find()
-        .filter(legacy_names::Column::Id.is_in(ids))
-        .all(db)
-        .await
-        .expect("Lekérés sikertelen");
-    let mut arrs: UserArrs = HashMap::new();
-    for user in users.iter() {
-        arrs.insert(
-            user.id.to_string(),
-            UserArr {
-                name: user.name.clone(),
-            },
-        );
-    }
-    Json(arrs)
 }
 
 #[derive(Debug, Serialize, Deserialize)]

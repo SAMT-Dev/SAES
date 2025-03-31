@@ -18,7 +18,6 @@
 	let handled_potleks: any = $state([]);
 	let pagee = $state(data.page as number);
 	let usernames: Record<string, { name: string }> = $state({});
-	let legacyusernames: Record<string, { name: string }> = $state({});
 	function switchPage(mode: 'next' | 'prev') {
 		let url = new URL(page.url);
 		if (mode === 'next') {
@@ -47,17 +46,9 @@
 			handled_potleks = data.potlekok;
 		}
 		let ids: number[] = [];
-		let legacy_ids: number[] = [];
 		for (const elem of handled_potleks) {
-			if (
-				elem.owner !== data.layout?.driverid &&
-				elem.owner_type === 1 &&
-				!ids.includes(elem.owner)
-			) {
+			if (elem.owner !== data.layout?.driverid && !ids.includes(elem.owner)) {
 				ids.push(elem.owner);
-			}
-			if (elem.owner_type === 2 && !ids.includes(elem.owner)) {
-				legacy_ids.push(elem.owner);
 			}
 			if (elem.handled_by !== null && !ids.includes(elem.handled_by)) {
 				ids.push(elem.handled_by);
@@ -74,15 +65,6 @@
 			});
 			let names = await fetcs.json();
 			usernames = names;
-		}
-		if (legacy_ids.length > 0) {
-			const fetcs = await fetch('/web-api/getusernames/legacy', {
-				headers: {
-					ids: JSON.stringify(legacy_ids)
-				}
-			});
-			let names = await fetcs.json();
-			legacyusernames = names;
 		}
 	}
 	onMount(async () => {
@@ -133,13 +115,7 @@
 						</h1>
 						{#if data.layout?.driverid !== potle.owner}
 							<h1 class="drop-shadow-xl">
-								Feltöltő: {potle.owner_type === 1
-									? usernames[potle.owner]
-										? usernames[potle.owner].name
-										: potle.owner
-									: legacyusernames[potle.owner]
-										? legacyusernames[potle.owner].name
-										: potle.owner}
+								Feltöltő: {usernames[potle.owner] ? usernames[potle.owner].name : potle.owner}
 							</h1>
 						{/if}
 						{#if tipus === get_type_number('számla') && potle.driver && data.layout?.driverid !== potle.driver}

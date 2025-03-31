@@ -11,7 +11,6 @@ pub struct Model {
     pub filename: String,
     pub checksum: Option<String>,
     pub owner: i32,
-    pub owner_type: i8,
     pub tmp: i8,
     pub converted: i8,
     pub faction: i8,
