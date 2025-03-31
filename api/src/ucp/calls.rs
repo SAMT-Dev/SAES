@@ -55,7 +55,7 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
             .await;
         let fridays = get_fridays();
         let dbreturn_supp = supplements::Entity::find()
-            .filter(supplements::Column::Owner.eq(&exts.unwrap().name))
+            .filter(supplements::Column::Owner.eq(exts.unwrap().driverid))
             .filter(supplements::Column::Status.eq(statuses.accepted.id))
             .filter(supplements::Column::Date.gt(fridays.last_friday))
             .filter(supplements::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
@@ -64,7 +64,7 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
             .await
             .expect("Leintések lekérése sikertelen az adatbázisból");
         let dbreturn_hails = hails::Entity::find()
-            .filter(hails::Column::Owner.eq(&exts.unwrap().name))
+            .filter(hails::Column::Owner.eq(exts.unwrap().driverid))
             .filter(hails::Column::Status.eq(statuses.accepted.id))
             .filter(hails::Column::Date.gt(fridays.last_friday))
             .filter(hails::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
