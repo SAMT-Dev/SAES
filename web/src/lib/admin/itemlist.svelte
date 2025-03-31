@@ -54,7 +54,6 @@
 				date: Date;
 				id: number;
 				owner: string;
-				owner_type: number;
 				reason: string | null;
 				status: number;
 				type: number;
