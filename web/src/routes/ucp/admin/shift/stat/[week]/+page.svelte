@@ -58,6 +58,7 @@
 					aha['számla'][szamla.driver!] = Number(szamla.price);
 				}
 			}
+			console.log(ids);
 			if (ids.length > 0) {
 				const fetcs = await fetch('/web-api/getusernames', {
 					headers: {
@@ -66,6 +67,7 @@
 				});
 				let names = await fetcs.json();
 				usernames = names;
+				console.log(usernames);
 			}
 		}
 	});
@@ -129,7 +131,11 @@
 									>
 								</div>
 							{:else}
-								<h2>{key2}: {key.endsWith('számla') ? value2 + '$' : value2 + ' db'}</h2>
+								<h2>
+									{usernames[key2] ? usernames[key2].name : key2}: {key.endsWith('számla')
+										? value2 + '$'
+										: value2 + ' db'}
+								</h2>
 							{/if}
 						{/each}
 					{/each}

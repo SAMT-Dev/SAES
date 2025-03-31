@@ -83,6 +83,11 @@
 					Elfogadott pótlékaid: délelőtti: {data.calls?.potlek.de}, éjszakai: {data.calls?.potlek
 						.du}
 				</h2>
+				{#if data.calls?.price! > 0}
+					<h2 class="text-xl drop-shadow-lg md:text-2xl">
+						Elfogadott számlák összege: {data.calls?.price}$.
+					</h2>
+				{/if}
 			{/if}
 			{#if allowFacts(data, [Factions.Apms]) && data.szamlak}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">

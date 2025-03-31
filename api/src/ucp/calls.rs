@@ -21,6 +21,7 @@ pub struct DriverRecord {
 pub struct Callz {
     pub app: Option<u32>,
     pub leintes: usize,
+    pub price: isize,
     pub potlek: Potlek,
 }
 #[derive(Debug, Deserialize, Serialize)]
@@ -72,6 +73,25 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
             .all(db)
             .await
             .expect("Leintések lekérése sikertelen az adatbázisból");
+        let dbreturn_bills = bills::Entity::find()
+            .filter(
+                bills::Column::Owner
+                    .eq(exts.unwrap().driverid)
+                    .or(bills::Column::Driver.eq(exts.unwrap().driverid)),
+            )
+            .filter(bills::Column::Status.eq(statuses.accepted.id))
+            .filter(bills::Column::Date.gt(fridays.last_friday))
+            .filter(bills::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
+            .filter(bills::Column::Date.lt(fridays.next_friday))
+            .all(db)
+            .await
+            .expect("Leintések lekérése sikertelen az adatbázisból");
+        let mut bills = 0;
+        for bill in dbreturn_bills.iter() {
+            if bill.price.is_some() {
+                bills += bill.price.unwrap();
+            }
+        }
         let mut leintes = 0;
         let mut de_potlek = 0;
         let mut du_potlek = 0;
@@ -103,6 +123,7 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
                         Some(0)
                     },
                     leintes,
+                    price: bills as isize,
                     potlek: Potlek {
                         de: de_potlek,
                         du: du_potlek,
@@ -113,6 +134,7 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
         Ok(Json(Callz {
             app: None,
             leintes,
+            price: bills as isize,
             potlek: Potlek {
                 de: de_potlek,
                 du: du_potlek,
