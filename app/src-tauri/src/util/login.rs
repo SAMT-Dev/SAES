@@ -1,5 +1,6 @@
 use std::env;
 
+use tauri::{AppHandle, Emitter};
 use tiny_http::{Response, Server};
 use url::Url;
 
@@ -8,7 +9,8 @@ use crate::DISCORD_TOKEN;
 use super::structs::UCPReturn;
 
 #[tauri::command]
-pub async fn begin_login() {
+pub async fn begin_login(app: AppHandle) {
+    let app2 = app.clone();
     tauri::async_runtime::spawn(async move {
         let server = Server::http("127.0.0.1:31313").unwrap();
         for req in server.incoming_requests() {
@@ -17,6 +19,10 @@ pub async fn begin_login() {
             let queries = parsed_url.query_pairs();
             for (key, value) in queries {
                 if key == "code" {
+                    if value == "noperm" {
+                        app2.emit("loginFailed", "noperms").unwrap();
+                        break;
+                    }
                     let mut writer = DISCORD_TOKEN.write().await;
                     *writer = Some(value.to_string());
                     break;
@@ -38,9 +44,18 @@ pub async fn begin_login() {
         .send()
         .await
         .unwrap();
+    println!("{:?}", &get.status());
     let data: Result<UCPReturn, reqwest::Error> = get.json().await;
     if data.is_ok() {
-        println!("{:?}", data.unwrap());
+        let data = data.unwrap();
+        if data.perms.contains(&"saes.login".to_string()) {
+            app.emit("loginDone", format!("{}-{}", data.name, data.admin))
+                .unwrap();
+        } else {
+            app.emit("loginFailed", "noperms").unwrap();
+        }
+    } else {
+        app.emit("loginFailed", "unknown").unwrap();
     }
 }
 
