@@ -4,7 +4,6 @@
 	import { Tooltip } from 'flowbite-svelte';
 
 	let { children, data }: { data: LayoutData; children: Snippet } = $props();
-
 	let nav: HTMLDivElement = $state()!;
 	const tognav = () => {
 		if (nav.classList.contains('hidden')) {
@@ -22,10 +21,10 @@
 >
 	<div class="ml-2 flex shrink items-center gap-2 xl:ml-[10vw]">
 		<h1 class="hidden text-3xl font-bold drop-shadow-xl md:block">
-			{data.faction === 'SCKK' ? data.layout?.taxi?.factionname : data.layout?.tow?.factionname}
+			{data.layout?.factions?.factionname}
 		</h1>
 		<h1 class="text-3xl font-bold drop-shadow-xl md:hidden">
-			{data.faction === 'SCKK' ? 'SCKK' : 'TOW'}
+			{data.layout?.factions?.factionshortname}
 		</h1>
 		<a
 			href="/ucp"
