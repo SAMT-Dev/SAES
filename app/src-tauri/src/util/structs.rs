@@ -2,9 +2,8 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct UCPReturn {
-    discordid: String,
-    driverid: i32,
-    name: String,
-    admin: bool,
-    perms: Vec<String>,
+    pub driverid: i32,
+    pub name: String,
+    pub admin: bool,
+    pub perms: Vec<String>,
 }
