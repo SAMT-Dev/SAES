@@ -61,6 +61,7 @@ pub enum AccessConfig {
     Hails,
     Bills,
     Shorts,
+    SeeAPI,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
