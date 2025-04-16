@@ -7,3 +7,13 @@ pub fn routes() -> Router {
         .route("/shorts", get(shorts::base_get_shorts))
         .layer(middleware::from_fn(key_auth))
 }
+
+#[derive(Debug,Deserialize)]
+pub struct AccountIdParam {
+    pub account_id: String
+}
+
+#[debug_handler]
+pub async fn get_accountid(ext: Extension<AccessKeyExt>,q: Query<AccountIdParam>) -> Result<impl IntoResponse, (StatusCode, String)> {
+    if !ext.access.contains(){}
+}
