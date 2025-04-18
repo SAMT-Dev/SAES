@@ -7,7 +7,7 @@ use tauri::{
     AppHandle, Emitter, Manager,
 };
 use tokio::sync::RwLock;
-use util::login::{begin_login, check_envs, get_api_url};
+use util::login::{begin_login, check_envs, done_setup, get_api_url, save_game_dir, set_game_dir};
 
 mod util;
 
@@ -23,7 +23,13 @@ async fn update_done(app: AppHandle) {
     let config = util::config::load_config();
     if config.is_none() {
         let loader = app.get_webview_window("loader").unwrap();
-        let main = app.get_webview_window("main").unwrap();
+        let main = tauri::WebviewWindowBuilder::from_config(
+            &app,
+            &app.config().app.windows.get(2).unwrap().clone(),
+        )
+        .unwrap()
+        .build()
+        .unwrap();
         app.emit("setloadertext", "Konfiguráció nem létezik")
             .unwrap();
         loader.close().unwrap();
@@ -67,6 +73,9 @@ pub fn run() {
             begin_login,
             get_api_url,
             check_envs,
+            set_game_dir,
+            save_game_dir,
+            done_setup
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

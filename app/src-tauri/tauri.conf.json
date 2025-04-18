@@ -48,6 +48,7 @@
         "minWidth": 800,
         "height": 600,
         "visible": false,
+        "create": false,
         "label": "main",
         "url": "/main",
         "center": true

@@ -5,12 +5,16 @@ use std::{
 };
 
 use tauri::{AppHandle, Emitter};
+use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
 use url::Url;
 
 use crate::DISCORD_TOKEN;
 
-use super::{config::get_conf_path, structs::UCPReturn};
+use super::{
+    config::{get_conf_path, save_config, Config},
+    structs::UCPReturn,
+};
 
 #[tauri::command]
 pub async fn begin_login(app: AppHandle) {
@@ -48,7 +52,6 @@ pub async fn begin_login(app: AppHandle) {
         .send()
         .await
         .unwrap();
-    println!("{:?}", &get.status());
     let data: Result<UCPReturn, reqwest::Error> = get.json().await;
     if data.is_ok() {
         let data = data.unwrap();
@@ -85,4 +88,28 @@ pub async fn check_envs(app: AppHandle) -> String {
 #[tauri::command]
 pub async fn get_api_url() -> String {
     env::var("API_URL").unwrap()
+}
+
+#[tauri::command]
+pub async fn set_game_dir(app: AppHandle) {
+    println!("Select!");
+    app.dialog().file().pick_folder(move |folder| {
+        if folder.is_some() {
+            app.emit("selectedGameDir", folder.unwrap()).unwrap();
+        }
+    });
+}
+
+#[tauri::command]
+pub async fn save_game_dir(dir: String) {
+    let config = Config {
+        auth: DISCORD_TOKEN.read().await.clone().unwrap(),
+        game_dir: dir.clone(),
+    };
+    save_config(config);
+}
+
+#[tauri::command]
+pub async fn done_setup(app: AppHandle) {
+    app.restart();
 }

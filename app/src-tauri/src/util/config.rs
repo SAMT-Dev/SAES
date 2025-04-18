@@ -1,6 +1,7 @@
 use std::{
     env::consts::OS,
     fs::{create_dir, File},
+    io::Write,
     path::Path,
 };
 
@@ -9,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    pub dc_token: String,
+    pub auth: String,
     pub game_dir: String,
 }
 
@@ -45,4 +46,11 @@ pub fn load_config() -> Option<Config> {
         return None;
     }
     return Some(real_config.unwrap());
+}
+
+pub fn save_config(config: Config) {
+    let pat = get_conf_path();
+    let config_str = serde_json::to_string(&config).unwrap();
+    let mut file = File::create(format!("{}/config.json", pat)).unwrap();
+    file.write(config_str.as_bytes()).unwrap();
 }
