@@ -5,6 +5,8 @@
 	let page = $state('noconfig');
 	let userinfo: { name?: string; admin?: boolean } = $state({});
 	let setupStep = $state(1);
+	let game_loc = $state('C:\\SeeMTA');
+
 	listen<string>('setmainpage', (ev) => {
 		page = ev.payload;
 	});
@@ -50,8 +52,14 @@
 		{/if}
 		{#if setupStep === 2}
 			<h1 class="text-3xl font-bold">
-				Üdv {userinfo.admin ? 'Szöszadmin ' : ''}{userinfo.name}!
+				Üdv {userinfo.admin ? 'szöszadmin ' : ''}{userinfo.name}!
 			</h1>
+			<h2>A továbblépéshez kérlek válaszd ki a játékod mappáját!</h2>
+			<h2 class="text-gray-300">Amennyiben ez az alap, nem kell megváltoztatnod!</h2>
+			<div class="flex">
+				<h2>{game_loc}</h2>
+				<button>Kiválasztás</button>
+			</div>
 		{/if}
 	{/if}
 </div>

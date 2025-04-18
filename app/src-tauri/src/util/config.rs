@@ -13,7 +13,7 @@ pub struct Config {
     pub game_dir: String,
 }
 
-fn get_conf_path() -> String {
+pub fn get_conf_path() -> String {
     let os = OS;
     let dir = my_home().unwrap().unwrap();
     let dir_str = dir.to_str().unwrap().to_string();

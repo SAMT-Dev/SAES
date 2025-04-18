@@ -1,4 +1,8 @@
-use std::env;
+use std::{
+    env,
+    fs::{self, File},
+    path::Path,
+};
 
 use tauri::{AppHandle, Emitter};
 use tiny_http::{Response, Server};
@@ -6,7 +10,7 @@ use url::Url;
 
 use crate::DISCORD_TOKEN;
 
-use super::structs::UCPReturn;
+use super::{config::get_conf_path, structs::UCPReturn};
 
 #[tauri::command]
 pub async fn begin_login(app: AppHandle) {
@@ -60,9 +64,22 @@ pub async fn begin_login(app: AppHandle) {
 }
 
 #[tauri::command]
-pub async fn check_envs() -> bool {
+pub async fn check_envs(app: AppHandle) -> String {
+    let pat = get_conf_path();
+    let realpat = format!("{}/.enverr", pat);
+    let errcheck = Path::new(&realpat);
     let api = env::var("API_URL");
-    api.is_ok()
+    if api.is_ok() {
+        if errcheck.exists() {
+            fs::remove_file(realpat).unwrap();
+        }
+        return String::from("ok");
+    }
+    if errcheck.exists() {
+        return String::from("multiple");
+    }
+    File::create(&errcheck).unwrap();
+    app.restart();
 }
 
 #[tauri::command]
