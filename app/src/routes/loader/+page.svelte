@@ -46,15 +46,17 @@
 				await relaunch();
 			}
 			text = 'ENV ellenőrzése';
-			let envs: boolean = await invoke('check_envs');
-			if (envs) {
+			let envs: string = await invoke('check_envs');
+			if (envs === 'ok') {
 				text = 'App indítása';
 				setTimeout(() => {
 					invoke('update_done');
 				}, 500);
-			} else {
+			} else if (envs === 'multiple') {
 				envserr = true;
 				text = '';
+			} else {
+				await relaunch();
 			}
 		}, 300);
 	});
@@ -68,10 +70,7 @@
 		<h1 class="font-bold text-3xl text-white w-screen">SAMT App</h1>
 		<h2 class="text-gray-300 font-light">{text}</h2>
 		{#if envserr}
-			<h2 class="text-red-500 font-light">
-				ENV beolvasása sikertelen. Ez első indításkor előfordul, kérlek indítsd újra az appot. Ha
-				nem oldja meg, keress fel egy fejlesztőt.
-			</h2>
+			<h2 class="text-red-500 font-light">.env beolvasása sikertelen.</h2>
 		{/if}
 	</div>
 	<h2 class="text-gray-400 absolute bottom-0 left-1">v{ver}</h2>

@@ -72,11 +72,11 @@ dev_to_test:
 
 [windows]
 t_dev:
-    cd app; cargo tauri dev
+    cd app; bun tauri dev
 
 [linux]
 t_dev:
-    cd app && cargo tauri dev
+    cd app && bun tauri dev
 
 #* DB Type gen based on api's .env
 

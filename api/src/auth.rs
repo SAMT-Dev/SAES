@@ -89,7 +89,6 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         STATE_MANAGEMENT.write().await.remove(pos);
     }
     let code_verifier = code_verifier.value();
-    println!("{}", code_verifier);
     let data = [
         ("grant_type", "authorization_code"),
         ("code", &query.code),
@@ -104,9 +103,11 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         .text()
         .await
         .expect("Átalakítás sikertelen");
-    println!("{}", token_response);
     let object = serde_json::from_str(&token_response);
     if object.is_err() {
+        if path_full.mode == "app".to_string() {
+            return Redirect::to("http://localhost:31313/app-auth/cb?code=noperm");
+        }
         return Redirect::to(&format!("{}?error=noperm", &ds.fdomain));
     }
     let object: TokenResponse = object.unwrap();
@@ -236,7 +237,6 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
     hasher.update(code_verifier.clone());
     let code_challenge = hasher.finalize();
     let code_challenge = &general_purpose::URL_SAFE_NO_PAD.encode(code_challenge);
-    println!("{} // {}", code_verifier, code_challenge);
     ub.set_host(&format!("{}/authorize", auth_envs.api_endpoint))
         .add_param("response_type", "code")
         .add_param("state", &general_purpose::STANDARD.encode(state_str))
