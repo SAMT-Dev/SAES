@@ -19,7 +19,6 @@ lazy_static! {
 #[tauri::command]
 async fn update_done(app: AppHandle) {
     app.emit("setloadertext", "Konfiguráció betöltése").unwrap();
-    util::config::setup_folders();
     let config = util::config::load_config();
     if config.is_none() {
         let loader = app.get_webview_window("loader").unwrap();
@@ -49,6 +48,7 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::Builder::new().build())
         .setup(|app| {
+            util::config::setup_folders();
             let quit_i = MenuItem::with_id(app, "quit", "Kilépés", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&quit_i])?;
             TrayIconBuilder::new()
