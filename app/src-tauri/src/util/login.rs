@@ -67,7 +67,7 @@ pub async fn begin_login(app: AppHandle) {
 }
 
 #[tauri::command]
-pub async fn check_envs(app: AppHandle) -> String {
+pub async fn check_envs() -> String {
     let pat = get_conf_path();
     let realpat = format!("{}/.enverr", pat);
     let errcheck = Path::new(&realpat);

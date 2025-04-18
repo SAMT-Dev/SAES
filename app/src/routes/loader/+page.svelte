@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import { listen } from '@tauri-apps/api/event';
 
-	let text = $state('Frissítések keresése');
+	let text = $state('Frissítés keresése');
 	let ver = $state('');
 	let envserr = $state(false);
 
