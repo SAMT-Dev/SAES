@@ -4,8 +4,9 @@
   "description": "Capability for the main window",
   "windows": ["main","loader"],
   "permissions": [
+    "updater:default",
     "core:default",
     "opener:default",
-    "core:app:allow-version"
+    "core:app:allow-version","dialog:default"
   ]
 }
