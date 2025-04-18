@@ -52,9 +52,13 @@
 			setTimeout(() => {
 				invoke('update_done');
 			}, 500);
-		} else if (envs === 'multiple') {
+		}
+		if (envs === 'second') {
 			envserr = true;
 			text = '';
+		}
+		if (envs === 'first') {
+			text = 'Kérlek indítsd újra az appot!';
 		}
 	});
 </script>

@@ -79,10 +79,10 @@ pub async fn check_envs(app: AppHandle) -> String {
         return String::from("ok");
     }
     if errcheck.exists() {
-        return String::from("multiple");
+        return String::from("second");
     }
     File::create(&errcheck).unwrap();
-    app.restart();
+    return String::from("first");
 }
 
 #[tauri::command]
