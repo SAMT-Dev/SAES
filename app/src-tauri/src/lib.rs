@@ -1,5 +1,6 @@
 use std::env;
 
+use hash::{check_hash, get_image, get_image_hash, get_images};
 use lazy_static::lazy_static;
 use tauri::{
     menu::{Menu, MenuItem},
@@ -7,8 +8,10 @@ use tauri::{
     AppHandle, Emitter, Manager,
 };
 use tokio::sync::RwLock;
+use url::Url;
 use util::login::{begin_login, check_envs, done_setup, get_api_url, save_game_dir, set_game_dir};
 
+mod hash;
 mod util;
 
 lazy_static! {
@@ -19,23 +22,32 @@ lazy_static! {
 #[tauri::command]
 async fn update_done(app: AppHandle) {
     app.emit("setloadertext", "Konfiguráció betöltése").unwrap();
+    let main = tauri::WebviewWindowBuilder::from_config(
+        &app,
+        &app.config().app.windows.get(2).unwrap().clone(),
+    )
+    .unwrap();
     let config = util::config::load_config();
     if config.is_none() {
         let loader = app.get_webview_window("loader").unwrap();
-        let main = tauri::WebviewWindowBuilder::from_config(
-            &app,
-            &app.config().app.windows.get(2).unwrap().clone(),
-        )
-        .unwrap()
-        .build()
-        .unwrap();
         app.emit("setloadertext", "Konfiguráció nem létezik")
+            .unwrap();
+        let main = main.build().unwrap();
+        main.navigate(Url::parse("http://localhost:1420/main/noconfig").unwrap())
             .unwrap();
         loader.close().unwrap();
         main.show().unwrap();
         main.set_focus().unwrap();
-        app.emit("setmainpage", "noconfig").unwrap();
+        return;
     }
+    app.emit("setloadertext", "Felület előkészítése").unwrap();
+    let main = main.build().unwrap();
+    main.navigate(Url::parse("http://localhost:1420/main").unwrap())
+        .unwrap();
+    let loader = app.get_webview_window("loader").unwrap();
+    loader.close().unwrap();
+    main.show().unwrap();
+    main.set_focus().unwrap();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -75,7 +87,11 @@ pub fn run() {
             check_envs,
             set_game_dir,
             save_game_dir,
-            done_setup
+            done_setup,
+            get_image,
+            get_images,
+            get_image_hash,
+            check_hash
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
