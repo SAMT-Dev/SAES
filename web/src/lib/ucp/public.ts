@@ -40,34 +40,34 @@ export const pages = (fact: string) => {
 		{
 			url: "/ucp",
 			display: "Kezdőlap",
-			faction: [Factions.Taxi, Factions.Apms, Factions.Tow],
+			faction: [Factions.Taxi, Factions.Apms, Factions.Tow, Factions.Uni],
 		},
 		{
 			url: "/ucp/segedlet",
 			display: "Segédlet",
-			faction: [Factions.Taxi, Factions.Tow, Factions.Apms],
+			faction: [Factions.Taxi, Factions.Tow, Factions.Apms, Factions.Uni],
 		},
 		{
 			url: "/ucp/links",
 			display: "Hasznos linkek",
-			faction: [Factions.Taxi, Factions.Tow],
+			faction: [Factions.Taxi, Factions.Tow, Factions.Uni],
 		},
 		{
 			url: "/ucp/potlekok",
 			display: "Pótlékok",
-			faction: [Factions.Taxi, Factions.Tow],
+			faction: [Factions.Taxi, Factions.Tow, Factions.Uni],
 		},
 		{
 			url: "/ucp/leintesek",
 			display: `Leintések${
 				fact === Factions.Tow ? " / Bejelentések" : ""
 			}`,
-			faction: [Factions.Taxi, Factions.Tow],
+			faction: [Factions.Taxi, Factions.Tow, Factions.Uni],
 		},
 		{
 			url: "/ucp/szamlak",
 			display: "Szereltetési számlák",
-			faction: [Factions.Taxi, Factions.Apms, Factions.Tow],
+			faction: [Factions.Taxi, Factions.Apms, Factions.Tow, Factions.Uni],
 		},
 	];
 };

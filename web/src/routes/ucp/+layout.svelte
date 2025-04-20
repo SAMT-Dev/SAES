@@ -29,6 +29,9 @@
 		if (data.faction === Factions.Tow) {
 			tip = 'TOW';
 		}
+		if (data.faction === Factions.Uni) {
+			tip = 'Akadémia';
+		}
 	}
 	if (data.refresh && browser) {
 		goto(page.url.pathname, { replaceState: true });
@@ -92,7 +95,7 @@
 	{:else}
 		<title>{tip}</title>
 	{/if}
-	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
+	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow || data.faction === Factions.Uni}
 		<link rel="icon" href="/sckk_icon.png" />
 	{/if}
 	{#if data.faction === Factions.Apms}
@@ -199,6 +202,28 @@
 							</h1>
 						</a>
 					{/if}
+					{#if allowPerms(data, [factPermissions.UNI.SaesFactUcp])}
+						<a
+							href="?select_faction=UNI"
+							data-sveltekit-reload
+							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
+						>
+							<div
+								class="group-hover:border-uni rounded-full border-4 border-solid border-white duration-300"
+							>
+								<img
+									src="/sckk_icon.png"
+									class=" m-auto w-40 rounded-full border-2 border-solid border-black transition-colors"
+									alt="SCKK Logo"
+								/>
+							</div>
+							<h1
+								class="group-hover:text-uni text-3xl font-bold tracking-wider transition-colors duration-300"
+							>
+								Akadémia
+							</h1>
+						</a>
+					{/if}
 					{#if allowPerms(data, [factPermissions.APMS.SaesFactUcp])}
 						<a
 							href="?select_faction=APMS"
@@ -273,8 +298,10 @@
 						: data.faction === Factions.Tow
 							? allowPerms(data, [factPermissions[Factions.Tow].SaesFactAdmin])
 							: data.faction === Factions.Apms
-								? allowPerms(data, [Permissions.SaesFactAdmin])
-								: false}
+								? allowPerms(data, [factPermissions[Factions.Apms].SaesFactAdmin])
+								: data.faction === Factions.Uni
+									? allowPerms(data, [factPermissions[Factions.Uni].SaesFactAdmin])
+									: false}
 					{data}
 					{nosocket}
 				/>

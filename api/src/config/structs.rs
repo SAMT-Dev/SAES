@@ -120,6 +120,7 @@ impl Default for MainConfig {
         factions.insert(Factions::SCKK, FactionConfig::default());
         factions.insert(Factions::TOW, FactionConfig::default());
         factions.insert(Factions::APMS, FactionConfig::default());
+        factions.insert(Factions::UNI, FactionConfig::default());
         Self {
             global: GlobalConfig::default(),
             factions,

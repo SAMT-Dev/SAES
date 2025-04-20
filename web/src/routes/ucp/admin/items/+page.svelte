@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Grid from '$lib/admin/grid.svelte';
 	import { allowPerms } from '$lib/api.js';
-	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
+	import { Factions, factPermissions } from '$lib/permissions.js';
 
 	let { data } = $props();
 	const supportCountries = ['HU', 'SK', 'RO'];
@@ -19,7 +19,8 @@
 			background: 'bg-yellow-200 hover:bg-yellow-400',
 			permission: [
 				factPermissions[Factions.Taxi].SaesFactAdminShift,
-				factPermissions[Factions.Tow].SaesFactAdminShift
+				factPermissions[Factions.Tow].SaesFactAdminShift,
+				factPermissions[Factions.Uni].SaesFactAdminShift
 			]
 		},
 		{
@@ -30,7 +31,8 @@
 			background: 'bg-green-200 hover:bg-green-400',
 			permission: [
 				factPermissions[Factions.Taxi].SaesFactAdminShift,
-				factPermissions[Factions.Tow].SaesFactAdminShift
+				factPermissions[Factions.Tow].SaesFactAdminShift,
+				factPermissions[Factions.Uni].SaesFactAdminShift
 			]
 		},
 		{
@@ -42,19 +44,20 @@
 			permission: [
 				factPermissions[Factions.Taxi].SaesFactAdminShift,
 				factPermissions[Factions.Tow].SaesFactAdminShift,
-				factPermissions.APMS.SaesFactAdmin
+				factPermissions[Factions.Apms].SaesFactAdmin,
+				factPermissions[Factions.Uni].SaesFactAdminShift
 			]
 		}
 	]}
 />
 
-{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
+{#if data.faction === Factions.Taxi || data.faction === Factions.Tow || data.faction === Factions.Uni}
 	<div class="mt-5 text-center">
 		<h1 class="mb-2 text-3xl font-bold text-black dark:text-white">Statisztika</h1>
 		<div
 			class="child:p-2 md:child:p-4 ml-5 mr-5 grid grid-cols-3 gap-5 text-center text-black dark:text-white"
 		>
-			{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminShift, factPermissions[Factions.Tow].SaesFactAdminShift] )}
+			{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminShift, factPermissions[Factions.Tow].SaesFactAdminShift, factPermissions[Factions.Uni].SaesFactAdminShift] )}
 				<div
 					class="rounded-lg"
 					class:bg-red-700={color === 'HU'}

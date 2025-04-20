@@ -67,7 +67,7 @@
 					Műszakod: {data.layout.factions.shiftname}
 				</h2>
 			{/if}
-			{#if allowFacts(data, [Factions.Taxi, Factions.Tow])}
+			{#if allowFacts(data, [Factions.Taxi, Factions.Tow, Factions.Uni])}
 				{#if data.calls?.app === null}
 					<h2 class="text-xl drop-shadow-lg md:text-2xl">
 						Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}

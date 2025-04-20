@@ -6,7 +6,7 @@
 
 <div class="text-center text-black dark:text-white">
 	<h1 class="mb-4 mt-4 text-4xl font-bold">Segédlet az oldal használatához</h1>
-	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
+	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow || data.faction === Factions.Uni}
 		<h2 class="text-black dark:text-white">
 			A segédlet felépítése pontokra bontott, azon belül pedig alpontokra bontott.
 		</h2>
@@ -120,7 +120,7 @@
 				</li>
 			</ul>
 
-			{#if data.faction === Factions.Taxi}
+			{#if data.faction === Factions.Taxi || data.faction === Factions.Uni}
 				<h1 class="ml-[20%] mt-5 text-left text-3xl font-bold">4. Hívások igazolása</h1>
 				<ul class="child:mx-[20%] child:text- ml-2">
 					<li class="flex gap-2">

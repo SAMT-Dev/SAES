@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { allowPerms } from '$lib/api';
-	import { Factions, factPermissions, Permissions } from '$lib/permissions';
+	import { Factions, factPermissions } from '$lib/permissions';
 
 	let { children, data } = $props();
 	let nav: HTMLDivElement = $state()!;
@@ -39,7 +39,7 @@
 			class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.endsWith('/admin') ? 'bg-emerald-600' : ''}`}
 			>Főoldal</a
 		>
-		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdmin, factPermissions[Factions.Tow].SaesFactAdmin] )}
+		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdmin, factPermissions[Factions.Tow].SaesFactAdmin, factPermissions[Factions.Uni].SaesFactAdmin] )}
 			<a
 				href="/ucp/admin/tools"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.endsWith('/admin/tools') ? 'bg-emerald-600' : ''}`}
@@ -51,21 +51,21 @@
 			class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/items') ? 'bg-emerald-600' : ''}`}
 			>Feltöltött elemek</a
 		>
-		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminShift, factPermissions[Factions.Tow].SaesFactAdminShift] )}
+		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminShift, factPermissions[Factions.Tow].SaesFactAdminShift, factPermissions[Factions.Uni].SaesFactAdminShift] )}
 			<a
 				href="/ucp/admin/shift"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/shift') ? 'bg-emerald-600' : ''}`}
 				>Műszakvezetés</a
 			>
 		{/if}
-		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminFleet, factPermissions[Factions.Tow].SaesFactAdminFleet] )}
+		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminFleet, factPermissions[Factions.Tow].SaesFactAdminFleet, factPermissions[Factions.Uni].SaesFactAdminFleet] )}
 			<a
 				href="/ucp/admin/fleet"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/fleet') ? 'bg-emerald-600' : ''}`}
 				>Flottakezelés</a
 			>
 		{/if}
-		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminFaction, factPermissions[Factions.Tow].SaesFactAdminFaction] )}
+		{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminFaction, factPermissions[Factions.Tow].SaesFactAdminFaction, factPermissions[Factions.Uni].SaesFactAdminFaction] )}
 			<a
 				href="/ucp/admin/faction"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/faction') ? 'bg-emerald-600' : ''}`}

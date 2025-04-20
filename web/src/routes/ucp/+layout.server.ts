@@ -123,6 +123,21 @@ export const load = (async ({ cookies, request, url }) => {
 							});
 							throw redirect(303, url.pathname);
 						}
+						if (
+							sfact === Factions.Uni &&
+							allowPerms({ layout: jeson }, [
+								factPermissions[Factions.Uni].SaesFactUcp,
+							])
+						) {
+							cookies.set("selected_faction", Factions.Uni, {
+								path: "/",
+								maxAge: 360 * 24 * 30,
+								secure: true,
+								sameSite: true,
+								httpOnly: true,
+							});
+							throw redirect(303, url.pathname);
+						}
 					}
 				}
 				if (url.searchParams.get("clear_faction")) {
@@ -169,6 +184,13 @@ export const load = (async ({ cookies, request, url }) => {
 					) {
 						throw redirect(303, "?select_faction=TOW");
 					}
+					if (
+						allowPerms({ layout: jeson }, [
+							factPermissions[Factions.Uni].SaesFactUcp,
+						])
+					) {
+						throw redirect(303, "?select_faction=UNI");
+					}
 				}
 				switch (cookies.get("selected_faction")) {
 					case Factions.Taxi:
@@ -193,6 +215,15 @@ export const load = (async ({ cookies, request, url }) => {
 						if (
 							!allowPerms({ layout: jeson }, [
 								factPermissions[Factions.Tow].SaesFactUcp,
+							])
+						) {
+							throw redirect(303, "?clear_faction=true");
+						}
+						break;
+					case Factions.Tow:
+						if (
+							!allowPerms({ layout: jeson }, [
+								factPermissions[Factions.Uni].SaesFactUcp,
 							])
 						) {
 							throw redirect(303, "?clear_faction=true");
