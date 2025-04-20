@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, thread, time::Duration};
 
 use hash::{check_hash, get_image, get_image_hash, get_images};
 use lazy_static::lazy_static;
@@ -8,7 +8,6 @@ use tauri::{
     AppHandle, Emitter, Manager,
 };
 use tokio::sync::RwLock;
-use url::Url;
 use util::login::{begin_login, check_envs, done_setup, get_api_url, save_game_dir, set_game_dir};
 
 mod hash;
@@ -33,8 +32,8 @@ async fn update_done(app: AppHandle) {
         app.emit("setloadertext", "Konfiguráció nem létezik")
             .unwrap();
         let main = main.build().unwrap();
-        main.navigate(Url::parse("http://localhost:1420/main/noconfig").unwrap())
-            .unwrap();
+        thread::sleep(Duration::from_millis(200));
+        main.emit("changepanel", "main/noconfig").unwrap();
         loader.close().unwrap();
         main.show().unwrap();
         main.set_focus().unwrap();
@@ -42,9 +41,9 @@ async fn update_done(app: AppHandle) {
     }
     app.emit("setloadertext", "Felület előkészítése").unwrap();
     let main = main.build().unwrap();
-    main.navigate(Url::parse("http://localhost:1420/main").unwrap())
-        .unwrap();
     let loader = app.get_webview_window("loader").unwrap();
+    thread::sleep(Duration::from_millis(200));
+    main.emit("changepanel", "main").unwrap();
     loader.close().unwrap();
     main.show().unwrap();
     main.set_focus().unwrap();
