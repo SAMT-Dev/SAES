@@ -50,6 +50,7 @@ pub fn routes() -> Router {
     Router::new()
         .route("/get", get(ucp_items_get))
         .route("/post", post(ucp_items_post))
+        .route("/get_by_hash", get(get_items_by_hash))
         .layer(DefaultBodyLimit::max(64000000))
 }
 
@@ -515,4 +516,34 @@ pub async fn ucp_items_post(
             "Frakciójelölés hiányzik!".to_string(),
         ));
     }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GetItemsByHash {
+    pub hash: String,
+}
+
+pub async fn get_items_by_hash(
+    ext: Extension<Driver>,
+    q: Query<GetItemsByHash>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let db = DB_CLIENT.get().unwrap();
+    let image = images::Entity::find()
+        .filter(images::Column::Checksum.eq(q.hash.clone()))
+        .filter(images::Column::Owner.eq(ext.driverid))
+        .one(db)
+        .await
+        .unwrap();
+    if image.is_none() {
+        return Err((
+            StatusCode::NOT_FOUND,
+            "Ez a hash nem tartozik egy feltöltött képhez!".to_string(),
+        ));
+    }
+    let binds = images_bind::Entity::find()
+        .filter(images_bind::Column::ImageId.eq(image.unwrap().id))
+        .all(db)
+        .await
+        .unwrap();
+    return Ok(Json(binds));
 }
