@@ -1,11 +1,11 @@
-use std::{env, thread, time::Duration};
+use std::env;
 
 use hash::{check_hash, get_image, get_image_hash, get_images};
 use lazy_static::lazy_static;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
-    AppHandle, Emitter, Manager,
+    AppHandle, Emitter, Listener, Manager, PhysicalSize, Size,
 };
 use tokio::sync::RwLock;
 use util::login::{begin_login, check_envs, done_setup, get_api_url, save_game_dir, set_game_dir};
@@ -32,8 +32,10 @@ async fn update_done(app: AppHandle) {
         app.emit("setloadertext", "Konfiguráció nem létezik")
             .unwrap();
         let main = main.build().unwrap();
-        thread::sleep(Duration::from_millis(200));
-        main.emit("changepanel", "main/noconfig").unwrap();
+        let main_clone = main.clone();
+        main.once("panel", move |_| {
+            main_clone.emit("changepanel", "main/noconfig").unwrap();
+        });
         loader.close().unwrap();
         main.show().unwrap();
         main.set_focus().unwrap();
@@ -41,12 +43,19 @@ async fn update_done(app: AppHandle) {
     }
     app.emit("setloadertext", "Felület előkészítése").unwrap();
     let main = main.build().unwrap();
+    let main_clone = main.clone();
+    main.once("panel", move |_| {
+        main_clone.emit("changepanel", "main").unwrap();
+    });
     let loader = app.get_webview_window("loader").unwrap();
-    thread::sleep(Duration::from_millis(200));
-    main.emit("changepanel", "main").unwrap();
     loader.close().unwrap();
     main.show().unwrap();
     main.set_focus().unwrap();
+    main.set_size(Size::Physical(PhysicalSize {
+        height: 720,
+        width: 1280,
+    }))
+    .unwrap();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
