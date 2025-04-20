@@ -18,7 +18,7 @@
 	onMount(async () => {
 		ver = await getVersion();
 		const update = await check();
-		if (update) {
+		if (update?.version) {
 			text = 'Frissítés előkészítése';
 			console.log(`found update ${update.version} from ${update.date} with notes ${update.body}`);
 			let downloaded = 0;
