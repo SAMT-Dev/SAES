@@ -147,6 +147,16 @@ pub async fn ucp_auth(
                         } else {
                             None
                         }
+                    } else if val.to_str().unwrap() == Factions::UNI.to_string() {
+                        if jwt
+                            .permissions
+                            .contains(&get_perm(Permissions::SaesUcp(Factions::UNI)))
+                            || jwt.is_sys_admin
+                        {
+                            Some(Factions::UNI)
+                        } else {
+                            None
+                        }
                     } else {
                         None
                     }

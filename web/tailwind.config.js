@@ -13,7 +13,8 @@ export default {
 			colors: {
 				taxi: '#fece01',
 				apms: '#d8b47e',
-				tow: '#3498db'
+				tow: '#3498db',
+				uni: '#ff5722'
 			},
 			backgroundSize: {
 				'size-200': '200% 200%'

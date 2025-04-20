@@ -9,6 +9,7 @@ pub enum Factions {
     SCKK,
     TOW,
     APMS,
+    UNI,
 }
 
 impl Display for Factions {
@@ -22,6 +23,7 @@ pub fn get_faction_id(faction: Factions) -> i8 {
         Factions::SCKK => 1,
         Factions::APMS => 3,
         Factions::TOW => 2,
+        Factions::UNI => 5,
     }
 }
 
@@ -30,6 +32,7 @@ pub fn get_faction_string(faction: Factions) -> String {
         Factions::SCKK => "taxi".to_string(),
         Factions::APMS => "apms".to_string(),
         Factions::TOW => "tow".to_string(),
+        Factions::UNI => "uni".to_string(),
     }
 }
 

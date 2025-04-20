@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { allowPerms, christmas, countPerms } from '$lib/api';
+	import { christmas, countPerms } from '$lib/api';
 	import { pages } from './public';
 	import { page as statepage } from '$app/state';
 	import { Tooltip } from 'flowbite-svelte';
@@ -48,10 +48,12 @@
 						href={multifact ? '?clear_faction=true' : '/ucp'}
 					>
 						<div
-							class={`${faction === Factions.Tow ? 'group-hover:border-tow' : faction === Factions.Taxi ? 'group-hover:border-taxi' : 'group-hover:border-apms'} pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200`}
+							class={`${faction === Factions.Tow ? 'group-hover:border-tow' : faction === Factions.Taxi ? 'group-hover:border-taxi' : faction === Factions.Apms ? 'group-hover:border-apms' : 'group-hover:border-uni'} pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200`}
 						>
 							<img
-								src={faction === Factions.Taxi || faction === Factions.Tow
+								src={faction === Factions.Taxi ||
+								faction === Factions.Tow ||
+								faction === Factions.Uni
 									? '/sckk_icon.png'
 									: faction === Factions.Apms
 										? '/apms_icon.png'
@@ -68,7 +70,9 @@
 									? 'group-hover:text-tow'
 									: faction === Factions.Taxi
 										? 'group-hover:text-taxi'
-										: 'group-hover:text-apms'
+										: faction === Factions.Apms
+											? 'group-hover:text-apms'
+											: 'group-hover:text-uni'
 							}`}
 						>
 							{tip}
@@ -91,7 +95,9 @@
 									? 'group-hover:text-tow'
 									: faction === Factions.Taxi
 										? 'group-hover:text-taxi'
-										: 'group-hover:text-apms'
+										: faction === Factions.Apms
+											? 'group-hover:text-apms'
+											: 'group-hover:text-uni'
 							}`}
 						></span></a
 					>
@@ -125,7 +131,7 @@
 										<li>
 											<a
 												href={page.url}
-												class={`${faction === Factions.Tow ? 'before:bg-tow' : faction === Factions.Taxi ? 'before:bg-taxi' : 'before:bg-apms'} group relative text-white before:absolute before:inset-x-0 before:-bottom-1.5 before:h-2 before:origin-right before:scale-x-0 before:transition before:duration-200 hover:before:origin-left ${statepage.url.pathname === page.url ? 'before:scale-x-100' : 'hover:before:scale-x-100'}`}
+												class={`${faction === Factions.Tow ? 'before:bg-tow' : faction === Factions.Taxi ? 'before:bg-taxi' : faction === Factions.Apms ? 'before:bg-apms' : 'before:bg-uni'} group relative text-white before:absolute before:inset-x-0 before:-bottom-1.5 before:h-2 before:origin-right before:scale-x-0 before:transition before:duration-200 hover:before:origin-left ${statepage.url.pathname === page.url ? 'before:scale-x-100' : 'hover:before:scale-x-100'}`}
 											>
 												<span class="relative" class:text-red-500={nosocket}>{page.display}</span>
 											</a>
@@ -142,7 +148,7 @@
 										<a
 											href="/ucp/admin"
 											class:text-red-500={nosocket}
-											class={`${faction === Factions.Tow ? 'from-tow via-blue-600 to-emerald-400' : faction === Factions.Taxi ? 'from-taxi via-amber-600 to-red-500' : 'from-apms via-[#ad8447] to-[#d48613]'} bg-linear-to-r block rounded-full bg-[size:200%] bg-[position:0] px-6 py-3 text-center font-bold drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]`}
+											class={`${faction === Factions.Tow ? 'from-tow via-blue-600 to-emerald-400' : faction === Factions.Taxi ? 'from-taxi via-amber-600 to-red-500' : faction === Factions.Apms ? 'from-apms via-[#ad8447] to-[#d48613]' : 'from-uni via-[#FE6E00] to-[#FF8303]'} bg-linear-to-r block rounded-full bg-[size:200%] bg-[position:0] px-6 py-3 text-center font-bold drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]`}
 										>
 											Adminisztráció
 											{#if christmas}
@@ -159,7 +165,7 @@
 			</div>
 		</div>
 	</div>
-	{#if faction === Factions.Taxi || faction === Factions.Tow}
+	{#if faction === Factions.Taxi || faction === Factions.Tow || faction === Factions.Uni}
 		<h2 class="bg-linear-to-r z-20 from-rose-600 to-amber-600 py-1 text-center text-xl text-white">
 			Nem vagy biztos valamiben? Nézd meg a <a href="/ucp/segedlet" class="text-taxi z-20 font-bold"
 				>segédletet</a

@@ -18,7 +18,8 @@
 			background: 'bg-yellow-200 hover:bg-taxi',
 			permission: [
 				factPermissions[Factions.Taxi].SaesFactUcp,
-				factPermissions[Factions.Tow].SaesFactUcp
+				factPermissions[Factions.Tow].SaesFactUcp,
+				factPermissions[Factions.Uni].SaesFactUcp
 			]
 		},
 		{
