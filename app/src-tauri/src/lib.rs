@@ -90,8 +90,14 @@ pub fn run() {
             get_image,
             get_images,
             get_image_hash,
-            check_hash
+            check_hash,
+            stop_app
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command]
+async fn stop_app(app: AppHandle) {
+    app.exit(0);
 }
