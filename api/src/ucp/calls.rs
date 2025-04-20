@@ -46,7 +46,12 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
         let calls = WEB_CLIENT
             .get(format!(
                 "{}/api/log/status/current",
-                if exts.unwrap().faction.unwrap().eq(&Factions::TOW) {
+                if exts.unwrap().faction.unwrap().eq(&Factions::TOW)
+                    || (exts.unwrap().faction.unwrap().eq(&Factions::UNI)
+                        && exts.unwrap().factions.is_some()
+                        && exts.unwrap().factions.clone().unwrap().shiftname
+                            == "Autómentés".to_string())
+                {
                     envs.sckkapp_tow
                 } else {
                     envs.sckkapp_taxi
