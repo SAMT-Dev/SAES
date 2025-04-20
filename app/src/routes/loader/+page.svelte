@@ -2,7 +2,7 @@
 	import { check } from '@tauri-apps/plugin-updater';
 	import { invoke } from '@tauri-apps/api/core';
 	import { getVersion } from '@tauri-apps/api/app';
-	import { exit, relaunch } from '@tauri-apps/plugin-process';
+	import { relaunch } from '@tauri-apps/plugin-process';
 	import { onMount } from 'svelte';
 	import { listen } from '@tauri-apps/api/event';
 

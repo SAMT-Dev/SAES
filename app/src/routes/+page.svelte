@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { listen } from '@tauri-apps/api/event';
+	import { emit, listen } from '@tauri-apps/api/event';
+	import { onMount } from 'svelte';
 
 	listen<string>('changepanel', (ev) => {
 		goto(ev.payload, { replaceState: true });
+	});
+	onMount(async () => {
+		await emit('panel');
 	});
 </script>
 
