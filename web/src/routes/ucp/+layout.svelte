@@ -95,11 +95,14 @@
 	{:else}
 		<title>{tip}</title>
 	{/if}
-	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow || data.faction === Factions.Uni}
+	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
 		<link rel="icon" href="/sckk_icon.png" />
 	{/if}
 	{#if data.faction === Factions.Apms}
 		<link rel="icon" href="/apms_icon.png" />
+	{/if}
+	{#if data.faction === Factions.Uni}
+		<link rel="icon" href="/uni_icon.png" />
 	{/if}
 </svelte:head>
 <Error {data}>
@@ -212,7 +215,7 @@
 								class="group-hover:border-uni rounded-full border-4 border-solid border-white duration-300"
 							>
 								<img
-									src="/sckk_icon.png"
+									src="/uni_icon.png"
 									class=" m-auto w-40 rounded-full border-2 border-solid border-black transition-colors"
 									alt="SCKK Logo"
 								/>

@@ -51,13 +51,13 @@
 							class={`${faction === Factions.Tow ? 'group-hover:border-tow' : faction === Factions.Taxi ? 'group-hover:border-taxi' : faction === Factions.Apms ? 'group-hover:border-apms' : 'group-hover:border-uni'} pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200`}
 						>
 							<img
-								src={faction === Factions.Taxi ||
-								faction === Factions.Tow ||
-								faction === Factions.Uni
+								src={faction === Factions.Taxi || faction === Factions.Tow
 									? '/sckk_icon.png'
 									: faction === Factions.Apms
 										? '/apms_icon.png'
-										: '/favicon.png'}
+										: faction === Factions.Uni
+											? '/uni_icon.png'
+											: '/favicon.png'}
 								class="border-1 pointer-events-none rounded-full border-solid border-black"
 								width="40"
 								height="40"
