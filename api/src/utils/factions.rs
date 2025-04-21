@@ -55,10 +55,12 @@ pub fn get_faction_from_jwt(jwt: AuthJWT, faction: Factions) -> Option<FactionRe
     })
 }
 
-// pub fn get_faction_by_id(id: i8) -> Factions {
-//     match id {
-//         1 => Factions::SCKK,
-//         3 => Factions::TOW,
-//         _ => Factions::SCKK,
-//     }
-// }
+pub fn get_faction_by_id(id: i8) -> Factions {
+    match id {
+        1 => Factions::SCKK,
+        2 => Factions::TOW,
+        3 => Factions::APMS,
+        5 => Factions::UNI,
+        _ => Factions::SCKK,
+    }
+}

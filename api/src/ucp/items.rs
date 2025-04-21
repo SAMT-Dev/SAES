@@ -23,7 +23,7 @@ use crate::{
     config::{loader::get_config, structs::ItemAccess},
     logging::db_log,
     utils::{
-        factions::{get_faction_id, Factions},
+        factions::{get_faction_by_id, get_faction_id, Factions},
         middle::Driver,
         queries::{UCPTypeExtraQuery, UCPTypeQuery},
         types_statuses::{get_statuses, get_types, get_types_as_list},
@@ -51,6 +51,7 @@ pub fn routes() -> Router {
         .route("/get", get(ucp_items_get))
         .route("/post", post(ucp_items_post))
         .route("/get_by_hash", get(get_items_by_hash))
+        .route("/get_item_by_id", get(get_item_info_by_id))
         .layer(DefaultBodyLimit::max(64000000))
 }
 
@@ -546,4 +547,95 @@ pub async fn get_items_by_hash(
         .await
         .unwrap();
     return Ok(Json(binds));
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ItemInfo {
+    pub item_type: i8,
+    pub item_id: i32,
+}
+
+#[debug_handler]
+pub async fn get_item_info_by_id(
+    ext: Extension<Driver>,
+    q: Query<ItemInfo>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let db = DB_CLIENT.get().unwrap();
+    let types = get_types();
+    if q.item_type == types.supplements.id {
+        let item = supplements::Entity::find()
+            .filter(supplements::Column::Owner.eq(ext.driverid))
+            .filter(supplements::Column::Id.eq(q.item_id))
+            .one(db)
+            .await
+            .unwrap();
+        if item.is_none() {
+            return Err((StatusCode::NOT_FOUND, "Elem nem található!".to_string()));
+        }
+        let item = item.unwrap();
+        return Ok(Json(ItemsStruct {
+            date: item.date,
+            driver: None,
+            faction: get_faction_by_id(item.faction),
+            handled_by: item.handled_by,
+            id: item.id,
+            img_1: item.image,
+            img_2: None,
+            owner: item.owner,
+            price: None,
+            reason: item.reason,
+            status: item.status,
+        }));
+    }
+    if q.item_type == types.hails.id {
+        let item = hails::Entity::find()
+            .filter(hails::Column::Owner.eq(ext.driverid))
+            .filter(hails::Column::Id.eq(q.item_id))
+            .one(db)
+            .await
+            .unwrap();
+        if item.is_none() {
+            return Err((StatusCode::NOT_FOUND, "Elem nem található!".to_string()));
+        }
+        let item = item.unwrap();
+        return Ok(Json(ItemsStruct {
+            date: item.date,
+            driver: None,
+            faction: get_faction_by_id(item.faction),
+            handled_by: item.handled_by,
+            id: item.id,
+            img_1: item.image_1,
+            img_2: Some(item.image_2),
+            owner: item.owner,
+            price: None,
+            reason: item.reason,
+            status: item.status,
+        }));
+    }
+    if q.item_type == types.bills.id {
+        let item = bills::Entity::find()
+            .filter(bills::Column::Owner.eq(ext.driverid))
+            .filter(bills::Column::Id.eq(q.item_id))
+            .one(db)
+            .await
+            .unwrap();
+        if item.is_none() {
+            return Err((StatusCode::NOT_FOUND, "Elem nem található!".to_string()));
+        }
+        let item = item.unwrap();
+        return Ok(Json(ItemsStruct {
+            date: item.date,
+            driver: None,
+            faction: get_faction_by_id(item.faction),
+            handled_by: item.handled_by,
+            id: item.id,
+            img_1: item.image,
+            img_2: None,
+            owner: item.owner,
+            price: item.price,
+            reason: item.reason,
+            status: item.status,
+        }));
+    }
+    return Err((StatusCode::NOT_FOUND, "".to_string()));
 }
