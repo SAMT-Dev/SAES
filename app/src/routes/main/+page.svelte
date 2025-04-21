@@ -12,7 +12,7 @@
 	});
 	onMount(async () => {
 		text = 'Kép hashek betöltése (sok időbe telhet)';
-		await invoke('check_hash');
+		await invoke('clear_check_hash');
 		text = 'Felület betöltése';
 		images = await invoke<string[]>('get_images');
 		for (const image of images) {

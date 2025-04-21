@@ -100,3 +100,12 @@ pub async fn check_hash() {
         .unwrap();
     hashfile.write(noice.as_bytes()).await.unwrap();
 }
+
+#[tauri::command]
+pub async fn clear_check_hash() {
+    let pat = get_conf_path();
+    if check_hashfile() {
+        fs::remove_file(format!("{}/hash.json", pat)).unwrap();
+    }
+    check_hash().await;
+}
