@@ -317,7 +317,9 @@
 						? 'selection:bg-tow'
 						: data.faction === Factions.Apms
 							? 'selection:bg-apms'
-							: ''}
+							: data.faction === Factions.Uni
+								? 'selection:bg-uni'
+								: ''}
 			>
 				{@render children?.()}
 			</main>

@@ -14,7 +14,9 @@ export default {
 				taxi: '#fece01',
 				apms: '#d8b47e',
 				tow: '#3498db',
-				uni: '#ff5722'
+				uni: '#08c25c',
+				uni2: '#18653b',
+				uni3: '#0a4022'
 			},
 			backgroundSize: {
 				'size-200': '200% 200%'

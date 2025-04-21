@@ -148,7 +148,7 @@
 										<a
 											href="/ucp/admin"
 											class:text-red-500={nosocket}
-											class={`${faction === Factions.Tow ? 'from-tow via-blue-600 to-emerald-400' : faction === Factions.Taxi ? 'from-taxi via-amber-600 to-red-500' : faction === Factions.Apms ? 'from-apms via-[#ad8447] to-[#d48613]' : 'from-uni via-[#FE6E00] to-[#FF8303]'} bg-linear-to-r block rounded-full bg-[size:200%] bg-[position:0] px-6 py-3 text-center font-bold drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]`}
+											class={`${faction === Factions.Tow ? 'from-tow via-blue-600 to-emerald-400' : faction === Factions.Taxi ? 'from-taxi via-amber-600 to-red-500' : faction === Factions.Apms ? 'from-apms via-[#ad8447] to-[#d48613]' : 'from-uni via-uni2 to-uni3'} bg-linear-to-r block rounded-full bg-[size:200%] bg-[position:0] px-6 py-3 text-center font-bold drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]`}
 										>
 											Adminisztráció
 											{#if christmas}
