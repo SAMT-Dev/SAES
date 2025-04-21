@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub auth: String,
     pub game_dir: String,
+    pub faction: Option<String>,
 }
 
 pub fn get_conf_path() -> String {

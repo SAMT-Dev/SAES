@@ -1,11 +1,11 @@
 use axum::{debug_handler, extract::Request, Json};
 use http::StatusCode;
 use saes_shared::db::{bills, hails, supplements};
+use saes_shared::structs::factions::{get_faction_id, Factions};
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
-use crate::utils::factions::{get_faction_id, Factions};
 use crate::utils::functions::get_fridays;
 use crate::utils::types_statuses::get_statuses;
 use crate::utils::{api::get_api_envs, middle::Driver};

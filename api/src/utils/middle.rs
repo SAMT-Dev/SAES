@@ -1,5 +1,9 @@
 use axum::{extract::Request, http::HeaderMap, middleware::Next, response::IntoResponse};
 use reqwest::StatusCode;
+use saes_shared::structs::{
+    factions::Factions,
+    permissions::{get_perm, Permissions},
+};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -11,9 +15,8 @@ use crate::{
 };
 
 use super::{
-    factions::{get_faction_from_jwt, Factions},
+    factions::get_faction_from_jwt,
     functions::{get_env_mode, EnvModes},
-    permissions::{get_perm, Permissions},
 };
 
 #[derive(Debug, Deserialize, Clone, Serialize)]

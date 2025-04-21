@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
 	import { onMount } from 'svelte';
 
-	let text = $state('');
+	let text = $state('Bejelentkezés ellenőrzése');
 	let images: string[] = $state([]);
 	let image_infos: Record<string, { hash: string; url: string }> = $state({});
 	let loaddone = $state(false);
@@ -11,6 +12,10 @@
 		text = ev.payload;
 	});
 	onMount(async () => {
+		let check = await invoke<boolean>('check_auth');
+		if (!check) {
+			return await goto('/main/login', { replaceState: true });
+		}
 		text = 'Kép hashek betöltése (sok időbe telhet)';
 		await invoke('clear_check_hash');
 		text = 'Felület betöltése';

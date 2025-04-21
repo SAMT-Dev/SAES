@@ -5,7 +5,10 @@ use axum::{
     Extension, Json,
 };
 use http::StatusCode;
-use saes_shared::db::{bills, hails, supplements};
+use saes_shared::{
+    db::{bills, hails, supplements},
+    structs::factions::{get_faction_id, Factions},
+};
 use serde::{Deserialize, Serialize};
 
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
@@ -14,7 +17,6 @@ use crate::{
     config::{loader::get_config, structs::ItemAccess},
     logging::db_log,
     utils::{
-        factions::{get_faction_id, Factions},
         middle::Driver,
         queries::SMItemsQuery,
         structs::SMGetItemsFull,
