@@ -1,40 +1,6 @@
-use std::fmt::Display;
-
-use serde::{Deserialize, Serialize};
+use saes_shared::structs::factions::Factions;
 
 use super::{middle::FactionRecord, structs::AuthJWT};
-
-#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Factions {
-    SCKK,
-    TOW,
-    APMS,
-    UNI,
-}
-
-impl Display for Factions {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-
-pub fn get_faction_id(faction: Factions) -> i8 {
-    match faction {
-        Factions::SCKK => 1,
-        Factions::APMS => 3,
-        Factions::TOW => 2,
-        Factions::UNI => 5,
-    }
-}
-
-pub fn get_faction_string(faction: Factions) -> String {
-    match faction {
-        Factions::SCKK => "taxi".to_string(),
-        Factions::APMS => "apms".to_string(),
-        Factions::TOW => "tow".to_string(),
-        Factions::UNI => "uni".to_string(),
-    }
-}
 
 pub fn get_faction_from_jwt(jwt: AuthJWT, faction: Factions) -> Option<FactionRecord> {
     let shorts: Vec<String> = jwt.faction_short_name.into();
@@ -53,14 +19,4 @@ pub fn get_faction_from_jwt(jwt: AuthJWT, faction: Factions) -> Option<FactionRe
         shiftid: Vec::<i8>::from(jwt.shift_id)[i],
         shiftname: Vec::<String>::from(jwt.shift_name)[i].clone(),
     })
-}
-
-pub fn get_faction_by_id(id: i8) -> Factions {
-    match id {
-        1 => Factions::SCKK,
-        2 => Factions::TOW,
-        3 => Factions::APMS,
-        5 => Factions::UNI,
-        _ => Factions::SCKK,
-    }
 }

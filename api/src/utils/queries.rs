@@ -1,6 +1,5 @@
+use saes_shared::structs::factions::Factions;
 use serde::Deserialize;
-
-use super::factions::Factions;
 
 #[derive(Debug, Deserialize)]
 pub struct BaseListQuery {

@@ -8,7 +8,10 @@ use tauri::{
     AppHandle, Emitter, Listener, Manager, PhysicalSize, Size,
 };
 use tokio::sync::RwLock;
-use util::login::{begin_login, check_envs, done_setup, get_api_url, save_game_dir, set_game_dir};
+use util::login::{
+    begin_login, check_auth, check_envs, done_setup, get_api_url, save_auth_token, save_game_dir,
+    set_game_dir,
+};
 
 mod hash;
 mod util;
@@ -101,7 +104,9 @@ pub fn run() {
             get_image_hash,
             check_hash,
             clear_check_hash,
-            stop_app
+            stop_app,
+            check_auth,
+            save_auth_token
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

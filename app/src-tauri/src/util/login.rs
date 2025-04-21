@@ -4,6 +4,7 @@ use std::{
     path::Path,
 };
 
+use reqwest::StatusCode;
 use tauri::{AppHandle, Emitter};
 use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
@@ -12,7 +13,7 @@ use url::Url;
 use crate::DISCORD_TOKEN;
 
 use super::{
-    config::{get_conf_path, save_config, Config},
+    config::{get_conf_path, load_config, save_config, Config},
     structs::UCPReturn,
 };
 
@@ -45,7 +46,7 @@ pub async fn begin_login(app: AppHandle) {
     .unwrap();
     let client = reqwest::Client::new();
     let token = DISCORD_TOKEN.read().await;
-    let api = get_api_url().await;
+    let api = get_api_url();
     let get = client
         .get(format!("{}/ucp", api))
         .header("cookie", token.clone().unwrap())
@@ -86,13 +87,29 @@ pub async fn check_envs() -> String {
 }
 
 #[tauri::command]
-pub async fn get_api_url() -> String {
+pub fn get_api_url() -> String {
     env::var("API_URL").unwrap()
 }
 
 #[tauri::command]
+pub async fn check_auth() -> bool {
+    let conf = load_config().unwrap();
+    let api = get_api_url();
+    let client = reqwest::Client::new();
+    let check = client
+        .get(format!("{}/ucp", api))
+        .header("cookie", conf.auth)
+        .send()
+        .await
+        .unwrap();
+    if StatusCode::is_success(&check.status()) {
+        return true;
+    }
+    return false;
+}
+
+#[tauri::command]
 pub async fn set_game_dir(app: AppHandle) {
-    println!("Select!");
     app.dialog().file().pick_folder(move |folder| {
         if folder.is_some() {
             app.emit("selectedGameDir", folder.unwrap()).unwrap();
@@ -105,8 +122,20 @@ pub async fn save_game_dir(dir: String) {
     let config = Config {
         auth: DISCORD_TOKEN.read().await.clone().unwrap(),
         game_dir: dir.clone(),
+        faction: None,
     };
     save_config(config);
+}
+
+#[tauri::command]
+pub async fn save_auth_token() {
+    let conf = load_config().unwrap();
+    let new_conf = Config {
+        auth: DISCORD_TOKEN.read().await.clone().unwrap(),
+        game_dir: conf.game_dir,
+        faction: conf.faction,
+    };
+    save_config(new_conf);
 }
 
 #[tauri::command]

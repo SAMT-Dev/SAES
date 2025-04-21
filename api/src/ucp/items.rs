@@ -13,7 +13,10 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
-use saes_shared::db::{bills, hails, images, images_bind, supplements};
+use saes_shared::{
+    db::{bills, hails, images, images_bind, supplements},
+    structs::factions::{get_faction_by_id, get_faction_id, Factions},
+};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
@@ -23,7 +26,6 @@ use crate::{
     config::{loader::get_config, structs::ItemAccess},
     logging::db_log,
     utils::{
-        factions::{get_faction_by_id, get_faction_id, Factions},
         middle::Driver,
         queries::{UCPTypeExtraQuery, UCPTypeQuery},
         types_statuses::{get_statuses, get_types, get_types_as_list},

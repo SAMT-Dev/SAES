@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
+use saes_shared::structs::factions::Factions;
 use serde::{Deserialize, Serialize};
-
-use crate::utils::factions::Factions;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum ShiftAccess {

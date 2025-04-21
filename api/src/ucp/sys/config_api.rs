@@ -1,14 +1,12 @@
 use axum::{debug_handler, extract::Query, response::IntoResponse, Json};
 use http::StatusCode;
+use saes_shared::structs::factions::Factions;
 use serde::Deserialize;
 
-use crate::{
-    config::{
-        editor::write_config,
-        loader::get_config,
-        structs::{FactionConfig, GlobalConfig},
-    },
-    utils::factions::Factions,
+use crate::config::{
+    editor::write_config,
+    loader::get_config,
+    structs::{FactionConfig, GlobalConfig},
 };
 
 #[debug_handler]
