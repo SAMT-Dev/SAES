@@ -6,13 +6,14 @@ use std::{
 };
 
 use homedir::my_home;
+use saes_shared::structs::factions::Factions;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub auth: String,
     pub game_dir: String,
-    pub faction: Option<String>,
+    pub faction: Option<Factions>,
 }
 
 pub fn get_conf_path() -> String {
