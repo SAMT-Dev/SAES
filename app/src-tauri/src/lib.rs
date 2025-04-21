@@ -1,6 +1,6 @@
 use std::env;
 
-use hash::{check_hash, get_image, get_image_hash, get_images};
+use hash::{check_hash, clear_check_hash, get_image, get_image_hash, get_images};
 use lazy_static::lazy_static;
 use tauri::{
     menu::{Menu, MenuItem},
@@ -100,6 +100,7 @@ pub fn run() {
             get_images,
             get_image_hash,
             check_hash,
+            clear_check_hash,
             stop_app
         ])
         .run(tauri::generate_context!())
