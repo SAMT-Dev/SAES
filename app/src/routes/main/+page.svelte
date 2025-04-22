@@ -11,14 +11,10 @@
 	listen<string>('setmaintext', (ev) => {
 		text = ev.payload;
 	});
-	onMount(async () => {
-		let check = await invoke<boolean>('check_auth');
-		if (!check) {
-			return await goto('/main/login', { replaceState: true });
+	async function rerender(check: boolean = false) {
+		if (check) {
+			await invoke('check_hash');
 		}
-		text = 'Kép hashek betöltése (sok időbe telhet)';
-		await invoke('clear_check_hash');
-		text = 'Felület betöltése';
 		images = await invoke<string[]>('get_images');
 		for (const image of images) {
 			let hash = await invoke<string>('get_image_hash', { path: image });
@@ -28,11 +24,26 @@
 				url: src
 			};
 		}
+	}
+	onMount(async () => {
+		let check = await invoke<boolean>('check_auth');
+		if (!check) {
+			return await goto('/main/login', { replaceState: true });
+		}
+		text = 'Kép hashek betöltése (sok időbe telhet)';
+		await invoke('clear_check_hash');
+		text = 'Felület betöltése';
+		await rerender();
 		loaddone = true;
 	});
 </script>
 
 <div class="bg-gray-950 h-screen w-screen text-white text-center overflow-auto">
+	<button
+		onclick={async () => {
+			rerender(true);
+		}}>Újratöltés</button
+	>
 	{#if !loaddone}
 		<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw]">
 			<h1>{text}</h1>
