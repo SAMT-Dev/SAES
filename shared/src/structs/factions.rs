@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, vec};
 
 use serde::{Deserialize, Serialize};
 
@@ -14,6 +14,10 @@ impl Display for Factions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self)
     }
+}
+
+pub fn get_factions_list() -> Vec<Factions> {
+    vec![Factions::SCKK, Factions::TOW, Factions::APMS, Factions::UNI]
 }
 
 pub fn get_faction_id(faction: Factions) -> i8 {

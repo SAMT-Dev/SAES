@@ -5,7 +5,11 @@ use std::{
 };
 
 use reqwest::StatusCode;
-use saes_shared::structs::user::Driver;
+use saes_shared::structs::{
+    factions::{get_factions_list, Factions},
+    permissions::{get_perm, Permissions},
+    user::Driver,
+};
 use tauri::{AppHandle, Emitter};
 use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
@@ -94,6 +98,11 @@ pub fn get_api_url() -> String {
 
 #[tauri::command]
 pub async fn check_auth() -> bool {
+    let auth = get_auth().await;
+    return auth.is_some();
+}
+
+pub async fn get_auth() -> Option<Driver> {
     let conf = load_config().unwrap();
     let api = get_api_url();
     let client = reqwest::Client::new();
@@ -104,12 +113,11 @@ pub async fn check_auth() -> bool {
         .await
         .unwrap();
     if StatusCode::is_success(&check.status()) {
-        return true;
+        let json: Driver = check.json().await.unwrap();
+        return Some(json);
     }
-    return false;
+    return None;
 }
-
-pub async fn get_auth() -> Driver {}
 
 #[tauri::command]
 pub async fn set_game_dir(app: AppHandle) {
@@ -149,4 +157,15 @@ pub async fn done_setup(app: AppHandle) {
 #[tauri::command]
 pub async fn check_faction() -> bool {
     let conf = load_config().unwrap();
+    return conf.faction.is_some();
+}
+
+#[tauri::command]
+pub async fn get_faction_options() -> Vec<Factions> {
+    let auth = get_auth().await.unwrap();
+    let facts = get_factions_list();
+    facts
+        .into_iter()
+        .filter(|f| auth.perms.contains(&get_perm(Permissions::SaesUcp(*f))))
+        .collect()
 }

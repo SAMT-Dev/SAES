@@ -30,6 +30,11 @@
 		if (!check) {
 			return await goto('/main/login', { replaceState: true });
 		}
+		text = 'Frakció ellenőrzése';
+		let fcheck = await invoke<boolean>('check_faction');
+		if (!fcheck) {
+			return await goto('/main/faction', { replaceState: true });
+		}
 		text = 'Kép hashek betöltése (sok időbe telhet)';
 		await invoke('clear_check_hash');
 		text = 'Felület betöltése';
