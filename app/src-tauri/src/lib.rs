@@ -1,7 +1,7 @@
 use std::env;
 
 use hash::{check_hash, clear_check_hash, get_image, get_image_hash, get_images};
-use lazy_static::lazy_static;
+use saes_shared::structs::user::Driver;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
@@ -16,10 +16,9 @@ use util::login::{
 mod hash;
 mod util;
 
-lazy_static! {
-    pub static ref DISCORD_TOKEN: RwLock<Option<String>> = RwLock::new(None);
-    pub static ref API_URL: RwLock<Option<String>> = RwLock::new(None);
-}
+pub static DISCORD_TOKEN: RwLock<Option<String>> = RwLock::const_new(None);
+pub static API_URL: RwLock<Option<String>> = RwLock::const_new(None);
+pub static AUTH: RwLock<Option<Driver>> = RwLock::const_new(None);
 
 #[tauri::command]
 async fn update_done(app: AppHandle) {

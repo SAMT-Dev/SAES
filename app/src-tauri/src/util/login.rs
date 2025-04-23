@@ -15,7 +15,7 @@ use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
 use url::Url;
 
-use crate::DISCORD_TOKEN;
+use crate::{AUTH, DISCORD_TOKEN};
 
 use super::{
     config::{get_conf_path, load_config, save_config, Config},
@@ -99,7 +99,12 @@ pub fn get_api_url() -> String {
 #[tauri::command]
 pub async fn check_auth() -> bool {
     let auth = get_auth().await;
-    return auth.is_some();
+    if auth.is_none() {
+        return false;
+    }
+    let mut rauth = AUTH.write().await;
+    *rauth = Some(auth.unwrap());
+    return true;
 }
 
 pub async fn get_auth() -> Option<Driver> {
@@ -157,12 +162,22 @@ pub async fn done_setup(app: AppHandle) {
 #[tauri::command]
 pub async fn check_faction() -> bool {
     let conf = load_config().unwrap();
-    return conf.faction.is_some();
+    if conf.faction.is_none() {
+        return false;
+    }
+    let auth = AUTH.read().await.clone().unwrap();
+    if auth
+        .perms
+        .contains(&get_perm(Permissions::SaesUcp(conf.faction.unwrap())))
+    {
+        return true;
+    }
+    return false;
 }
 
 #[tauri::command]
 pub async fn get_faction_options() -> Vec<Factions> {
-    let auth = get_auth().await.unwrap();
+    let auth = AUTH.read().await.clone().unwrap();
     let facts = get_factions_list();
     facts
         .into_iter()

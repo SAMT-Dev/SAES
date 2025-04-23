@@ -52,7 +52,7 @@ pub fn load_config() -> Option<Config> {
 
 pub fn save_config(config: Config) {
     let pat = get_conf_path();
-    let config_str = serde_json::to_string(&config).unwrap();
+    let config_str = serde_json::to_string_pretty(&config).unwrap();
     let mut file = File::create(format!("{}/config.json", pat)).unwrap();
     file.write(config_str.as_bytes()).unwrap();
 }
