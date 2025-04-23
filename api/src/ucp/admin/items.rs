@@ -7,17 +7,20 @@ use axum::{
 use http::StatusCode;
 use saes_shared::{
     db::{bills, hails, supplements},
-    structs::factions::{get_faction_id, Factions},
+    structs::{
+        api_config::ItemAccess,
+        factions::{get_faction_id, Factions},
+        user::Driver,
+    },
 };
 use serde::{Deserialize, Serialize};
 
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 
 use crate::{
-    config::{loader::get_config, structs::ItemAccess},
+    config::loader::get_config,
     logging::db_log,
     utils::{
-        middle::Driver,
         queries::SMItemsQuery,
         structs::SMGetItemsFull,
         types_statuses::{get_statuses_as_list, get_types, get_types_as_list},

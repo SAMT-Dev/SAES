@@ -3,15 +3,12 @@ use http::StatusCode;
 
 use saes_shared::{
     db::{bills, hails, supplements},
-    structs::factions::get_faction_id,
+    structs::{factions::get_faction_id, user::Driver},
 };
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Serialize;
 
-use crate::{
-    utils::{middle::Driver, types_statuses::get_statuses},
-    DB_CLIENT,
-};
+use crate::{utils::types_statuses::get_statuses, DB_CLIENT};
 
 #[derive(Debug, Serialize)]
 pub struct SMStat {

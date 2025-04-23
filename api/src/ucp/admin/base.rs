@@ -1,6 +1,5 @@
 use axum::{debug_handler, extract::Request, Json};
-
-use crate::utils::middle::Driver;
+use saes_shared::structs::user::Driver;
 
 #[debug_handler]
 pub async fn admin_home(mut request: Request) -> Json<Driver> {

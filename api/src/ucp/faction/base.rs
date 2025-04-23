@@ -5,12 +5,15 @@ use axum::{
     Json,
 };
 use http::StatusCode;
-use saes_shared::db::{bills, hails, supplements};
+use saes_shared::{
+    db::{bills, hails, supplements},
+    structs::user::Driver,
+};
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
 
 use crate::{
-    utils::{middle::Driver, structs::SMGetItemsFull, types_statuses::get_types},
+    utils::{structs::SMGetItemsFull, types_statuses::get_types},
     DB_CLIENT,
 };
 

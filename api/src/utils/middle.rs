@@ -3,15 +3,13 @@ use reqwest::StatusCode;
 use saes_shared::structs::{
     factions::Factions,
     permissions::{get_perm, Permissions},
+    user::Driver,
 };
 use serde::{Deserialize, Serialize};
 
 use crate::{
     auth::validate_jwt,
-    config::{
-        loader::get_config,
-        structs::{AccessConfig, FactionAccessConfig, FactionSiteAccessConfig},
-    },
+    config::{loader::get_config, structs::AccessConfig},
 };
 
 use super::{
@@ -19,32 +17,9 @@ use super::{
     functions::{get_env_mode, EnvModes},
 };
 
-#[derive(Debug, Deserialize, Clone, Serialize)]
-pub struct FactionRecord {
-    pub factionid: i8,
-    pub factionname: String,
-    pub factionshortname: String,
-    pub positionid: i8,
-    pub positionname: String,
-    pub shiftid: i8,
-    pub shiftname: String,
-}
-
 #[derive(Debug, Serialize)]
 pub struct SAMTAuth {
     pub userdiscordid: String,
-}
-
-#[derive(Debug, Deserialize, Clone, Serialize)]
-pub struct Driver {
-    pub driverid: i32,
-    pub name: String,
-    pub admin: bool,
-    pub perms: Vec<String>,
-    pub access: Option<FactionAccessConfig>,
-    pub site_access: Option<FactionSiteAccessConfig>,
-    pub faction: Option<Factions>,
-    pub factions: Option<FactionRecord>,
 }
 
 #[derive(Debug, Deserialize, Clone, Serialize)]

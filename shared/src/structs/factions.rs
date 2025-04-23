@@ -43,3 +43,14 @@ pub fn get_faction_by_id(id: i8) -> Factions {
         _ => Factions::SCKK,
     }
 }
+
+#[derive(Debug, Deserialize, Clone, Serialize)]
+pub struct FactionRecord {
+    pub factionid: i8,
+    pub factionname: String,
+    pub factionshortname: String,
+    pub positionid: i8,
+    pub positionname: String,
+    pub shiftid: i8,
+    pub shiftname: String,
+}

@@ -5,6 +5,7 @@ use std::{
 };
 
 use reqwest::StatusCode;
+use saes_shared::structs::user::Driver;
 use tauri::{AppHandle, Emitter};
 use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
@@ -108,6 +109,8 @@ pub async fn check_auth() -> bool {
     return false;
 }
 
+pub async fn get_auth() -> Driver {}
+
 #[tauri::command]
 pub async fn set_game_dir(app: AppHandle) {
     app.dialog().file().pick_folder(move |folder| {
@@ -141,4 +144,9 @@ pub async fn save_auth_token() {
 #[tauri::command]
 pub async fn done_setup(app: AppHandle) {
     app.restart();
+}
+
+#[tauri::command]
+pub async fn check_faction() -> bool {
+    let conf = load_config().unwrap();
 }

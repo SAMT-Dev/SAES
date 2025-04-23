@@ -1,11 +1,14 @@
 use axum::{debug_handler, response::IntoResponse, routing::get, Extension, Json, Router};
 use chrono::{DateTime, Utc};
 use http::StatusCode;
-use saes_shared::{db::logs, structs::factions::get_faction_id};
+use saes_shared::{
+    db::logs,
+    structs::{factions::get_faction_id, user::Driver},
+};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder};
 use serde::Serialize;
 
-use crate::{utils::middle::Driver, DB_CLIENT};
+use crate::DB_CLIENT;
 
 #[derive(Debug, Serialize)]
 pub struct Logs {

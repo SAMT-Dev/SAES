@@ -8,15 +8,13 @@ use chrono::NaiveDateTime;
 use http::StatusCode;
 use saes_shared::{
     db::{bills, hails, supplements},
-    structs::factions::get_faction_id,
+    structs::{factions::get_faction_id, user::Driver},
 };
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Serialize;
 
 use crate::{
-    utils::{
-        functions::get_fridays, middle::Driver, queries::SMStatQuery, types_statuses::get_statuses,
-    },
+    utils::{functions::get_fridays, queries::SMStatQuery, types_statuses::get_statuses},
     DB_CLIENT,
 };
 

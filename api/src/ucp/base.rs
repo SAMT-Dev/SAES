@@ -2,12 +2,10 @@ use std::collections::HashMap;
 
 use axum::{debug_handler, extract::Request, Json};
 use http::HeaderMap;
+use saes_shared::structs::user::Driver;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    utils::{api::get_api_envs, middle::Driver},
-    WEB_CLIENT,
-};
+use crate::{utils::api::get_api_envs, WEB_CLIENT};
 
 #[debug_handler]
 pub async fn ucp_home(mut request: Request) -> Json<Driver> {

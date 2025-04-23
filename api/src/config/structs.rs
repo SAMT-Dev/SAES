@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use saes_shared::structs::factions::Factions;
+use saes_shared::structs::{
+    api_config::{FactionAccessConfig, FactionSiteAccessConfig, ItemAccess},
+    factions::Factions,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -13,18 +16,6 @@ pub enum ShiftAccess {
 impl Default for ShiftAccess {
     fn default() -> Self {
         Self::SameShift
-    }
-}
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub enum ItemAccess {
-    None,
-    Read,
-    Write,
-}
-
-impl Default for ItemAccess {
-    fn default() -> Self {
-        Self::Write
     }
 }
 
@@ -68,22 +59,6 @@ pub struct FactionConfig {
     pub shift_access: ShiftAccess,
     pub access: FactionAccessConfig,
     pub site_access: FactionSiteAccessConfig,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct FactionAccessConfig {
-    pub supplements: ItemAccess,
-    pub hails: ItemAccess,
-    pub bills: ItemAccess,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct FactionSiteAccessConfig {
-    pub ucp: bool,
-    pub admin: bool,
-    pub shift: bool,
-    pub fleet: bool,
-    pub faction: bool,
 }
 
 impl Default for FactionConfig {

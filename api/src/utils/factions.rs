@@ -1,6 +1,6 @@
-use saes_shared::structs::factions::Factions;
+use saes_shared::structs::factions::{FactionRecord, Factions};
 
-use super::{middle::FactionRecord, structs::AuthJWT};
+use super::structs::AuthJWT;
 
 pub fn get_faction_from_jwt(jwt: AuthJWT, faction: Factions) -> Option<FactionRecord> {
     let shorts: Vec<String> = jwt.faction_short_name.into();

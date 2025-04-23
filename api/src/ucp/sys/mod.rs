@@ -5,8 +5,9 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use saes_shared::structs::user::Driver;
 
-use crate::utils::middle::{sysadmin_auth, Driver};
+use crate::utils::middle::sysadmin_auth;
 
 mod config_api;
 
