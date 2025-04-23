@@ -169,3 +169,14 @@ pub async fn get_faction_options() -> Vec<Factions> {
         .filter(|f| auth.perms.contains(&get_perm(Permissions::SaesUcp(*f))))
         .collect()
 }
+
+#[tauri::command]
+pub async fn set_faction(faction: Factions) {
+    let conf = load_config().unwrap();
+    let new_conf = Config {
+        auth: conf.auth,
+        game_dir: conf.game_dir,
+        faction: Some(faction),
+    };
+    save_config(new_conf);
+}

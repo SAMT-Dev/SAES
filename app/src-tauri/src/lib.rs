@@ -10,7 +10,7 @@ use tauri::{
 use tokio::sync::RwLock;
 use util::login::{
     begin_login, check_auth, check_envs, check_faction, done_setup, get_api_url,
-    get_faction_options, save_auth_token, save_game_dir, set_game_dir,
+    get_faction_options, save_auth_token, save_game_dir, set_faction, set_game_dir,
 };
 
 mod hash;
@@ -108,7 +108,8 @@ pub fn run() {
             check_auth,
             save_auth_token,
             check_faction,
-            get_faction_options
+            get_faction_options,
+            set_faction
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
