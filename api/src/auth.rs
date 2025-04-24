@@ -2,10 +2,9 @@ use axum::extract::Query;
 use axum::{debug_handler, response::Redirect};
 use base64::engine::general_purpose;
 use base64::Engine;
-use cookie::time::OffsetDateTime;
+use cookie::time::{Duration, OffsetDateTime};
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use random_string::{charsets, generate};
-use sha2::{Digest, Sha256};
 use tokio::sync::RwLock;
 use tower_cookies::{Cookie, Cookies};
 use url_builder::URLBuilder;
@@ -20,6 +19,7 @@ static STATE_MANAGEMENT: RwLock<Vec<StateList>> = RwLock::const_new(Vec::new());
 pub struct AuthEnvs {
     pub api_endpoint: String,
     pub client_id: String,
+    pub client_secret: String,
     pub base_url: String,
     pub domain: String,
     pub fdomain: String,
@@ -27,8 +27,9 @@ pub struct AuthEnvs {
 
 pub async fn get_auth_envs() -> AuthEnvs {
     let hash = BASE_HASHMAP.read().await;
-    let id = hash.get("env_authapi_client_id").unwrap();
-    let url = hash.get("env_authapi_url").unwrap();
+    let id = hash.get("env_discord_id").unwrap();
+    let secret = hash.get("env_discord_secret").unwrap();
+    let url = "https://discord.com";
     let domain = hash.get("env_domain").unwrap();
     let base_url = hash.get("env_api_base_url").unwrap();
     let fdomain = hash.get("env_full_domain").unwrap();
@@ -37,6 +38,7 @@ pub async fn get_auth_envs() -> AuthEnvs {
         domain: domain.to_owned(),
         fdomain: fdomain.to_owned(),
         client_id: id.to_owned(),
+        client_secret: secret.to_owned(),
         base_url: base_url.to_owned(),
     }
 }
@@ -50,6 +52,8 @@ pub struct Code {
 #[derive(Debug, Deserialize)]
 struct TokenResponse {
     access_token: String,
+    expires_in: i64,
+    refresh_token: String,
 }
 
 #[debug_handler]
@@ -88,15 +92,14 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             .unwrap();
         STATE_MANAGEMENT.write().await.remove(pos);
     }
-    let code_verifier = code_verifier.value();
     let data = [
         ("grant_type", "authorization_code"),
         ("code", &query.code),
         ("redirect_uri", &format!("{}/auth/cb", ds.base_url)),
         ("client_id", &ds.client_id),
-        ("code_verifier", code_verifier),
+        ("client_secret", &ds.client_secret),
     ];
-    let url = format!("{}/token", ds.api_endpoint);
+    let url = format!("{}/api/oauth2/token", ds.api_endpoint);
     let response = WEB_CLIENT.post(&url).form(&data).send().await;
     let token_response: String = response
         .expect("Lekérés sikertelen")
@@ -111,12 +114,31 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         return Redirect::to(&format!("{}?error=noperm", &ds.fdomain));
     }
     let object: TokenResponse = object.unwrap();
+
     if path_full.mode == "app".to_string() {
         return Redirect::to(&format!(
             "http://localhost:31313/app-auth/cb?code={}",
             object.access_token
         ));
     }
+    cookies.add(
+        Cookie::build(("dc-auth", object.access_token.clone()))
+            .max_age(Duration::seconds(object.expires_in))
+            .domain(ds.domain.clone())
+            .secure(true)
+            .http_only(true)
+            .path("/")
+            .build(),
+    );
+    cookies.add(
+        Cookie::build(("dc-refresh", object.refresh_token))
+            .max_age(Duration::seconds(object.expires_in * 30))
+            .domain(ds.domain.clone())
+            .secure(true)
+            .http_only(true)
+            .path("/")
+            .build(),
+    );
     let parts: Vec<&str> = object.access_token.split(".").collect();
     let payload = parts[1];
     let decoded = general_purpose::STANDARD_NO_PAD.decode(payload).unwrap();
@@ -137,38 +159,40 @@ fn base_path() -> String {
     "/ucp".to_string()
 }
 
-#[derive(Deserialize, Debug)]
-pub struct WebtransferQuery {
-    pub jwt: String,
-}
+// * OBSOLETE BY NEW AUTH
 
-pub async fn webtransfer(q: Query<WebtransferQuery>, c: Cookies) -> Redirect {
-    let ds = get_auth_envs().await;
-    let jwt = validate_jwt(q.jwt.clone()).await;
-    let mut setcookie = true;
-    if jwt.is_some() {
-        let jwt = jwt.unwrap();
-        let old_jwt = c.get("auth_token");
-        if old_jwt.is_some() {
-            let old_jwt = validate_jwt(old_jwt.unwrap().value().to_string()).await;
-            if old_jwt.is_some() {
-                setcookie = false;
-            }
-        }
-        if setcookie {
-            c.add(
-                Cookie::build(("auth_token", q.jwt.clone()))
-                    .expires(OffsetDateTime::from_unix_timestamp(jwt.exp).unwrap())
-                    .http_only(true)
-                    .secure(true)
-                    .domain(ds.domain.clone())
-                    .path("/")
-                    .build(),
-            );
-        }
-    }
-    Redirect::to(&format!("{}/ucp", ds.fdomain.clone()))
-}
+// #[derive(Deserialize, Debug)]
+// pub struct WebtransferQuery {
+//     pub jwt: String,
+// }
+
+// pub async fn webtransfer(q: Query<WebtransferQuery>, c: Cookies) -> Redirect {
+//     let ds = get_auth_envs().await;
+//     let jwt = validate_jwt(q.jwt.clone()).await;
+//     let mut setcookie = true;
+//     if jwt.is_some() {
+//         let jwt = jwt.unwrap();
+//         let old_jwt = c.get("auth_token");
+//         if old_jwt.is_some() {
+//             let old_jwt = validate_jwt(old_jwt.unwrap().value().to_string()).await;
+//             if old_jwt.is_some() {
+//                 setcookie = false;
+//             }
+//         }
+//         if setcookie {
+//             c.add(
+//                 Cookie::build(("auth_token", q.jwt.clone()))
+//                     .expires(OffsetDateTime::from_unix_timestamp(jwt.exp).unwrap())
+//                     .http_only(true)
+//                     .secure(true)
+//                     .domain(ds.domain.clone())
+//                     .path("/")
+//                     .build(),
+//             );
+//         }
+//     }
+//     Redirect::to(&format!("{}/ucp", ds.fdomain.clone()))
+// }
 
 pub async fn validate_jwt(token: String) -> Option<AuthJWT> {
     let hash = BASE_HASHMAP.read().await;
@@ -220,6 +244,7 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
             .domain(auth_envs.domain)
             .http_only(true)
             .secure(true)
+            .max_age(Duration::minutes(60))
             .path("/")
             .build(),
     );
@@ -233,18 +258,12 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
         },
     };
     let state_str = serde_json::to_string(&state).expect("Sikertelen átalakítás");
-    let mut hasher = Sha256::new();
-    hasher.update(code_verifier.clone());
-    let code_challenge = hasher.finalize();
-    let code_challenge = &general_purpose::URL_SAFE_NO_PAD.encode(code_challenge);
-    ub.set_host(&format!("{}/authorize", auth_envs.api_endpoint))
-        .add_param("response_type", "code")
+    ub.set_host(&format!("{}/oauth2/authorize", auth_envs.api_endpoint))
         .add_param("state", &general_purpose::STANDARD.encode(state_str))
         .add_param("client_id", &auth_envs.client_id)
-        .add_param("scope", "openid%20profile")
-        .add_param("redirect_uri", &format!("{}/auth/cb", auth_envs.base_url))
-        .add_param("code_challenge_method", "S256")
-        .add_param("code_challenge", code_challenge);
+        .add_param("scope", "identify")
+        .add_param("response_type", "code")
+        .add_param("redirect_uri", &format!("{}/auth/cb", auth_envs.base_url));
     let mut built_url = ub.build();
     built_url.remove(0);
     built_url.remove(0);
