@@ -180,6 +180,7 @@ pub async fn check_faction() -> bool {
     if auth
         .perms
         .contains(&get_perm(Permissions::SaesUcp(conf.faction.unwrap())))
+        || auth.admin
     {
         return true;
     }
@@ -192,7 +193,7 @@ pub async fn get_faction_options() -> Vec<Factions> {
     let facts = get_factions_list();
     facts
         .into_iter()
-        .filter(|f| auth.perms.contains(&get_perm(Permissions::SaesUcp(*f))))
+        .filter(|f| auth.perms.contains(&get_perm(Permissions::SaesUcp(*f))) || auth.admin)
         .collect()
 }
 
