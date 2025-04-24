@@ -91,6 +91,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         )
         .route("/auth", get(auth::auth_home))
         .route("/auth/cb", get(auth::base_callback))
+        .route("/auth/jwt", get(auth::get_jwt))
         // .route("/auth/transfer", get(auth::webtransfer)) --> OBSOLETE
         .route("/list", get(list::base_list_get))
         .nest("/api", api::routes())

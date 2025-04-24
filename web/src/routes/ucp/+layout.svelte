@@ -34,7 +34,7 @@
 		}
 	}
 	if (data.refresh && browser) {
-		goto(page.url.pathname, { replaceState: true });
+		location.reload();
 	}
 	onMount(() => {
 		if (!data.noaccess && !data.noauth && !data.error && !data.nofact && !data.refresh) {

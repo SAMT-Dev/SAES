@@ -1,7 +1,7 @@
 use axum::{extract::Request, http::HeaderMap, middleware::Next, response::IntoResponse};
 use reqwest::StatusCode;
 use saes_shared::structs::{
-    factions::Factions,
+    factions::{get_faction_id, Factions},
     permissions::{get_perm, Permissions},
     user::Driver,
 };
@@ -12,10 +12,7 @@ use crate::{
     config::{loader::get_config, structs::AccessConfig},
 };
 
-use super::{
-    factions::get_faction_from_jwt,
-    functions::{get_env_mode, EnvModes},
-};
+use super::functions::{get_env_mode, EnvModes};
 
 #[derive(Debug, Serialize)]
 pub struct SAMTAuth {
@@ -77,20 +74,20 @@ pub async fn ucp_auth(
     let env_mode = get_env_mode().await;
     if (env_mode == EnvModes::Testing)
         && !jwt.permissions.contains(&get_perm(Permissions::SaesTest))
-        && !jwt.is_sys_admin
+        && !jwt.admin
     {
         return Err((
             StatusCode::FORBIDDEN,
             "Nincs jogod a teszt oldalhoz! (saes.test)".to_string(),
         ));
     }
-    if (env_mode == EnvModes::Devel) && !jwt.is_sys_admin {
+    if (env_mode == EnvModes::Devel) && !jwt.admin {
         return Err((
             StatusCode::FORBIDDEN,
             "Nincs jogod a dev oldalhoz!".to_string(),
         ));
     }
-    if jwt.permissions.contains(&get_perm(Permissions::SaesLogin)) || jwt.is_sys_admin {
+    if jwt.permissions.contains(&get_perm(Permissions::SaesLogin)) || jwt.admin {
         let fact = match faction {
             None => None,
             Some(val) => {
@@ -99,7 +96,7 @@ pub async fn ucp_auth(
                         if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::SCKK)))
-                            || jwt.is_sys_admin
+                            || jwt.admin
                         {
                             Some(Factions::SCKK)
                         } else {
@@ -109,7 +106,7 @@ pub async fn ucp_auth(
                         if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::TOW)))
-                            || jwt.is_sys_admin
+                            || jwt.admin
                         {
                             Some(Factions::TOW)
                         } else {
@@ -119,7 +116,7 @@ pub async fn ucp_auth(
                         if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::APMS)))
-                            || jwt.is_sys_admin
+                            || jwt.admin
                         {
                             Some(Factions::APMS)
                         } else {
@@ -129,7 +126,7 @@ pub async fn ucp_auth(
                         if jwt
                             .permissions
                             .contains(&get_perm(Permissions::SaesUcp(Factions::UNI)))
-                            || jwt.is_sys_admin
+                            || jwt.admin
                         {
                             Some(Factions::UNI)
                         } else {
@@ -144,7 +141,7 @@ pub async fn ucp_auth(
             }
         };
         if fact.is_some() {
-            let records = get_faction_from_jwt(jwt.clone(), fact.unwrap());
+            let records = jwt.factions.get(&get_faction_id(fact.unwrap()));
             match fact.unwrap() {
                 facto => {
                     if !config.factions.get(&facto).unwrap().site_access.ucp {
@@ -159,19 +156,19 @@ pub async fn ucp_auth(
             let tag = Driver {
                 name: jwt.username,
                 driverid: jwt.id,
-                admin: jwt.is_sys_admin,
+                admin: jwt.admin,
                 perms: jwt.permissions,
                 access: Some(factconf.access.clone()),
                 site_access: Some(factconf.site_access.clone()),
                 faction: fact,
-                factions: records,
+                factions: records.cloned(),
             };
             request.extensions_mut().insert(tag);
         } else {
             let tag = Driver {
                 name: jwt.username,
                 driverid: jwt.id,
-                admin: jwt.is_sys_admin,
+                admin: jwt.admin,
                 access: None,
                 site_access: None,
                 perms: jwt.permissions,
