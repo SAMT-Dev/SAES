@@ -110,7 +110,11 @@ pub async fn check_auth(app: AppHandle) -> bool {
 }
 
 pub async fn get_auth(app: AppHandle) -> Option<Driver> {
-    let conf = load_config().unwrap();
+    let conf = load_config();
+    if conf.is_none() {
+        app.restart();
+    }
+    let conf = conf.unwrap();
     let api = get_api_url();
     let client = reqwest::Client::new();
     let check = client
