@@ -8,6 +8,11 @@
 	let images: string[] = $state([]);
 	let image_infos: Record<string, { hash: string; url: string }> = $state({});
 	let loaddone = $state(false);
+	let noapi = $state(false);
+
+	listen('apiFailed', () => {
+		noapi = true;
+	});
 	listen<string>('setmaintext', (ev) => {
 		text = ev.payload;
 	});
@@ -27,7 +32,7 @@
 	}
 	onMount(async () => {
 		let check = await invoke<boolean>('check_auth');
-		if (!check) {
+		if (!check && !noapi) {
 			return await goto('/main/login', { replaceState: true });
 		}
 		text = 'Frakció ellenőrzése';
@@ -44,22 +49,28 @@
 </script>
 
 <div class="bg-gray-950 h-screen w-screen text-white text-center overflow-auto">
-	<button
-		onclick={async () => {
-			rerender(true);
-		}}>Újratöltés</button
-	>
-	{#if !loaddone}
-		<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw]">
-			<h1>{text}</h1>
-		</div>
-	{:else}
-		{#each images as image}
-			<div>
-				<h1>{image}</h1>
-				<h2>{image_infos[image].hash}</h2>
-				<img src={`data:image/png;base64,${image_infos[image].url}`} alt="" />
+	{#if !noapi}
+		{#if !loaddone}
+			<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw]">
+				<h1>{text}</h1>
 			</div>
-		{/each}
+		{:else}
+			<button
+				onclick={async () => {
+					rerender(true);
+				}}>Újratöltés</button
+			>
+			{#each images as image}
+				<div>
+					<h1>{image}</h1>
+					<h2>{image_infos[image].hash}</h2>
+					<img src={`data:image/png;base64,${image_infos[image].url}`} alt="" />
+				</div>
+			{/each}
+		{/if}
+	{:else}
+		<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw]">
+			<h1>API elérése sikertelen.</h1>
+		</div>
 	{/if}
 </div>

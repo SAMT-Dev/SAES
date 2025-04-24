@@ -2,6 +2,8 @@ use std::{
     env,
     fs::{self, File},
     path::Path,
+    thread,
+    time::Duration,
 };
 
 use reqwest::StatusCode;
@@ -97,8 +99,8 @@ pub fn get_api_url() -> String {
 }
 
 #[tauri::command]
-pub async fn check_auth() -> bool {
-    let auth = get_auth().await;
+pub async fn check_auth(app: AppHandle) -> bool {
+    let auth = get_auth(app).await;
     if auth.is_none() {
         return false;
     }
@@ -107,7 +109,7 @@ pub async fn check_auth() -> bool {
     return true;
 }
 
-pub async fn get_auth() -> Option<Driver> {
+pub async fn get_auth(app: AppHandle) -> Option<Driver> {
     let conf = load_config().unwrap();
     let api = get_api_url();
     let client = reqwest::Client::new();
@@ -115,8 +117,13 @@ pub async fn get_auth() -> Option<Driver> {
         .get(format!("{}/ucp", api))
         .header("cookie", conf.auth)
         .send()
-        .await
-        .unwrap();
+        .await;
+    if check.is_err() {
+        app.emit("apiFailed", ()).unwrap();
+        thread::sleep(Duration::from_secs(1));
+        return None;
+    }
+    let check = check.unwrap();
     if StatusCode::is_success(&check.status()) {
         let json: Driver = check.json().await.unwrap();
         return Some(json);

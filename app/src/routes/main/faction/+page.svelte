@@ -35,7 +35,6 @@
 
 <div class="h-screen w-screen bg-gray-950 pointer-events-none select-none text-white text-center">
 	<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-		<h1 class="text-3xl font-bold mb-2">Kérlek válassz frakciót!</h1>
 		<div class="flex gap-3 items-center justify-center">
 			{#each facts as f}
 				{#if factResolver[f]}
