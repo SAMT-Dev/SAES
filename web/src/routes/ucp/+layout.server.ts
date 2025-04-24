@@ -12,10 +12,29 @@ export type AccessType = "Write" | "Read" | "None";
 
 export const load = (async ({ cookies, request, url }) => {
 	if (!cookies.get("auth_token")) {
-		return {
-			noauth: true,
-			api: apiUrlPublic,
-		};
+		if (!cookies.get("dc-auth")) {
+			return {
+				noauth: true,
+				api: apiUrlPublic,
+			};
+		}
+		let jwt = await fetch(`${apiUrl}/auth/jwt`, {
+			headers: {
+				cookie: cookies.get("dc-auth")!,
+			},
+		});
+		if (jwt.ok) {
+			let realjwt: { jwt: string; exp: number } = await jwt.json();
+			cookies.set("auth_token", realjwt.jwt, {
+				path: "/",
+				expires: new Date(realjwt.exp * 1000),
+				secure: true,
+				httpOnly: true,
+			});
+			return {
+				refresh: true,
+			};
+		}
 	}
 	try {
 		const aha = await fetch(`${apiUrl}/ucp`, {

@@ -26,7 +26,7 @@ pub async fn on_connect(socket: SocketRef, data: InitialData) {
         );
         db_log(jwt.id, None, None, None, "LOGIN", None).await;
         let mama = get_config().await;
-        if jwt.is_sys_admin {
+        if jwt.admin {
             socket.join("sysadmin");
         }
         // io.to("socketppl")

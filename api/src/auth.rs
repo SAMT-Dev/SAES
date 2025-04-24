@@ -1,16 +1,23 @@
+use std::collections::HashMap;
+
 use axum::extract::Query;
+use axum::response::IntoResponse;
+use axum::Json;
 use axum::{debug_handler, response::Redirect};
 use base64::engine::general_purpose;
 use base64::Engine;
-use cookie::time::{Duration, OffsetDateTime};
-use jsonwebtoken::{decode, DecodingKey, Validation};
+use cookie::time::Duration;
+use http::{HeaderMap, StatusCode};
+use jsonwebtoken::{decode, DecodingKey, EncodingKey, Header, Validation};
 use random_string::{charsets, generate};
+use saes_shared::structs::factions::FactionRecord;
 use tokio::sync::RwLock;
 use tower_cookies::{Cookie, Cookies};
 use url_builder::URLBuilder;
 
 use serde::{Deserialize, Serialize};
 
+use crate::utils::api::get_api_envs;
 use crate::utils::structs::{AuthJWT, StateList};
 use crate::{BASE_HASHMAP, WEB_CLIENT};
 
@@ -23,6 +30,7 @@ pub struct AuthEnvs {
     pub base_url: String,
     pub domain: String,
     pub fdomain: String,
+    pub jwt_key: String,
 }
 
 pub async fn get_auth_envs() -> AuthEnvs {
@@ -33,6 +41,7 @@ pub async fn get_auth_envs() -> AuthEnvs {
     let domain = hash.get("env_domain").unwrap();
     let base_url = hash.get("env_api_base_url").unwrap();
     let fdomain = hash.get("env_full_domain").unwrap();
+    let jwt = hash.get("env_jwt_key").unwrap();
     AuthEnvs {
         api_endpoint: url.to_owned(),
         domain: domain.to_owned(),
@@ -40,10 +49,11 @@ pub async fn get_auth_envs() -> AuthEnvs {
         client_id: id.to_owned(),
         client_secret: secret.to_owned(),
         base_url: base_url.to_owned(),
+        jwt_key: jwt.to_owned(),
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Code {
     code: String,
     state: String,
@@ -114,7 +124,6 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         return Redirect::to(&format!("{}?error=noperm", &ds.fdomain));
     }
     let object: TokenResponse = object.unwrap();
-
     if path_full.mode == "app".to_string() {
         return Redirect::to(&format!(
             "http://localhost:31313/app-auth/cb?code={}",
@@ -139,20 +148,91 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             .path("/")
             .build(),
     );
-    let parts: Vec<&str> = object.access_token.split(".").collect();
-    let payload = parts[1];
-    let decoded = general_purpose::STANDARD_NO_PAD.decode(payload).unwrap();
-    let jwt_token: AuthJWT = serde_json::from_slice(&decoded).unwrap();
-    cookies.add(
-        Cookie::build(("auth_token", object.access_token))
-            .expires(OffsetDateTime::from_unix_timestamp(jwt_token.exp).unwrap())
-            .http_only(true)
-            .secure(true)
-            .domain(ds.domain.clone())
-            .path("/")
-            .build(),
-    );
     return Redirect::to(&format!("{}{}", &ds.fdomain, path_full.path));
+}
+
+#[derive(Debug, Deserialize)]
+struct AtMe {
+    id: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct FMSRes {
+    factionrecords: Vec<FactionRecord>,
+    id: i32,
+    issysadmin: bool,
+    permissions: Vec<String>,
+    username: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct JWTRet {
+    jwt: String,
+    exp: i64,
+}
+
+#[debug_handler]
+pub async fn get_jwt(h: HeaderMap) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let auth = h.get("cookie");
+    if auth.is_none() {
+        return Err((StatusCode::UNAUTHORIZED, "No auth".to_string()));
+    };
+    let auth = auth.unwrap().to_str().unwrap().to_owned();
+    let me = WEB_CLIENT
+        .get("https://discord.com/api/v10/users/@me")
+        .bearer_auth(auth)
+        .send()
+        .await;
+    if me.is_err() {
+        return Err((StatusCode::BAD_REQUEST, "".to_string()));
+    }
+    let me: AtMe = me.unwrap().json().await.unwrap();
+    let apis = get_api_envs().await;
+    let fmsget = WEB_CLIENT
+        .get(format!("{}/authenticate?dcid={}", apis.fms, me.id))
+        .header("authkey", apis.fms_key)
+        .send()
+        .await;
+    if fmsget.is_err() {
+        if fmsget.unwrap_err().status() == Some(StatusCode::NOT_FOUND) {
+            return Err((StatusCode::UNAUTHORIZED, "Nem létezel".to_string()));
+        }
+        return Err((StatusCode::BAD_REQUEST, "".to_string()));
+    }
+    let fmsget: FMSRes = fmsget.unwrap().json().await.unwrap();
+    let mut jwt = AuthJWT {
+        admin: fmsget.issysadmin,
+        exp: (chrono::Utc::now() + chrono::Duration::hours(6)).timestamp(),
+        id: fmsget.id,
+        permissions: fmsget.permissions,
+        username: fmsget.username,
+        factions: HashMap::new(),
+    };
+    for faction in fmsget.factionrecords {
+        jwt.factions.insert(
+            faction.factionid,
+            FactionRecord {
+                factionid: faction.factionid,
+                factionname: faction.factionname,
+                factionshortname: faction.factionshortname,
+                positionname: faction.positionname,
+                shiftname: faction.shiftname,
+                positionid: faction.positionid,
+                shiftid: faction.shiftid,
+            },
+        );
+    }
+    let envs = get_auth_envs().await;
+    let jwt_encoded = jsonwebtoken::encode(
+        &Header::default(),
+        &jwt,
+        &EncodingKey::from_secret(&envs.jwt_key.as_bytes()),
+    )
+    .unwrap();
+    return Ok(Json(JWTRet {
+        jwt: jwt_encoded,
+        exp: jwt.exp,
+    }));
 }
 
 fn base_path() -> String {
@@ -196,7 +276,7 @@ fn base_path() -> String {
 
 pub async fn validate_jwt(token: String) -> Option<AuthJWT> {
     let hash = BASE_HASHMAP.read().await;
-    let key = hash.get("env_authapi_key").unwrap();
+    let key = hash.get("env_jwt_key").unwrap();
     let jwt = decode::<AuthJWT>(
         &token,
         &DecodingKey::from_secret(key.as_bytes()),
