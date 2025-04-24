@@ -121,7 +121,10 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         if path_full.mode == "app".to_string() {
             return Redirect::to("http://localhost:31313/app-auth/cb?code=noperm");
         }
-        return Redirect::to(&format!("{}?error=noperm", &ds.fdomain));
+        return Redirect::to(&format!(
+            "{}?error=noperm&details={}",
+            &ds.fdomain, token_response
+        ));
     }
     let object: TokenResponse = object.unwrap();
     if path_full.mode == "app".to_string() {
