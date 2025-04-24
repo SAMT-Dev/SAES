@@ -105,7 +105,7 @@ export const load = (async ({ cookies, request, url }) => {
 						) {
 							cookies.set("selected_faction", Factions.Taxi, {
 								path: "/",
-								maxAge: 360 * 24 * 30,
+								maxAge: 360 * 24 * 60,
 								secure: true,
 								sameSite: true,
 								httpOnly: true,
@@ -120,7 +120,7 @@ export const load = (async ({ cookies, request, url }) => {
 						) {
 							cookies.set("selected_faction", Factions.Apms, {
 								path: "/",
-								maxAge: 360 * 24 * 30,
+								maxAge: 360 * 24 * 60,
 								secure: true,
 								sameSite: true,
 								httpOnly: true,
@@ -135,7 +135,7 @@ export const load = (async ({ cookies, request, url }) => {
 						) {
 							cookies.set("selected_faction", Factions.Tow, {
 								path: "/",
-								maxAge: 360 * 24 * 30,
+								maxAge: 360 * 24 * 60,
 								secure: true,
 								sameSite: true,
 								httpOnly: true,
@@ -150,7 +150,7 @@ export const load = (async ({ cookies, request, url }) => {
 						) {
 							cookies.set("selected_faction", Factions.Uni, {
 								path: "/",
-								maxAge: 360 * 24 * 30,
+								maxAge: 360 * 24 * 60,
 								secure: true,
 								sameSite: true,
 								httpOnly: true,
@@ -239,7 +239,7 @@ export const load = (async ({ cookies, request, url }) => {
 							throw redirect(303, "?clear_faction=true");
 						}
 						break;
-					case Factions.Tow:
+					case Factions.Uni:
 						if (
 							!allowPerms({ layout: jeson }, [
 								factPermissions[Factions.Uni].SaesFactUcp,
