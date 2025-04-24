@@ -5,6 +5,9 @@
 	let facts: (keyof typeof factResolver)[] = $state([]);
 	onMount(async () => {
 		facts = await invoke<(keyof typeof factResolver)[]>('get_faction_options');
+		if (facts.length === 1) {
+			await selectFact(facts[0]);
+		}
 	});
 	let factResolver = {
 		SCKK: {
