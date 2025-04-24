@@ -38,7 +38,10 @@
 		<div class="flex gap-3 items-center justify-center">
 			{#each facts as f}
 				{#if factResolver[f]}
-					<button class="cursor-pointer pointer-events-auto" onclick={async () => selectFact(f)}>
+					<button
+						class="cursor-pointer pointer-events-auto bg-gray-700 p-4 rounded-xl"
+						onclick={async () => selectFact(f)}
+					>
 						<img src={`https://samt.hu/${factResolver[f].logo}`} alt="" class="w-28 m-auto" />
 						<h1 class="text-3xl font-bold">{factResolver[f].display}</h1>
 					</button>
