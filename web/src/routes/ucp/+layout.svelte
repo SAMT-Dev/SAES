@@ -172,7 +172,7 @@
 							>
 								<img
 									src="/sckk_icon.png"
-									class="m-auto w-40 rounded-full border-2 border-solid border-black transition-colors"
+									class="m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
 									alt="SCKK Logo"
 								/>
 							</div>
@@ -194,7 +194,7 @@
 							>
 								<img
 									src="/sckk_icon.png"
-									class=" m-auto w-40 rounded-full border-2 border-solid border-black transition-colors"
+									class=" m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
 									alt="SCKK Logo"
 								/>
 							</div>
@@ -216,7 +216,7 @@
 							>
 								<img
 									src="/uni_icon.png"
-									class=" m-auto w-40 rounded-full border-2 border-solid border-black transition-colors"
+									class=" m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
 									alt="SCKK Logo"
 								/>
 							</div>
@@ -238,7 +238,7 @@
 							>
 								<img
 									src="/apms_icon.png"
-									class=" m-auto w-40 rounded-full border-2 border-solid border-black transition-colors"
+									class=" m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
 									alt="APMS Logo"
 								/>
 							</div>
