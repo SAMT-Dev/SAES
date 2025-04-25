@@ -12,6 +12,7 @@ use saes_shared::structs::{
     permissions::{get_perm, Permissions},
     user::Driver,
 };
+use serde::Deserialize;
 use tauri::{AppHandle, Emitter};
 use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
@@ -52,11 +53,21 @@ pub async fn begin_login(app: AppHandle) {
     .await
     .unwrap();
     let client = reqwest::Client::new();
-    let token = DISCORD_TOKEN.read().await;
     let api = get_api_url();
+    let token = DISCORD_TOKEN.read().await;
+    let getjwt = client
+        .get(format!("{}/auth/jwt", api))
+        .header("cookie", token.clone().unwrap())
+        .send()
+        .await;
+    if getjwt.is_err() {
+        app.emit("loginFailed", "unknown").unwrap();
+        return;
+    }
+    let jwt: JWTRet = getjwt.unwrap().json().await.unwrap();
     let get = client
         .get(format!("{}/ucp", api))
-        .header("cookie", token.clone().unwrap())
+        .header("cookie", jwt.jwt)
         .send()
         .await
         .unwrap();
@@ -109,6 +120,11 @@ pub async fn check_auth(app: AppHandle) -> bool {
     return true;
 }
 
+#[derive(Debug, Deserialize)]
+struct JWTRet {
+    jwt: String,
+}
+
 pub async fn get_auth(app: AppHandle) -> Option<Driver> {
     let conf = load_config();
     if conf.is_none() {
@@ -117,9 +133,19 @@ pub async fn get_auth(app: AppHandle) -> Option<Driver> {
     let conf = conf.unwrap();
     let api = get_api_url();
     let client = reqwest::Client::new();
+    let jwt = client
+        .get(format!("{}/auth/jwt", api))
+        .header("cookie", conf.auth)
+        .send()
+        .await;
+    if jwt.is_err() {
+        return None;
+    }
+    let jwt = jwt.unwrap();
+    let authkey: JWTRet = jwt.json().await.unwrap();
     let check = client
         .get(format!("{}/ucp", api))
-        .header("cookie", conf.auth)
+        .header("cookie", authkey.jwt.clone())
         .send()
         .await;
     if check.is_err() {
