@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::thread;
 
 use axum::extract::Query;
 use axum::response::IntoResponse;
@@ -140,29 +139,26 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             object.access_token
         ));
     }
-    thread::sleep(std::time::Duration::from_millis(300));
     cookies.add(
         Cookie::build(("dc-auth", object.access_token.clone()))
             .max_age(Duration::seconds(object.expires_in))
-            .domain(ds.domain.clone())
+            .domain(format!(".{}", ds.domain.clone()))
             .same_site(cookie::SameSite::Lax)
             .http_only(true)
             .secure(false)
             .path("/")
             .build(),
     );
-    thread::sleep(std::time::Duration::from_millis(300));
     cookies.add(
         Cookie::build(("dc-refresh", object.refresh_token))
             .max_age(Duration::seconds(object.expires_in * 30))
-            .domain(ds.domain.clone())
+            .domain(format!(".{}", ds.domain.clone()))
             .same_site(cookie::SameSite::Lax)
             .secure(false)
             .http_only(true)
             .path("/")
             .build(),
     );
-    thread::sleep(std::time::Duration::from_millis(300));
     return Redirect::to(&format!("{}{}", &ds.fdomain, path_full.path));
 }
 
@@ -336,7 +332,7 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
     };
     cookies.add(
         Cookie::build(("oauth-session", code_verifier.clone()))
-            .domain(auth_envs.domain)
+            .domain(format!(".{}", auth_envs.domain))
             .http_only(true)
             .secure(false)
             .max_age(Duration::minutes(60))
