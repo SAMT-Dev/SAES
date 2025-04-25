@@ -28,7 +28,7 @@ export const load = (async ({ cookies, request, url }) => {
 			cookies.set("auth_token", realjwt.jwt, {
 				path: "/",
 				expires: new Date(realjwt.exp * 1000),
-				secure: false,
+				secure: true,
 				httpOnly: true,
 			});
 			return {
@@ -112,7 +112,7 @@ export const load = (async ({ cookies, request, url }) => {
 							cookies.set("selected_faction", Factions.Taxi, {
 								path: "/",
 								maxAge: 360 * 24 * 60,
-								secure: false,
+								secure: true,
 								sameSite: true,
 								httpOnly: true,
 							});
@@ -127,7 +127,7 @@ export const load = (async ({ cookies, request, url }) => {
 							cookies.set("selected_faction", Factions.Apms, {
 								path: "/",
 								maxAge: 360 * 24 * 60,
-								secure: false,
+								secure: true,
 								sameSite: true,
 								httpOnly: true,
 							});
@@ -142,7 +142,7 @@ export const load = (async ({ cookies, request, url }) => {
 							cookies.set("selected_faction", Factions.Tow, {
 								path: "/",
 								maxAge: 360 * 24 * 60,
-								secure: false,
+								secure: true,
 								sameSite: true,
 								httpOnly: true,
 							});
@@ -157,7 +157,7 @@ export const load = (async ({ cookies, request, url }) => {
 							cookies.set("selected_faction", Factions.Uni, {
 								path: "/",
 								maxAge: 360 * 24 * 60,
-								secure: false,
+								secure: true,
 								sameSite: true,
 								httpOnly: true,
 							});
