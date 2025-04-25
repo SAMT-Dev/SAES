@@ -73,7 +73,10 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
     let path_full: AuthState = serde_json::from_str(&path).expect("Nem megy");
     let code_verifier = cookies.get("oauth-session");
     if code_verifier.is_none() {
-        return Redirect::to(&ds.fdomain);
+        if path_full.mode == "app".to_string() {
+            return Redirect::to("http://localhost:31313/app-auth/cb?code=oauth2");
+        }
+        return Redirect::to(&format!("{}?error=oauth2", &ds.fdomain));
     }
     let code_verifier = code_verifier.unwrap();
     let item = {

@@ -42,6 +42,20 @@
 	</div>
 {/if}
 
+{#if error === 'oauth2'}
+	<div class="flex h-screen">
+		<div class="m-auto text-center text-white">
+			<h1 class="text-center text-3xl font-bold">Oauth2 session hiba.</h1>
+			<a
+				href="/"
+				data-sveltekit-reload
+				class="rounded-xl bg-rose-900 px-2 uppercase text-rose-400 transition-all duration-300 hover:bg-rose-950 hover:text-white"
+				>Visszalépés</a
+			>
+		</div>
+	</div>
+{/if}
+
 {#if loading.value}
 	<div
 		class="fixed top-0 z-50 h-full w-full bg-[rgba(0,0,0,0.4)]"
