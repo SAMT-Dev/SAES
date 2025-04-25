@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::thread;
 
 use axum::extract::Query;
 use axum::response::IntoResponse;
@@ -139,6 +140,7 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             object.access_token
         ));
     }
+    thread::sleep(std::time::Duration::from_millis(300));
     cookies.add(
         Cookie::build(("dc-auth", object.access_token.clone()))
             .max_age(Duration::seconds(object.expires_in))
@@ -149,6 +151,7 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             .path("/")
             .build(),
     );
+    thread::sleep(std::time::Duration::from_millis(300));
     cookies.add(
         Cookie::build(("dc-refresh", object.refresh_token))
             .max_age(Duration::seconds(object.expires_in * 30))
@@ -159,6 +162,7 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
             .path("/")
             .build(),
     );
+    thread::sleep(std::time::Duration::from_millis(300));
     return Redirect::to(&format!("{}{}", &ds.fdomain, path_full.path));
 }
 
