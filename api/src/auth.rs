@@ -142,19 +142,19 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
     cookies.add(
         Cookie::build(("dc-auth", object.access_token.clone()))
             .max_age(Duration::seconds(object.expires_in))
-            .domain(format!(".{}", ds.domain.clone()))
+            .domain(ds.domain.clone())
             .same_site(cookie::SameSite::Lax)
             .http_only(true)
-            .secure(false)
+            .secure(true)
             .path("/")
             .build(),
     );
     cookies.add(
         Cookie::build(("dc-refresh", object.refresh_token))
             .max_age(Duration::seconds(object.expires_in * 30))
-            .domain(format!(".{}", ds.domain.clone()))
+            .domain(ds.domain.clone())
             .same_site(cookie::SameSite::Lax)
-            .secure(false)
+            .secure(true)
             .http_only(true)
             .path("/")
             .build(),
@@ -332,9 +332,9 @@ pub async fn auth_home(Query(q): Query<AuthHomeCode>, cookies: Cookies) -> Redir
     };
     cookies.add(
         Cookie::build(("oauth-session", code_verifier.clone()))
-            .domain(format!(".{}", auth_envs.domain))
+            .domain(auth_envs.domain)
             .http_only(true)
-            .secure(false)
+            .secure(true)
             .max_age(Duration::minutes(60))
             .same_site(cookie::SameSite::Lax)
             .path("/")

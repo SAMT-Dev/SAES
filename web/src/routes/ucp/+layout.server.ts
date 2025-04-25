@@ -46,6 +46,12 @@ export const load = (async ({ cookies, request, url }) => {
 			},
 		});
 		if (aha.status === 404 || aha.status === 406) {
+			if (cookies.get("dc-auth")) {
+				cookies.delete("auth_token", { path: "/" });
+				return {
+					refresh: true,
+				};
+			}
 			return {
 				noauth: true,
 				api: apiUrlPublic,
