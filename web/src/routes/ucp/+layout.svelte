@@ -160,22 +160,18 @@
 	{:else if data.nofact}
 		<main>
 			<div class="flex h-screen items-center justify-center text-center text-black dark:text-white">
-				<div class="flex items-center justify-center gap-5">
+				<div class="flex flex-col items-center justify-center gap-2 lg:flex-row lg:gap-5">
 					{#if allowPerms(data, [factPermissions[Factions.Taxi].SaesFactUcp])}
 						<a
 							href="?select_faction=SCKK"
 							data-sveltekit-reload
 							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
 						>
-							<div
-								class="group-hover:border-taxi rounded-full border-4 border-solid border-white duration-300"
-							>
-								<img
-									src="/sckk_icon.png"
-									class="m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
-									alt="SCKK Logo"
-								/>
-							</div>
+							<img
+								src="/sckk_icon.png"
+								class="group-hover:border-taxi m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
+								alt="SCKK Logo"
+							/>
 							<h1
 								class="group-hover:text-taxi text-3xl font-bold tracking-wider transition-colors duration-300"
 							>
@@ -189,15 +185,11 @@
 							data-sveltekit-reload
 							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
 						>
-							<div
-								class="group-hover:border-tow rounded-full border-4 border-solid border-white duration-300"
-							>
-								<img
-									src="/sckk_icon.png"
-									class=" m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
-									alt="SCKK Logo"
-								/>
-							</div>
+							<img
+								src="/sckk_icon.png"
+								class="group-hover:border-tow m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
+								alt="SCKK Logo"
+							/>
 							<h1
 								class="group-hover:text-tow text-3xl font-bold tracking-wider transition-colors duration-300"
 							>
@@ -211,15 +203,11 @@
 							data-sveltekit-reload
 							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
 						>
-							<div
-								class="group-hover:border-uni rounded-full border-4 border-solid border-white duration-300"
-							>
-								<img
-									src="/uni_icon.png"
-									class=" m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
-									alt="SCKK Logo"
-								/>
-							</div>
+							<img
+								src="/uni_icon.png"
+								class="group-hover:border-uni m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
+								alt="SCKK Logo"
+							/>
 							<h1
 								class="group-hover:text-uni text-3xl font-bold tracking-wider transition-colors duration-300"
 							>
@@ -233,15 +221,11 @@
 							data-sveltekit-reload
 							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
 						>
-							<div
-								class="group-hover:border-apms rounded-full border-4 border-solid border-white duration-300"
-							>
-								<img
-									src="/apms_icon.png"
-									class=" m-auto min-w-40 max-w-40 rounded-full border-2 border-solid border-black transition-colors"
-									alt="APMS Logo"
-								/>
-							</div>
+							<img
+								src="/apms_icon.png"
+								class="group-hover:border-apms m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
+								alt="APMS Logo"
+							/>
 							<h1
 								class="group-hover:text-apms text-3xl font-bold tracking-wider transition-colors duration-300"
 							>
