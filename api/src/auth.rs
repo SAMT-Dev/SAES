@@ -94,7 +94,10 @@ pub async fn base_callback(Query(query): Query<Code>, cookies: Cookies) -> Redir
         }
     };
     if item.is_none() {
-        return Redirect::to(&ds.fdomain);
+        if path_full.mode == "app".to_string() {
+            return Redirect::to("http://localhost:31313/app-auth/cb?code=oauth22");
+        }
+        return Redirect::to(&format!("{}?error=oauth22", &ds.fdomain));
     }
     {
         let pos = STATE_MANAGEMENT
