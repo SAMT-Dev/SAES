@@ -474,8 +474,8 @@ pub async fn ucp_items_post(
                                 )
                                 .unwrap()),
                                 owner: Set(ext.driverid),
-                                driver: Set(ext.driverid),
-                                target_faction: Set(get_faction_id(ext.faction.unwrap())),
+                                driver: Set(Some(ext.driverid)),
+                                target_faction: Set(Some(get_faction_id(ext.faction.unwrap()))),
                                 status: Set(statuses.uploaded.id),
                                 image: Set(new_img),
                                 ..Default::default()
