@@ -142,6 +142,9 @@ pub async fn get_auth(app: AppHandle) -> Option<Driver> {
         return None;
     }
     let jwt = jwt.unwrap();
+    if !jwt.status().is_success(){
+        return None;
+    }
     let authkey: JWTRet = jwt.json().await.unwrap();
     let check = client
         .get(format!("{}/ucp", api))
