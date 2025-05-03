@@ -197,7 +197,11 @@ pub async fn get_jwt(h: HeaderMap) -> Result<impl IntoResponse, (StatusCode, Str
     if me.is_err() {
         return Err((StatusCode::BAD_REQUEST, "".to_string()));
     }
-    let me: AtMe = me.unwrap().json().await.unwrap();
+    let me = me.unwrap();
+    if !me.status().is_success() {
+        return Err((StatusCode::BAD_REQUEST, "".to_string()));
+    }
+    let me: AtMe = me.json().await.unwrap();
     let apis = get_api_envs().await;
     let fmsget = WEB_CLIENT
         .get(format!("{}/authenticate?dcid={}", apis.fms, me.id))
