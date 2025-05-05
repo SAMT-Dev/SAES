@@ -412,7 +412,7 @@
 					id="potlek-type"
 					class="bg-emerald-600 font-bold text-black dark:text-white"
 					bind:value={jona}
-					on:input={(e) => changestatus(e)}
+					oninput={(e) => changestatus(e)}
 				>
 					<option value="1" class="font-bold">Feltöltve</option>
 					<option value="2" class="font-bold">Elfogadva</option>
@@ -525,7 +525,7 @@
 									{#if tools.includes('délelőtti') && jona === get_status_number('feltöltve').toString()}
 										<Button
 											class="icon-[lucide--sun] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-yellow-300 dark:bg-white"
-											on:click={() => quickTools('de', potleks.data.items.indexOf(potle))}
+											onclick={() => quickTools('de', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
 											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
@@ -535,7 +535,7 @@
 									{#if tools.includes('éjszakai') && jona === get_status_number('feltöltve').toString()}
 										<Button
 											class="icon-[lucide--moon] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-blue-800 dark:bg-white"
-											on:click={() => quickTools('du', potleks.data.items.indexOf(potle))}
+											onclick={() => quickTools('du', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
 											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
@@ -545,7 +545,7 @@
 									{#if tools.includes('accept') && jona === get_status_number('feltöltve').toString()}
 										<Button
 											class="icon-[lucide--check] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-green-500 dark:bg-white"
-											on:click={() => quickTools('accept', potleks.data.items.indexOf(potle))}
+											onclick={() => quickTools('accept', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
 											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
@@ -555,7 +555,7 @@
 									{#if tools.includes('decline') && jona === get_status_number('feltöltve').toString()}
 										<Button
 											class="icon-[lucide--x] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-red-600 dark:bg-white"
-											on:click={() => quickTools('decline', potleks.data.items.indexOf(potle))}
+											onclick={() => quickTools('decline', potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
 											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
@@ -565,7 +565,7 @@
 									{#if tools.includes('edit')}
 										<Button
 											class="icon-[lucide--edit] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-slate-500 dark:bg-white"
-											on:click={() => edit(potleks.data.items.indexOf(potle))}
+											onclick={() => edit(potleks.data.items.indexOf(potle))}
 										></Button>
 										<Tooltip class="bg-slate-500"
 											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
