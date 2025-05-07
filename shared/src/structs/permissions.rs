@@ -1,22 +1,19 @@
 use serde::{Deserialize, Serialize};
 
-use super::factions::{get_faction_string, Factions};
-
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Permissions {
     SaesLogin,
     SaesMaintenance,
     SaesTest,
-    SaesUcp(Factions),
-    SaesAdmin(Factions),
-    SaesAdminShift(Factions),
-    SaesAdminFleet(Factions),
-    SaesAdminFaction(Factions),
+    SaesUcp(String),
+    SaesAdmin(String),
+    SaesAdminShift(String),
+    SaesAdminFleet(String),
+    SaesAdminFaction(String),
 }
 
-pub fn get_subperm(perm: &str, fact: Factions) -> String {
-    let faction = get_faction_string(fact);
-    perm.replace("fc", &faction)
+pub fn get_subperm(perm: &str, fact: String) -> String {
+    perm.replace("fc", &fact)
 }
 
 pub fn get_perm(perm: Permissions) -> String {

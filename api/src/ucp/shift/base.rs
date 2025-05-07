@@ -8,12 +8,13 @@ use chrono::NaiveDateTime;
 use http::StatusCode;
 use saes_shared::{
     db::{bills, hails, supplements},
-    structs::{factions::get_faction_id, user::Driver},
+    structs::user::Driver,
 };
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Serialize;
 
 use crate::{
+    config::loader::get_config,
     utils::{functions::get_fridays, queries::SMStatQuery, types_statuses::get_statuses},
     DB_CLIENT,
 };
@@ -49,6 +50,7 @@ pub async fn sm_stat(
     quer: Query<SMStatQuery>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let statuses = get_statuses();
+    let config = get_config().await;
     if quer.week == "current".to_string() {
         let friday = get_fridays();
         let db = DB_CLIENT.get().unwrap();
@@ -56,7 +58,14 @@ pub async fn sm_stat(
             .filter(supplements::Column::Status.eq(statuses.accepted.id))
             .filter(supplements::Column::Date.gt(friday.last_friday))
             .filter(supplements::Column::Date.lt(friday.next_friday))
-            .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                supplements::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -64,7 +73,14 @@ pub async fn sm_stat(
             .filter(hails::Column::Status.eq(statuses.accepted.id))
             .filter(hails::Column::Date.gt(friday.last_friday))
             .filter(hails::Column::Date.lt(friday.next_friday))
-            .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                hails::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -72,7 +88,14 @@ pub async fn sm_stat(
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .filter(bills::Column::Date.gt(friday.last_friday))
             .filter(bills::Column::Date.lt(friday.next_friday))
-            .filter(bills::Column::TargetFaction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                bills::Column::TargetFaction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -106,7 +129,14 @@ pub async fn sm_stat(
             .filter(supplements::Column::Status.eq(statuses.accepted.id))
             .filter(supplements::Column::Date.gt(friday.before_last_friday))
             .filter(supplements::Column::Date.lt(friday.last_friday))
-            .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                supplements::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -114,7 +144,14 @@ pub async fn sm_stat(
             .filter(hails::Column::Status.eq(statuses.accepted.id))
             .filter(hails::Column::Date.gt(friday.before_last_friday))
             .filter(hails::Column::Date.lt(friday.last_friday))
-            .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                hails::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -122,7 +159,14 @@ pub async fn sm_stat(
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .filter(bills::Column::Date.gt(friday.before_last_friday))
             .filter(bills::Column::Date.lt(friday.last_friday))
-            .filter(bills::Column::TargetFaction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                bills::Column::TargetFaction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");

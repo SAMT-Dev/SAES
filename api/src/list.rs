@@ -1,13 +1,11 @@
 use axum::{debug_handler, extract::Query, response::IntoResponse, Json};
 use http::StatusCode;
-use saes_shared::{
-    db::{bills, hails, supplements},
-    structs::factions::get_faction_id,
-};
+use saes_shared::db::{bills, hails, supplements};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder};
 use serde::Serialize;
 
 use crate::{
+    config::loader::get_config,
     utils::{
         functions::get_fridays,
         queries::BaseListQuery,
@@ -32,6 +30,7 @@ pub async fn base_list_get(
     quer: Query<BaseListQuery>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let friday = get_fridays();
+    let config = get_config().await;
     let db = DB_CLIENT.get().unwrap();
     let statuses = get_statuses();
     let types = get_types();
@@ -40,7 +39,14 @@ pub async fn base_list_get(
             .filter(supplements::Column::Owner.eq(quer.driver.clone()))
             .filter(supplements::Column::Date.gt(friday.before_last_friday))
             .filter(supplements::Column::Status.eq(statuses.accepted.id))
-            .filter(supplements::Column::Faction.eq(get_faction_id(quer.faction)))
+            .filter(
+                supplements::Column::Faction.eq(config
+                    .factions
+                    .get(&quer.faction)
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .filter(supplements::Column::Date.lt(friday.last_friday))
             .filter(supplements::Column::Type.eq(if quer.tipus == "potlek_de" {
                 1
@@ -75,7 +81,9 @@ pub async fn base_list_get(
         let hails_ret = hails::Entity::find()
             .filter(hails::Column::Owner.eq(quer.driver.clone()))
             .filter(hails::Column::Date.gt(friday.before_last_friday))
-            .filter(hails::Column::Faction.eq(get_faction_id(quer.faction)))
+            .filter(
+                hails::Column::Faction.eq(config.factions.get(&quer.faction).unwrap().settings.id),
+            )
             .filter(hails::Column::Date.lt(friday.last_friday))
             .filter(hails::Column::Status.eq(statuses.accepted.id))
             .order_by(hails::Column::Date, Order::Desc)
@@ -101,7 +109,14 @@ pub async fn base_list_get(
         let bills_ret = bills::Entity::find()
             .filter(bills::Column::Driver.eq(quer.driver.clone()))
             .filter(bills::Column::Date.gt(friday.before_last_friday))
-            .filter(bills::Column::TargetFaction.eq(get_faction_id(quer.faction)))
+            .filter(
+                bills::Column::TargetFaction.eq(config
+                    .factions
+                    .get(&quer.faction)
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .filter(bills::Column::Date.lt(friday.last_friday))
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .order_by(bills::Column::Date, Order::Desc)

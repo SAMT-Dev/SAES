@@ -8,7 +8,6 @@ use std::{
 
 use reqwest::StatusCode;
 use saes_shared::structs::{
-    factions::{get_factions_list, Factions},
     permissions::{get_perm, Permissions},
     user::Driver,
 };
@@ -142,7 +141,7 @@ pub async fn get_auth(app: AppHandle) -> Option<Driver> {
         return None;
     }
     let jwt = jwt.unwrap();
-    if !jwt.status().is_success(){
+    if !jwt.status().is_success() {
         return None;
     }
     let authkey: JWTRet = jwt.json().await.unwrap();
@@ -217,7 +216,7 @@ pub async fn check_faction() -> bool {
 }
 
 #[tauri::command]
-pub async fn get_faction_options() -> Vec<Factions> {
+pub async fn get_faction_options() -> Vec<String> {
     let auth = AUTH.read().await.clone().unwrap();
     let facts = get_factions_list();
     facts

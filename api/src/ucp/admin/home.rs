@@ -3,12 +3,12 @@ use http::StatusCode;
 
 use saes_shared::{
     db::{bills, hails, supplements},
-    structs::{factions::get_faction_id, user::Driver},
+    structs::user::Driver,
 };
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Serialize;
 
-use crate::{utils::types_statuses::get_statuses, DB_CLIENT};
+use crate::{config::loader::get_config, utils::types_statuses::get_statuses, DB_CLIENT};
 
 #[derive(Debug, Serialize)]
 pub struct SMStat {
@@ -27,18 +27,40 @@ pub async fn admin_home_stat(
     ext: Extension<Driver>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let db = DB_CLIENT.get().unwrap();
+    let config = get_config().await;
     let statreturn_supp = supplements::Entity::find()
-        .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+        .filter(
+            supplements::Column::Faction.eq(config
+                .factions
+                .get(&ext.faction.clone().unwrap())
+                .unwrap()
+                .settings
+                .id),
+        )
         .all(db)
         .await
         .expect("[ERROR] Statisztika lekérés sikertelen");
     let statreturn_hails = hails::Entity::find()
-        .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+        .filter(
+            hails::Column::Faction.eq(config
+                .factions
+                .get(&ext.faction.clone().unwrap())
+                .unwrap()
+                .settings
+                .id),
+        )
         .all(db)
         .await
         .expect("[ERROR] Statisztika lekérés sikertelen");
     let statreturn_bills = bills::Entity::find()
-        .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+        .filter(
+            bills::Column::Faction.eq(config
+                .factions
+                .get(&ext.faction.clone().unwrap())
+                .unwrap()
+                .settings
+                .id),
+        )
         .all(db)
         .await
         .expect("[ERROR] Statisztika lekérés sikertelen");

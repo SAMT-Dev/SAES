@@ -8,7 +8,7 @@ use crate::SOCKET_IO;
 use super::structs::MainConfig;
 
 pub async fn write_config(config: &MainConfig) {
-    let config_file = Path::new("./config/main.json");
+    let config_file = Path::new("./config/default.json");
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)

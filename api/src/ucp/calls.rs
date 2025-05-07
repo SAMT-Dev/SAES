@@ -1,12 +1,12 @@
 use axum::{debug_handler, extract::Request, Json};
 use http::StatusCode;
 use saes_shared::db::{bills, hails, supplements};
-use saes_shared::structs::factions::{get_faction_id, Factions};
 use saes_shared::structs::user::Driver;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
+use crate::config::loader::get_config;
 use crate::utils::api::get_api_envs;
 use crate::utils::functions::get_fridays;
 use crate::utils::types_statuses::get_statuses;
@@ -42,13 +42,14 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
     let exts: Option<&Driver> = request.extensions_mut().get();
     if exts.unwrap().faction.is_some() {
         let db = DB_CLIENT.get().unwrap();
+        let config = get_config().await;
         let statuses = get_statuses();
         let envs = get_api_envs().await;
         let calls = WEB_CLIENT
             .get(format!(
                 "{}/api/log/status/current",
-                if exts.unwrap().faction.unwrap().eq(&Factions::TOW)
-                    || (exts.unwrap().faction.unwrap().eq(&Factions::UNI)
+                if exts.unwrap().faction.clone().unwrap().eq("TOW")
+                    || (exts.unwrap().faction.clone().unwrap().eq("UNI")
                         && exts.unwrap().factions.is_some()
                         && exts.unwrap().factions.clone().unwrap().shiftname
                             == "Autómentés".to_string())
@@ -65,7 +66,14 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
             .filter(supplements::Column::Owner.eq(exts.unwrap().driverid))
             .filter(supplements::Column::Status.eq(statuses.accepted.id))
             .filter(supplements::Column::Date.gt(fridays.last_friday))
-            .filter(supplements::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
+            .filter(
+                supplements::Column::Faction.eq(config
+                    .factions
+                    .get(&exts.unwrap().faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .filter(supplements::Column::Date.lt(fridays.next_friday))
             .all(db)
             .await
@@ -74,7 +82,14 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
             .filter(hails::Column::Owner.eq(exts.unwrap().driverid))
             .filter(hails::Column::Status.eq(statuses.accepted.id))
             .filter(hails::Column::Date.gt(fridays.last_friday))
-            .filter(hails::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
+            .filter(
+                hails::Column::Faction.eq(config
+                    .factions
+                    .get(&exts.unwrap().faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .filter(hails::Column::Date.lt(fridays.next_friday))
             .all(db)
             .await
@@ -87,7 +102,14 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
             )
             .filter(bills::Column::Status.eq(statuses.accepted.id))
             .filter(bills::Column::Date.gt(fridays.last_friday))
-            .filter(bills::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
+            .filter(
+                bills::Column::Faction.eq(config
+                    .factions
+                    .get(&exts.unwrap().faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .filter(bills::Column::Date.lt(fridays.next_friday))
             .all(db)
             .await
@@ -157,14 +179,24 @@ pub async fn ucp_calls(mut request: Request) -> Result<Json<Callz>, (StatusCode,
 #[debug_handler]
 pub async fn ucp_apms_calls(mut request: Request) -> Result<Json<ApmsCalls>, (StatusCode, String)> {
     let exts: Option<&Driver> = request.extensions_mut().get();
-    if exts.unwrap().faction.is_some() && exts.unwrap().faction.unwrap() == Factions::APMS {
+    if exts.unwrap().faction.is_some()
+        && exts.unwrap().faction.clone().unwrap() == "APMS".to_string()
+    {
         let db = DB_CLIENT.get().unwrap();
+        let config = get_config().await;
         let statuses = get_statuses();
         let fridays: crate::utils::functions::Friday = get_fridays();
         let dbreturn_bills = bills::Entity::find()
             .filter(bills::Column::Status.ne(statuses.rejected.id))
             .filter(bills::Column::Date.gt(fridays.last_friday))
-            .filter(bills::Column::Faction.eq(get_faction_id(exts.unwrap().faction.unwrap())))
+            .filter(
+                bills::Column::Faction.eq(config
+                    .factions
+                    .get(&exts.unwrap().faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .filter(bills::Column::Date.lt(fridays.next_friday))
             .all(db)
             .await

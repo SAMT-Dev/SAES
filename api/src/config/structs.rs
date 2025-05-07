@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use saes_shared::structs::{
-    api_config::{FactionAccessConfig, FactionSiteAccessConfig, ItemAccess},
-    factions::Factions,
-};
+use saes_shared::structs::api_config::{FactionAccessConfig, FactionSiteAccessConfig};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -59,42 +56,26 @@ pub struct FactionConfig {
     pub shift_access: ShiftAccess,
     pub access: FactionAccessConfig,
     pub site_access: FactionSiteAccessConfig,
+    pub settings: FactionSettings,
 }
-
-impl Default for FactionConfig {
-    fn default() -> Self {
-        Self {
-            shift_access: ShiftAccess::default(),
-            access: FactionAccessConfig {
-                supplements: ItemAccess::default(),
-                hails: ItemAccess::default(),
-                bills: ItemAccess::default(),
-            },
-            site_access: FactionSiteAccessConfig {
-                ucp: true,
-                admin: true,
-                shift: true,
-                fleet: true,
-                faction: true,
-            },
-        }
-    }
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FactionSettings {
+    pub id: i8,
+    pub icon_id: i32,
+    pub display: String,
+    pub perm_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MainConfig {
     pub global: GlobalConfig,
-    pub factions: HashMap<Factions, FactionConfig>,
+    pub factions: HashMap<String, FactionConfig>,
     pub access_keys: Vec<AccessKeysConfig>,
 }
 
 impl Default for MainConfig {
     fn default() -> Self {
-        let mut factions = HashMap::new();
-        factions.insert(Factions::SCKK, FactionConfig::default());
-        factions.insert(Factions::TOW, FactionConfig::default());
-        factions.insert(Factions::APMS, FactionConfig::default());
-        factions.insert(Factions::UNI, FactionConfig::default());
+        let factions = HashMap::new();
         Self {
             global: GlobalConfig::default(),
             factions,
