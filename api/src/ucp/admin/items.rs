@@ -7,11 +7,7 @@ use axum::{
 use http::StatusCode;
 use saes_shared::{
     db::{bills, hails, supplements},
-    structs::{
-        api_config::ItemAccess,
-        factions::{get_faction_id, Factions},
-        user::Driver,
-    },
+    structs::{api_config::ItemAccess, user::Driver},
 };
 use serde::{Deserialize, Serialize};
 
@@ -33,7 +29,7 @@ pub struct SMPostItemsBody {
     pub id: i32,
     pub status: i8,
     pub price: Option<i32>,
-    pub target_faction: Option<Factions>,
+    pub target_faction: Option<String>,
     pub driver: Option<i32>,
     pub supp_type: Option<i8>,
     pub reason: Option<String>,
@@ -56,14 +52,14 @@ pub async fn admin_items_get(
     if quer.tipus == types.supplements.id
         && (config
             .factions
-            .get(&ext.faction.unwrap())
+            .get(&ext.faction.clone().unwrap())
             .unwrap()
             .access
             .supplements
             == ItemAccess::Read
             || config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .supplements
@@ -72,7 +68,14 @@ pub async fn admin_items_get(
         let statreturn = supplements::Entity::find()
             .filter(supplements::Column::Status.eq(quer.status.clone()))
             .order_by(supplements::Column::Date, Order::Desc)
-            .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                supplements::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -101,14 +104,14 @@ pub async fn admin_items_get(
     } else if quer.tipus == types.hails.id
         && (config
             .factions
-            .get(&ext.faction.unwrap())
+            .get(&ext.faction.clone().unwrap())
             .unwrap()
             .access
             .hails
             == ItemAccess::Read
             || config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .hails
@@ -117,7 +120,14 @@ pub async fn admin_items_get(
         let statreturn = hails::Entity::find()
             .filter(hails::Column::Status.eq(quer.status.clone()))
             .order_by(hails::Column::Date, Order::Desc)
-            .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                hails::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -146,14 +156,14 @@ pub async fn admin_items_get(
     } else if quer.tipus == types.bills.id
         && (config
             .factions
-            .get(&ext.faction.unwrap())
+            .get(&ext.faction.clone().unwrap())
             .unwrap()
             .access
             .bills
             == ItemAccess::Read
             || config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .bills
@@ -162,7 +172,14 @@ pub async fn admin_items_get(
         let statreturn = bills::Entity::find()
             .filter(bills::Column::Status.eq(quer.status.clone()))
             .order_by(bills::Column::Date, Order::Desc)
-            .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                bills::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .all(db)
             .await
             .expect("[ERROR] Statisztika lekérés sikertelen");
@@ -210,7 +227,7 @@ pub async fn admin_items_post(
         if body.tipus == types.supplements.id
             && config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .supplements
@@ -271,7 +288,14 @@ pub async fn admin_items_post(
             }
             db_log(
                 ext.driverid,
-                Some(get_faction_id(ext.faction.unwrap())),
+                Some(
+                    config
+                        .factions
+                        .get(&ext.faction.clone().unwrap())
+                        .unwrap()
+                        .settings
+                        .id,
+                ),
                 Some(body.id.clone()),
                 Some(types.supplements.id),
                 "UPDATE ITEM",
@@ -280,7 +304,12 @@ pub async fn admin_items_post(
             .await;
             let activemodel = supplements::ActiveModel {
                 id: Set(body.id),
-                faction: Set(get_faction_id(ext.faction.unwrap())),
+                faction: Set(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
                 status: Set(body.status),
                 reason: Set(body.reason),
                 r#type: Set(if !body.supp_type.is_some() {
@@ -317,7 +346,7 @@ pub async fn admin_items_post(
         } else if body.tipus == types.hails.id
             && config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .hails
@@ -361,7 +390,14 @@ pub async fn admin_items_post(
             }
             db_log(
                 ext.driverid,
-                Some(get_faction_id(ext.faction.unwrap())),
+                Some(
+                    config
+                        .factions
+                        .get(&ext.faction.clone().unwrap())
+                        .unwrap()
+                        .settings
+                        .id,
+                ),
                 Some(body.id.clone()),
                 Some(types.hails.id),
                 "UPDATE ITEM",
@@ -370,7 +406,12 @@ pub async fn admin_items_post(
             .await;
             let activemodel = hails::ActiveModel {
                 id: Set(body.id),
-                faction: Set(get_faction_id(ext.faction.unwrap())),
+                faction: Set(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
                 status: Set(body.status),
                 reason: Set(body.reason),
                 handled_by: Set(Some(ext.driverid)),
@@ -400,7 +441,7 @@ pub async fn admin_items_post(
         } else if body.tipus == types.bills.id
             && config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .bills
@@ -477,7 +518,16 @@ pub async fn admin_items_post(
                 .as_str();
             }
             if body.target_faction.is_some() {
-                if old_model.target_faction != Some(get_faction_id(body.target_faction.unwrap())) {
+                if old_model.target_faction
+                    != Some(
+                        config
+                            .factions
+                            .get(&body.target_faction.clone().unwrap())
+                            .unwrap()
+                            .settings
+                            .id,
+                    )
+                {
                     act += format!(
                         "{}target_faction FROM {} TO {}",
                         if act.len() > 0 { "; " } else { "" },
@@ -487,7 +537,12 @@ pub async fn admin_items_post(
                             0
                         },
                         if body.target_faction.is_some() {
-                            get_faction_id(body.target_faction.unwrap())
+                            config
+                                .factions
+                                .get(&body.target_faction.clone().unwrap())
+                                .unwrap()
+                                .settings
+                                .id
                         } else {
                             0
                         }
@@ -497,7 +552,14 @@ pub async fn admin_items_post(
             }
             db_log(
                 ext.driverid,
-                Some(get_faction_id(ext.faction.unwrap())),
+                Some(
+                    config
+                        .factions
+                        .get(&ext.faction.clone().unwrap())
+                        .unwrap()
+                        .settings
+                        .id,
+                ),
                 Some(body.id.clone()),
                 Some(types.bills.id),
                 "UPDATE ITEM",
@@ -506,11 +568,23 @@ pub async fn admin_items_post(
             .await;
             let activemodel = bills::ActiveModel {
                 id: Set(body.id),
-                faction: Set(get_faction_id(ext.faction.unwrap())),
+                faction: Set(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
                 status: Set(body.status),
                 reason: Set(body.reason),
                 target_faction: Set(if body.target_faction.is_some() {
-                    Some(get_faction_id(body.target_faction.unwrap()))
+                    Some(
+                        config
+                            .factions
+                            .get(&body.target_faction.clone().unwrap())
+                            .unwrap()
+                            .settings
+                            .id,
+                    )
                 } else {
                     None
                 }),

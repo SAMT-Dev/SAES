@@ -1,14 +1,11 @@
 use axum::{debug_handler, response::IntoResponse, routing::get, Extension, Json, Router};
 use chrono::{DateTime, Utc};
 use http::StatusCode;
-use saes_shared::{
-    db::logs,
-    structs::{factions::get_faction_id, user::Driver},
-};
+use saes_shared::{db::logs, structs::user::Driver};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder};
 use serde::Serialize;
 
-use crate::DB_CLIENT;
+use crate::{config::loader::get_config, DB_CLIENT};
 
 #[derive(Debug, Serialize)]
 pub struct Logs {
@@ -30,8 +27,16 @@ pub fn get_routes() -> Router {
 #[debug_handler]
 pub async fn fm_get_logs(ext: Extension<Driver>) -> impl IntoResponse {
     let db = DB_CLIENT.get().unwrap();
+    let config = get_config().await;
     let logs = logs::Entity::find()
-        .filter(logs::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+        .filter(
+            logs::Column::Faction.eq(config
+                .factions
+                .get(&ext.faction.clone().unwrap())
+                .unwrap()
+                .settings
+                .id),
+        )
         .order_by(logs::Column::Date, Order::Desc)
         .all(db)
         .await

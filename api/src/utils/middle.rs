@@ -1,7 +1,6 @@
 use axum::{extract::Request, http::HeaderMap, middleware::Next, response::IntoResponse};
 use reqwest::StatusCode;
 use saes_shared::structs::{
-    factions::{get_faction_id, Factions},
     permissions::{get_perm, Permissions},
     user::Driver,
 };
@@ -90,59 +89,31 @@ pub async fn ucp_auth(
     if jwt.permissions.contains(&get_perm(Permissions::SaesLogin)) || jwt.admin {
         let fact = match faction {
             None => None,
-            Some(val) => {
-                if val.to_str().is_ok() {
-                    if val.to_str().unwrap() == Factions::SCKK.to_string() {
-                        if jwt
-                            .permissions
-                            .contains(&get_perm(Permissions::SaesUcp(Factions::SCKK)))
-                            || jwt.admin
-                        {
-                            Some(Factions::SCKK)
-                        } else {
-                            None
-                        }
-                    } else if val.to_str().unwrap() == Factions::TOW.to_string() {
-                        if jwt
-                            .permissions
-                            .contains(&get_perm(Permissions::SaesUcp(Factions::TOW)))
-                            || jwt.admin
-                        {
-                            Some(Factions::TOW)
-                        } else {
-                            None
-                        }
-                    } else if val.to_str().unwrap() == Factions::APMS.to_string() {
-                        if jwt
-                            .permissions
-                            .contains(&get_perm(Permissions::SaesUcp(Factions::APMS)))
-                            || jwt.admin
-                        {
-                            Some(Factions::APMS)
-                        } else {
-                            None
-                        }
-                    } else if val.to_str().unwrap() == Factions::UNI.to_string() {
-                        if jwt
-                            .permissions
-                            .contains(&get_perm(Permissions::SaesUcp(Factions::UNI)))
-                            || jwt.admin
-                        {
-                            Some(Factions::UNI)
-                        } else {
-                            None
-                        }
+            Some(f) => {
+                let conf = config.factions.get(f.to_str().unwrap());
+                if conf.is_none() {
+                    None
+                } else {
+                    if jwt.permissions.contains(&get_perm(Permissions::SaesUcp(
+                        conf.unwrap().settings.perm_name.clone(),
+                    ))) {
+                        Some(f.to_str().unwrap().to_string())
                     } else {
                         None
                     }
-                } else {
-                    None
                 }
             }
         };
         if fact.is_some() {
-            let records = jwt.factions.get(&get_faction_id(fact.unwrap()));
-            match fact.unwrap() {
+            let records = jwt.factions.get(
+                &config
+                    .factions
+                    .get(&fact.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id,
+            );
+            match fact.clone().unwrap() {
                 facto => {
                     if !config.factions.get(&facto).unwrap().site_access.ucp {
                         return Err((
@@ -152,7 +123,7 @@ pub async fn ucp_auth(
                     }
                 }
             }
-            let factconf = config.factions.get(&fact.unwrap()).unwrap();
+            let factconf = config.factions.get(&fact.clone().unwrap()).unwrap();
             let tag = Driver {
                 name: jwt.username,
                 driverid: jwt.id,
@@ -195,7 +166,7 @@ pub async fn shift_auth(
     let config = get_config().await;
     if uwrp.faction.is_some() {
         let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdminShift(
-            uwrp.faction.unwrap(),
+            uwrp.faction.clone().unwrap(),
         ))) {
             true
         } else {
@@ -205,7 +176,7 @@ pub async fn shift_auth(
         if (uwrp.admin || fact)
             && config
                 .factions
-                .get(&uwrp.faction.unwrap())
+                .get(&uwrp.faction.clone().unwrap())
                 .unwrap()
                 .site_access
                 .shift
@@ -230,10 +201,9 @@ pub async fn admin_auth(
     let uwrp = exts.expect("Tag lekérése sikertelen, ucp_auth megtörtént?");
     let config = get_config().await;
     if uwrp.faction.is_some() {
-        let fact = if uwrp
-            .perms
-            .contains(&get_perm(Permissions::SaesAdmin(uwrp.faction.unwrap())))
-        {
+        let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdmin(
+            uwrp.faction.clone().unwrap(),
+        ))) {
             true
         } else {
             false
@@ -242,7 +212,7 @@ pub async fn admin_auth(
         if (uwrp.admin || fact)
             && config
                 .factions
-                .get(&uwrp.faction.unwrap())
+                .get(&uwrp.faction.clone().unwrap())
                 .unwrap()
                 .site_access
                 .admin
@@ -276,7 +246,7 @@ pub async fn faction_auth(
         ));
     }
     let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdminFaction(
-        uwrp.faction.unwrap(),
+        uwrp.faction.clone().unwrap(),
     ))) {
         true
     } else {
@@ -287,7 +257,7 @@ pub async fn faction_auth(
         && !fact
         && !config
             .factions
-            .get(&uwrp.faction.unwrap())
+            .get(&uwrp.faction.clone().unwrap())
             .unwrap()
             .site_access
             .faction

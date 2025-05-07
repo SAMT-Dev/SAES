@@ -15,11 +15,7 @@ use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 use saes_shared::{
     db::{bills, hails, images, images_bind, supplements},
-    structs::{
-        api_config::ItemAccess,
-        factions::{get_faction_by_id, get_faction_id, Factions},
-        user::Driver,
-    },
+    structs::{api_config::ItemAccess, user::Driver},
 };
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 use serde::{Deserialize, Serialize};
@@ -30,6 +26,7 @@ use crate::{
     config::loader::get_config,
     logging::db_log,
     utils::{
+        factions::get_faction_by_id,
         queries::{UCPTypeExtraQuery, UCPTypeQuery},
         types_statuses::{get_statuses, get_types, get_types_as_list},
     },
@@ -45,7 +42,7 @@ pub struct ItemsStruct {
     pub status: i8,
     pub driver: Option<i32>,
     pub reason: Option<String>,
-    pub faction: Factions,
+    pub faction: String,
     pub handled_by: Option<i32>,
     pub price: Option<i32>,
     pub date: chrono::DateTime<Utc>,
@@ -77,14 +74,14 @@ pub async fn ucp_items_get(
     if cucc.tipus == types.supplements.id
         && (config
             .factions
-            .get(&ext.faction.unwrap())
+            .get(&ext.faction.clone().unwrap())
             .unwrap()
             .access
             .supplements
             == ItemAccess::Read
             || config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .supplements
@@ -92,7 +89,14 @@ pub async fn ucp_items_get(
     {
         let items = supplements::Entity::find()
             .filter(supplements::Column::Owner.eq(ext.driverid))
-            .filter(supplements::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                supplements::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .order_by(supplements::Column::Date, Order::Desc)
             .all(db)
             .await
@@ -103,7 +107,7 @@ pub async fn ucp_items_get(
                 ItemsStruct {
                     owner: strucc.owner.clone(),
                     img_1: strucc.image,
-                    faction: ext.faction.unwrap(),
+                    faction: ext.faction.clone().unwrap(),
                     img_2: None,
                     driver: None,
                     reason: strucc.reason.clone(),
@@ -119,14 +123,14 @@ pub async fn ucp_items_get(
     } else if cucc.tipus == types.hails.id
         && (config
             .factions
-            .get(&ext.faction.unwrap())
+            .get(&ext.faction.clone().unwrap())
             .unwrap()
             .access
             .hails
             == ItemAccess::Read
             || config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .hails
@@ -134,7 +138,14 @@ pub async fn ucp_items_get(
     {
         let items = hails::Entity::find()
             .filter(hails::Column::Owner.eq(ext.driverid))
-            .filter(hails::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                hails::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .order_by(hails::Column::Date, Order::Desc)
             .all(db)
             .await
@@ -143,7 +154,7 @@ pub async fn ucp_items_get(
             .iter()
             .map(|strucc| -> ItemsStruct {
                 ItemsStruct {
-                    faction: ext.faction.unwrap(),
+                    faction: ext.faction.clone().unwrap(),
                     owner: strucc.owner.clone(),
                     img_1: strucc.image_1,
                     img_2: Some(strucc.image_2),
@@ -161,14 +172,14 @@ pub async fn ucp_items_get(
     } else if cucc.tipus == types.bills.id
         && (config
             .factions
-            .get(&ext.faction.unwrap())
+            .get(&ext.faction.clone().unwrap())
             .unwrap()
             .access
             .bills
             == ItemAccess::Read
             || config
                 .factions
-                .get(&ext.faction.unwrap())
+                .get(&ext.faction.clone().unwrap())
                 .unwrap()
                 .access
                 .bills
@@ -180,7 +191,14 @@ pub async fn ucp_items_get(
                     .eq(ext.driverid)
                     .or(bills::Column::Driver.eq(ext.driverid)),
             )
-            .filter(bills::Column::Faction.eq(get_faction_id(ext.faction.unwrap())))
+            .filter(
+                bills::Column::Faction.eq(config
+                    .factions
+                    .get(&ext.faction.clone().unwrap())
+                    .unwrap()
+                    .settings
+                    .id),
+            )
             .order_by(bills::Column::Date, Order::Desc)
             .all(db)
             .await
@@ -189,7 +207,7 @@ pub async fn ucp_items_get(
             .iter()
             .map(|strucc| -> ItemsStruct {
                 ItemsStruct {
-                    faction: ext.faction.unwrap(),
+                    faction: ext.faction.clone().unwrap(),
                     owner: strucc.owner,
                     img_1: strucc.image,
                     img_2: None,
@@ -272,7 +290,7 @@ pub async fn ucp_items_post(
                         if cucc.tipus == types.hails.id
                             && config
                                 .factions
-                                .get(&ext.faction.unwrap())
+                                .get(&ext.faction.clone().unwrap())
                                 .unwrap()
                                 .access
                                 .hails
@@ -282,7 +300,12 @@ pub async fn ucp_items_post(
                                 let img = images::ActiveModel {
                                     owner: Set(ext.driverid),
                                     tmp: Set(1),
-                                    faction: Set(get_faction_id(ext.faction.unwrap())),
+                                    faction: Set(config
+                                        .factions
+                                        .get(&ext.faction.clone().unwrap())
+                                        .unwrap()
+                                        .settings
+                                        .id),
                                     filename: Set(real_file_name[1].clone()),
                                     checksum: Set(Some(hash_text)),
                                     date: Set(DateTime::from_timestamp_millis(
@@ -302,7 +325,12 @@ pub async fn ucp_items_post(
                                 };
 
                                 let iten = hails::ActiveModel {
-                                    faction: Set(get_faction_id(ext.faction.unwrap())),
+                                    faction: Set(config
+                                        .factions
+                                        .get(&ext.faction.clone().unwrap())
+                                        .unwrap()
+                                        .settings
+                                        .id),
                                     date: Set(DateTime::from_timestamp_millis(
                                         ditas[i].parse().unwrap(),
                                     )
@@ -339,7 +367,14 @@ pub async fn ucp_items_post(
                                     .expect("BIND Create failed");
                                 db_log(
                                     ext.driverid,
-                                    Some(get_faction_id(ext.faction.unwrap())),
+                                    Some(
+                                        config
+                                            .factions
+                                            .get(&ext.faction.clone().unwrap())
+                                            .unwrap()
+                                            .settings
+                                            .id,
+                                    ),
                                     Some(newitem.last_insert_id),
                                     Some(types.hails.id),
                                     "UPLOAD ITEM",
@@ -353,7 +388,12 @@ pub async fn ucp_items_post(
                                     owner: Set(ext.driverid),
                                     filename: Set(real_file_name[1].clone()),
                                     checksum: Set(Some(hash_text)),
-                                    faction: Set(get_faction_id(ext.faction.unwrap())),
+                                    faction: Set(config
+                                        .factions
+                                        .get(&ext.faction.clone().unwrap())
+                                        .unwrap()
+                                        .settings
+                                        .id),
                                     tmp: Set(1),
                                     date: Set(DateTime::from_timestamp_millis(
                                         ditas[i].parse().unwrap(),
@@ -375,7 +415,7 @@ pub async fn ucp_items_post(
                         } else if cucc.tipus == types.supplements.id
                             && config
                                 .factions
-                                .get(&ext.faction.unwrap())
+                                .get(&ext.faction.clone().unwrap())
                                 .unwrap()
                                 .access
                                 .supplements
@@ -386,7 +426,12 @@ pub async fn ucp_items_post(
                                 tmp: Set(1),
                                 filename: Set(real_file_name[1].clone()),
                                 checksum: Set(Some(hash_text)),
-                                faction: Set(get_faction_id(ext.faction.unwrap())),
+                                faction: Set(config
+                                    .factions
+                                    .get(&ext.faction.clone().unwrap())
+                                    .unwrap()
+                                    .settings
+                                    .id),
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
@@ -403,7 +448,12 @@ pub async fn ucp_items_post(
                                 same_file.unwrap().id
                             };
                             let iten = supplements::ActiveModel {
-                                faction: Set(get_faction_id(ext.faction.unwrap())),
+                                faction: Set(config
+                                    .factions
+                                    .get(&ext.faction.clone().unwrap())
+                                    .unwrap()
+                                    .settings
+                                    .id),
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
@@ -429,7 +479,14 @@ pub async fn ucp_items_post(
                                 .expect("BIND Create failed");
                             db_log(
                                 ext.driverid,
-                                Some(get_faction_id(ext.faction.unwrap())),
+                                Some(
+                                    config
+                                        .factions
+                                        .get(&ext.faction.clone().unwrap())
+                                        .unwrap()
+                                        .settings
+                                        .id,
+                                ),
                                 Some(newitem.last_insert_id),
                                 Some(types.supplements.id),
                                 "UPLOAD ITEM",
@@ -440,7 +497,7 @@ pub async fn ucp_items_post(
                         } else if cucc.tipus == types.bills.id
                             && config
                                 .factions
-                                .get(&ext.faction.unwrap())
+                                .get(&ext.faction.clone().unwrap())
                                 .unwrap()
                                 .access
                                 .bills
@@ -448,7 +505,12 @@ pub async fn ucp_items_post(
                         {
                             let img = images::ActiveModel {
                                 owner: Set(ext.driverid),
-                                faction: Set(get_faction_id(ext.faction.unwrap())),
+                                faction: Set(config
+                                    .factions
+                                    .get(&ext.faction.clone().unwrap())
+                                    .unwrap()
+                                    .settings
+                                    .id),
                                 checksum: Set(Some(hash_text)),
                                 tmp: Set(1),
                                 filename: Set(real_file_name[1].clone()),
@@ -468,14 +530,26 @@ pub async fn ucp_items_post(
                                 same_file.unwrap().id
                             };
                             let iten = bills::ActiveModel {
-                                faction: Set(get_faction_id(ext.faction.unwrap())),
+                                faction: Set(config
+                                    .factions
+                                    .get(&ext.faction.clone().unwrap())
+                                    .unwrap()
+                                    .settings
+                                    .id),
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()),
                                 owner: Set(ext.driverid),
                                 driver: Set(Some(ext.driverid)),
-                                target_faction: Set(Some(get_faction_id(ext.faction.unwrap()))),
+                                target_faction: Set(Some(
+                                    config
+                                        .factions
+                                        .get(&ext.faction.clone().unwrap())
+                                        .unwrap()
+                                        .settings
+                                        .id,
+                                )),
                                 status: Set(statuses.uploaded.id),
                                 image: Set(new_img),
                                 ..Default::default()
@@ -496,7 +570,14 @@ pub async fn ucp_items_post(
                                 .expect("BIND Create failed");
                             db_log(
                                 ext.driverid,
-                                Some(get_faction_id(ext.faction.unwrap())),
+                                Some(
+                                    config
+                                        .factions
+                                        .get(&ext.faction.clone().unwrap())
+                                        .unwrap()
+                                        .settings
+                                        .id,
+                                ),
                                 Some(newitem.last_insert_id),
                                 Some(types.bills.id),
                                 "UPLOAD ITEM",
@@ -583,7 +664,7 @@ pub async fn get_item_info_by_id(
         return Ok(Json(ItemsStruct {
             date: item.date,
             driver: None,
-            faction: get_faction_by_id(item.faction),
+            faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
             id: item.id,
             img_1: item.image,
@@ -608,7 +689,7 @@ pub async fn get_item_info_by_id(
         return Ok(Json(ItemsStruct {
             date: item.date,
             driver: None,
-            faction: get_faction_by_id(item.faction),
+            faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
             id: item.id,
             img_1: item.image_1,
@@ -633,7 +714,7 @@ pub async fn get_item_info_by_id(
         return Ok(Json(ItemsStruct {
             date: item.date,
             driver: None,
-            faction: get_faction_by_id(item.faction),
+            faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
             id: item.id,
             img_1: item.image,

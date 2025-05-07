@@ -13,7 +13,7 @@ pub async fn get_config() -> MainConfig {
     if !dir.exists() {
         fs::create_dir(dir).await.unwrap();
     }
-    let config_file = Path::new("./config/main.json");
+    let config_file = Path::new("./config/default.json");
     if !config_file.exists() {
         let mut file = File::create(config_file).await.unwrap();
         let config = MainConfig::default();

@@ -1,6 +1,5 @@
 use axum::{debug_handler, extract::Query, response::IntoResponse, Json};
 use http::StatusCode;
-use saes_shared::structs::factions::Factions;
 use serde::Deserialize;
 
 use crate::config::{
@@ -37,7 +36,7 @@ pub async fn sys_post_global_config(
 
 #[derive(Debug, Deserialize)]
 pub struct FactionQuery {
-    pub faction: Factions,
+    pub faction: String,
 }
 
 #[debug_handler]
@@ -47,7 +46,7 @@ pub async fn sys_post_faction_config(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let conf = get_config().await;
     let mut new_config = conf.clone();
-    new_config.factions.insert(q.faction, c);
+    new_config.factions.insert(q.faction.to_string(), c);
     write_config(&new_config).await;
     Ok(Json(new_config.factions[&q.faction].clone()))
 }

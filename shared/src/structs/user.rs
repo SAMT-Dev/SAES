@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     api_config::{FactionAccessConfig, FactionSiteAccessConfig},
-    factions::{FactionRecord, Factions},
+    factions::FactionRecord,
 };
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
@@ -13,6 +13,6 @@ pub struct Driver {
     pub perms: Vec<String>,
     pub access: Option<FactionAccessConfig>,
     pub site_access: Option<FactionSiteAccessConfig>,
-    pub faction: Option<Factions>,
+    pub faction: Option<String>,
     pub factions: Option<FactionRecord>,
 }

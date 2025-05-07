@@ -1,11 +1,10 @@
-use saes_shared::structs::factions::Factions;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct BaseListQuery {
     pub tipus: String,
     pub driver: String,
-    pub faction: Factions,
+    pub faction: String,
 }
 
 #[derive(Debug, Deserialize)]
