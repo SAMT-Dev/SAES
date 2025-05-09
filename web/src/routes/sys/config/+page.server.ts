@@ -1,10 +1,10 @@
-import { apiUrl, apiUrlPublic } from '$lib/api';
-import { isRedirect, redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import type { Factions } from '$lib/permissions';
+import { apiUrl, apiUrlPublic } from "$lib/api";
+import { isRedirect, redirect } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
+import type { Factions } from "$lib/permissions";
 
-export type ShiftAccess = 'SameShift' | 'OtherManager' | 'OtherShift';
-export type FactionAccess = 'None' | 'Read' | 'Write';
+export type ShiftAccess = "SameShift" | "OtherManager" | "OtherShift";
+export type FactionAccess = "None" | "Read" | "Write";
 
 export interface FactionAccessConfig {
 	supplements: FactionAccess;
@@ -35,36 +35,36 @@ export interface Config {
 }
 
 export const load = (async ({ cookies }) => {
-	if (!cookies.get('auth_token')) {
+	if (!cookies.get("auth_token")) {
 		return {
 			noauth: true,
-			api: apiUrlPublic
+			api: apiUrlPublic,
 		};
 	}
 	try {
-		const aha = await fetch(`${apiUrl}/ucp/sys/config/get`, {
+		const aha = await fetch(`${apiUrl}/sys/config/get`, {
 			headers: {
-				cookie: cookies.get('auth_token') as string
-			}
+				cookie: cookies.get("auth_token") as string,
+			},
 		});
 		if (aha.status === 404) {
 			return {
 				noauth: true,
-				api: apiUrlPublic
+				api: apiUrlPublic,
 			};
 		}
 		if (aha.status === 403) {
-			throw redirect(302, '/ucp/admin');
+			throw redirect(302, "/ucp/admin");
 		}
 		if (aha.status === 402) {
 			return {
-				error: await aha.text()
+				error: await aha.text(),
 			};
 		}
 		if (aha.ok) {
 			let config: Config = await aha.json();
 			return {
-				config
+				config,
 			};
 		}
 	} catch (err) {
@@ -72,7 +72,7 @@ export const load = (async ({ cookies }) => {
 			throw redirect(err.status, err.location);
 		}
 		return {
-			error: true
+			error: true,
 		};
 	}
 }) satisfies PageServerLoad;

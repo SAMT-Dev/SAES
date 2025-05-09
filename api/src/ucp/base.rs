@@ -1,16 +1,44 @@
 use std::collections::HashMap;
 
-use axum::{debug_handler, extract::Request, Json};
+use axum::{debug_handler, response::IntoResponse, Extension, Json};
 use http::HeaderMap;
-use saes_shared::structs::user::Driver;
+use saes_shared::structs::{permissions::get_perm, user::Driver};
 use serde::{Deserialize, Serialize};
 
-use crate::{utils::api::get_api_envs, WEB_CLIENT};
+use crate::{config::loader::get_config, utils::api::get_api_envs, WEB_CLIENT};
+
+#[derive(Debug, Serialize)]
+struct HomeRet {
+    driver: Driver,
+    info: FactionInfo,
+}
+
+#[derive(Debug, Serialize)]
+struct FactionInfo {
+    display: String,
+    icon_id: i32,
+}
 
 #[debug_handler]
-pub async fn ucp_home(mut request: Request) -> Json<Driver> {
-    let exts: Option<&Driver> = request.extensions_mut().get();
-    Json(exts.unwrap().clone())
+pub async fn ucp_home(ext: Extension<Driver>) -> impl IntoResponse {
+    let config = get_config().await;
+    let faction = config.factions.get(&ext.faction.clone().unwrap()).unwrap();
+    Json(HomeRet {
+        driver: Driver {
+            driverid: ext.driverid,
+            access: ext.access.clone(),
+            faction: ext.faction.clone(),
+            admin: ext.admin,
+            factions: ext.factions.clone(),
+            perms: ext.perms.clone(),
+            name: ext.name.clone(),
+            site_access: ext.site_access.clone(),
+        },
+        info: FactionInfo {
+            display: faction.settings.display.clone(),
+            icon_id: faction.settings.icon_id,
+        },
+    })
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -62,4 +90,33 @@ pub async fn ucp_getuserid(h: HeaderMap) -> Json<UserId> {
         .unwrap();
     let res = req.json().await.unwrap();
     Json(res)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PubFactionReturn {
+    pub icon_id: i32,
+    pub name: String,
+}
+
+#[debug_handler]
+pub async fn ucp_getpubfactions(ext: Extension<Driver>) -> Json<HashMap<String, PubFactionReturn>> {
+    let config = get_config().await;
+    let mut factions = HashMap::new();
+    for (key, faction) in config.factions.iter() {
+        if ext.perms.contains(&get_perm(
+            saes_shared::structs::permissions::Permissions::SaesUcp(
+                faction.settings.perm_name.clone(),
+            ),
+        )) || ext.admin
+        {
+            factions.insert(
+                key.to_owned(),
+                PubFactionReturn {
+                    icon_id: faction.settings.icon_id,
+                    name: faction.settings.display.clone(),
+                },
+            );
+        }
+    }
+    Json(factions)
 }

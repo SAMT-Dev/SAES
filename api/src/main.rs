@@ -29,6 +29,7 @@ mod list;
 mod logging;
 mod shorts;
 mod socket;
+mod sys;
 mod ucp;
 mod utils;
 
@@ -97,6 +98,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .nest("/api", api::routes())
         .nest("/ucp", ucp::routes())
         .nest("/app", app::routes())
+        .nest("/sys", sys::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(CorsLayer::permissive())

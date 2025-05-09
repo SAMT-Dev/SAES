@@ -14,6 +14,11 @@
 	};
 </script>
 
+<svelte:head>
+	<link rel="icon" href="/favicon.png" />
+	<title>SA Management - SAMT</title>
+</svelte:head>
+
 <nav
 	class="grid grid-cols-2 items-center justify-between bg-rose-500 text-black lg:flex dark:text-white"
 >
@@ -33,19 +38,24 @@
 		class="child:px-2 child:rounded-lg child:drop-shadow-xl lg:flex! col-span-2 hidden flex-col items-center justify-center gap-2 text-center text-xl md:flex-row lg:z-auto lg:col-span-1 xl:mr-[10vw]"
 	>
 		<a
-			href="/ucp/admin/sys"
+			href="/sys"
 			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys') ? 'bg-rose-700' : ''}`}
 			>Főoldal</a
 		>
 		<a
-			href="/ucp/admin/sys/config"
+			href="/sys/config"
 			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys/config') ? 'bg-rose-700' : ''}`}
 			>Config</a
 		>
 		<a
-			href="/ucp/admin/sys/logs"
+			href="/sys/logs"
 			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys/logs') ? 'bg-rose-700' : ''}`}
 			>Logs</a
+		>
+		<a
+			href="/sys/factions"
+			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys/factions') ? 'bg-rose-700' : ''}`}
+			>Frakciók</a
 		>
 	</div>
 </nav>

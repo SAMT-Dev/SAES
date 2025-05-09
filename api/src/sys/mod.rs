@@ -7,9 +7,10 @@ use axum::{
 };
 use saes_shared::structs::user::Driver;
 
-use crate::utils::middle::sysadmin_auth;
+use crate::utils::middle::{sysadmin_auth, ucp_auth};
 
 mod config_api;
+mod factions;
 
 #[debug_handler]
 pub async fn sys_home(mut request: Request) -> Json<Driver> {
@@ -29,5 +30,7 @@ pub fn routes() -> Router {
             "/config/faction-post",
             post(config_api::sys_post_faction_config),
         )
+        .route("/getfactions", get(factions::get_all_factions))
         .layer(middleware::from_fn(sysadmin_auth))
+        .layer(middleware::from_fn(ucp_auth))
 }
