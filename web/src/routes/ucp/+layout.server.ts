@@ -5,6 +5,7 @@ import {
 	Factions,
 	factPermissions,
 	getAllFactionPermissions,
+	getFactionPerm,
 	Permissions,
 } from "$lib/permissions";
 
@@ -69,92 +70,52 @@ export const load = (async ({ cookies, request, url }) => {
 		}
 		if (aha.ok) {
 			const jeson: {
-				discordid: string;
-				driverid: number;
-				name: string;
-				admin: boolean;
-				perms: string[];
-				access: {
-					supplements: AccessType;
-					hails: AccessType;
-					bills: AccessType;
-				};
-				site_access: {
-					ucp: boolean;
+				driver: {
+					discordid: string;
+					driverid: number;
+					name: string;
 					admin: boolean;
-					shift: boolean;
-					fleet: boolean;
-					faction: boolean;
+					perms: string[];
+					access: {
+						supplements: AccessType;
+						hails: AccessType;
+						bills: AccessType;
+					};
+					site_access: {
+						ucp: boolean;
+						admin: boolean;
+						shift: boolean;
+						fleet: boolean;
+						faction: boolean;
+					};
+					faction?: string;
+					factions?: {
+						factionid: number;
+						factionname: string;
+						factionshortname: string;
+						positionid: number;
+						positionname: string;
+						shiftid: number;
+						shiftname: string;
+					};
 				};
-				faction?: string;
-				factions?: {
-					factionid: number;
-					factionname: string;
-					factionshortname: string;
-					positionid: number;
-					positionname: string;
-					shiftid: number;
-					shiftname: string;
+				info: {
+					display: string;
+					icon_id: number;
 				};
 			} = await aha.json();
-			if (jeson.name) {
+			if (jeson.driver.name) {
 				if (url.searchParams.get("select_faction")) {
 					let sfact = url.searchParams.get(
 						"select_faction",
 					) as string;
 					if (Object.values(Factions).includes(sfact as Factions)) {
 						if (
-							sfact === Factions.Taxi &&
-							allowPerms({ layout: jeson }, [
-								factPermissions[Factions.Taxi].SaesFactUcp,
+							allowPerms({ layout: jeson.driver }, [
+								getFactionPerm(Permissions.SaesFactUcp, sfact),
 							])
 						) {
-							cookies.set("selected_faction", Factions.Taxi, {
-								path: "/",
-								maxAge: 360 * 24 * 60,
-								secure: true,
-								sameSite: true,
-								httpOnly: true,
-							});
-							throw redirect(303, url.pathname);
-						}
-						if (
-							sfact === Factions.Apms &&
-							allowPerms({ layout: jeson }, [
-								factPermissions.APMS.SaesFactUcp,
-							])
-						) {
-							cookies.set("selected_faction", Factions.Apms, {
-								path: "/",
-								maxAge: 360 * 24 * 60,
-								secure: true,
-								sameSite: true,
-								httpOnly: true,
-							});
-							throw redirect(303, url.pathname);
-						}
-						if (
-							sfact === Factions.Tow &&
-							allowPerms({ layout: jeson }, [
-								factPermissions[Factions.Tow].SaesFactUcp,
-							])
-						) {
-							cookies.set("selected_faction", Factions.Tow, {
-								path: "/",
-								maxAge: 360 * 24 * 60,
-								secure: true,
-								sameSite: true,
-								httpOnly: true,
-							});
-							throw redirect(303, url.pathname);
-						}
-						if (
-							sfact === Factions.Uni &&
-							allowPerms({ layout: jeson }, [
-								factPermissions[Factions.Uni].SaesFactUcp,
-							])
-						) {
-							cookies.set("selected_faction", Factions.Uni, {
+							cookies.set("selected_faction", sfact, {
 								path: "/",
 								maxAge: 360 * 24 * 60,
 								secure: true,

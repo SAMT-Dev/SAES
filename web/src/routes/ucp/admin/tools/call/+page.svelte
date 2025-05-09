@@ -60,7 +60,7 @@
 			class="m-auto h-12 w-96"
 			multiple={true}
 			accept=".log"
-			on:change={zoneChange}
+			onchange={zoneChange}
 			bind:files
 		/>
 	{:else}
