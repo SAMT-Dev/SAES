@@ -11,12 +11,7 @@ export default {
 				itim: ['Itim']
 			},
 			colors: {
-				taxi: '#fece01',
-				apms: '#d8b47e',
-				tow: '#3498db',
-				uni: '#08c25c',
-				uni2: '#18653b',
-				uni3: '#0a4022'
+				taxi: '#fece01'
 			},
 			backgroundSize: {
 				'size-200': '200% 200%'

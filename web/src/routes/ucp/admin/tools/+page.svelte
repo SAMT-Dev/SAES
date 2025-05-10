@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Grid from '$lib/admin/grid.svelte';
-	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
+	import { getFactionPerm, Permissions } from '$lib/permissions.js';
 
 	let { data } = $props();
 </script>
@@ -17,8 +17,9 @@
 			border: 'border-taxi',
 			background: 'bg-yellow-200 hover:bg-taxi',
 			permission: [
-				factPermissions[Factions.Taxi].SaesFactAdmin,
-				factPermissions[Factions.Tow].SaesFactAdmin
+				getFactionPerm(Permissions.SaesFactAdmin, 'taxi'),
+				getFactionPerm(Permissions.SaesFactAdmin, 'tow'),
+				getFactionPerm(Permissions.SaesFactAdmin, 'uni')
 			]
 		},
 		{
@@ -29,8 +30,9 @@
 			border: 'border-blue-600',
 			background: 'bg-blue-300 hover:bg-blue-600',
 			permission: [
-				factPermissions[Factions.Taxi].SaesFactAdmin,
-				factPermissions[Factions.Tow].SaesFactAdmin
+				getFactionPerm(Permissions.SaesFactAdmin, 'taxi'),
+				getFactionPerm(Permissions.SaesFactAdmin, 'tow'),
+				getFactionPerm(Permissions.SaesFactAdmin, 'uni')
 			]
 		}
 	]}

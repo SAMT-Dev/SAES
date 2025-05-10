@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Grid from '$lib/admin/grid.svelte';
 	import { allowPerms } from '$lib/api.js';
-	import { Factions, factPermissions } from '$lib/permissions.js';
+	import { getFactionPerm, Permissions } from '$lib/permissions.js';
 
 	let { data } = $props();
 	const supportCountries = ['HU', 'SK', 'RO'];
@@ -18,9 +18,9 @@
 			border: 'border-yellow-400',
 			background: 'bg-yellow-200 hover:bg-yellow-400',
 			permission: [
-				factPermissions[Factions.Taxi].SaesFactAdminShift,
-				factPermissions[Factions.Tow].SaesFactAdminShift,
-				factPermissions[Factions.Uni].SaesFactAdminShift
+				getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'tow'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'uni')
 			]
 		},
 		{
@@ -30,9 +30,9 @@
 			border: 'border-green-400',
 			background: 'bg-green-200 hover:bg-green-400',
 			permission: [
-				factPermissions[Factions.Taxi].SaesFactAdminShift,
-				factPermissions[Factions.Tow].SaesFactAdminShift,
-				factPermissions[Factions.Uni].SaesFactAdminShift
+				getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'tow'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'uni')
 			]
 		},
 		{
@@ -42,22 +42,22 @@
 			border: 'border-tow',
 			background: 'bg-blue-200 hover:bg-tow',
 			permission: [
-				factPermissions[Factions.Taxi].SaesFactAdminShift,
-				factPermissions[Factions.Tow].SaesFactAdminShift,
-				factPermissions[Factions.Apms].SaesFactAdmin,
-				factPermissions[Factions.Uni].SaesFactAdminShift
+				getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'tow'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'apms'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'uni')
 			]
 		}
 	]}
 />
 
-{#if data.faction === Factions.Taxi || data.faction === Factions.Tow || data.faction === Factions.Uni}
+{#if data.faction === 'SCKK' || data.faction === 'TOW' || data.faction === 'UNI'}
 	<div class="mt-5 text-center">
 		<h1 class="mb-2 text-3xl font-bold text-black dark:text-white">Statisztika</h1>
 		<div
 			class="child:p-2 md:child:p-4 ml-5 mr-5 grid grid-cols-3 gap-5 text-center text-black dark:text-white"
 		>
-			{#if allowPerms( data, [factPermissions[Factions.Taxi].SaesFactAdminShift, factPermissions[Factions.Tow].SaesFactAdminShift, factPermissions[Factions.Uni].SaesFactAdminShift] )}
+			{#if allowPerms( data, [getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'), getFactionPerm(Permissions.SaesFactAdminShift, 'tow'), getFactionPerm(Permissions.SaesFactAdminShift, 'uni')] )}
 				<div
 					class="rounded-lg"
 					class:bg-red-700={color === 'HU'}

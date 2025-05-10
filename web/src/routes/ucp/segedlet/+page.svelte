@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { Factions } from '$lib/permissions.js';
-
 	let { data } = $props();
 </script>
 
 <div class="text-center text-black dark:text-white">
 	<h1 class="mb-4 mt-4 text-4xl font-bold">Segédlet az oldal használatához</h1>
-	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow || data.faction === Factions.Uni}
+	{#if ['SCKK', 'TOW', 'UNI'].includes(data.faction!)}
 		<h2 class="text-black dark:text-white">
 			A segédlet felépítése pontokra bontott, azon belül pedig alpontokra bontott.
 		</h2>
@@ -24,7 +22,7 @@
 				<li class="flex items-center gap-2">
 					<h2 class="text-left text-xl font-bold">1.</h2>
 					<h2 class="text-xl">
-						{#if data.faction === Factions.Tow}
+						{#if data.faction === 'TOW'}
 							A fotónak tartalmaznia kell a kiadott számlát és a teljes játékot. <a
 								class="text-taxi hidden text-xl font-bold uppercase"
 								target="_blank"
@@ -38,7 +36,7 @@
 				<li class="flex items-center gap-2">
 					<h2 class="text-left text-xl font-bold">2.</h2>
 					<h2 class="text-xl">
-						Pótlékok a következő időben érvényesek: {#if data.faction === Factions.Tow}
+						Pótlékok a következő időben érvényesek: {#if data.faction === 'TOW'}
 							8-16 óra (délelőtti), 20-4 (éjszakai).
 						{:else}
 							8-15 óra (délelőtti), 22-4 (éjszakai).
@@ -47,7 +45,7 @@
 				</li>
 			</ul>
 			<h1 class="ml-[20%] mt-5 text-left text-3xl font-bold">
-				2. Leintések {#if data.faction === Factions.Tow}/ Bejelentések
+				2. Leintések {#if data.faction === 'TOW'}/ Bejelentések
 				{/if}
 			</h1>
 			<ul class="child:mx-[20%] child:text-left ml-2">
@@ -58,7 +56,7 @@
 				<li class="flex gap-2">
 					<h2 class="text-xl font-bold">2.</h2>
 					<h2 class="text-xl">
-						{#if data.faction === Factions.Tow}
+						{#if data.faction === 'TOW'}
 							Az első képen a kiadott számlának kell látszódnia. <a
 								class="text-taxi hidden text-xl font-bold uppercase"
 								target="_blank"
@@ -69,7 +67,7 @@
 							látszódnia.
 						{/if}
 					</h2>
-					{#if data.faction !== Factions.Tow}
+					{#if data.faction !== 'TOW'}
 						<a
 							class="text-taxi hidden text-xl font-bold uppercase"
 							target="_blank"
@@ -85,7 +83,7 @@
 				<li class="flex gap-2">
 					<h2 class="text-xl font-bold">3.</h2>
 					<h2 class="text-xl">
-						{#if data.faction === Factions.Tow}
+						{#if data.faction === 'TOW'}
 							A második képen a fizetésről kell képet készíteni. (chat)
 							<a
 								class="text-taxi hidden text-xl font-bold uppercase"
@@ -120,7 +118,7 @@
 				</li>
 			</ul>
 
-			{#if data.faction === Factions.Taxi || data.faction === Factions.Uni}
+			{#if data.faction === 'SCKK' || data.faction === 'UNI'}
 				<h1 class="ml-[20%] mt-5 text-left text-3xl font-bold">4. Hívások igazolása</h1>
 				<ul class="child:mx-[20%] child:text- ml-2">
 					<li class="flex gap-2">
@@ -156,7 +154,7 @@
 			{/if}
 		</div>
 	{/if}
-	{#if data.faction === Factions.Apms}
+	{#if data.faction === 'APMS'}
 		<h2 class="text-3xl">
 			Fel kell tölteni a szereltetési számlákhoz az adott szereltetésről a képet. (F12)
 		</h2>
