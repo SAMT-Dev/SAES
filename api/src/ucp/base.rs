@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use axum::{debug_handler, response::IntoResponse, Extension, Json};
-use http::HeaderMap;
+use http::{HeaderMap, StatusCode};
 use saes_shared::structs::{permissions::get_perm, user::Driver};
 use serde::{Deserialize, Serialize};
 
@@ -10,20 +10,28 @@ use crate::{config::loader::get_config, utils::api::get_api_envs, WEB_CLIENT};
 #[derive(Debug, Serialize)]
 struct HomeRet {
     driver: Driver,
-    info: FactionInfo,
+    info: Option<FactionInfo>,
 }
 
 #[derive(Debug, Serialize)]
 struct FactionInfo {
     display: String,
     icon_id: i32,
+    perm_name: String,
+    primary: String,
+    secondary: String,
+    tertiary: String,
 }
 
 #[debug_handler]
-pub async fn ucp_home(ext: Extension<Driver>) -> impl IntoResponse {
+pub async fn ucp_home(ext: Extension<Driver>) -> Result<impl IntoResponse, (StatusCode, String)> {
     let config = get_config().await;
-    let faction = config.factions.get(&ext.faction.clone().unwrap()).unwrap();
-    Json(HomeRet {
+    let faction = if ext.faction.is_some() {
+        Some(config.factions.get(&ext.faction.clone().unwrap()).unwrap())
+    } else {
+        None
+    };
+    Ok(Json(HomeRet {
         driver: Driver {
             driverid: ext.driverid,
             access: ext.access.clone(),
@@ -34,11 +42,19 @@ pub async fn ucp_home(ext: Extension<Driver>) -> impl IntoResponse {
             name: ext.name.clone(),
             site_access: ext.site_access.clone(),
         },
-        info: FactionInfo {
-            display: faction.settings.display.clone(),
-            icon_id: faction.settings.icon_id,
+        info: if faction.is_some() {
+            Some(FactionInfo {
+                display: faction.unwrap().settings.display.clone(),
+                icon_id: faction.unwrap().settings.icon_id,
+                perm_name: faction.unwrap().settings.perm_name.clone(),
+                primary: faction.unwrap().settings.color.primary.clone(),
+                secondary: faction.unwrap().settings.color.secondary.clone(),
+                tertiary: faction.unwrap().settings.color.tertiary.clone(),
+            })
+        } else {
+            None
         },
-    })
+    }))
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -96,6 +112,10 @@ pub async fn ucp_getuserid(h: HeaderMap) -> Json<UserId> {
 pub struct PubFactionReturn {
     pub icon_id: i32,
     pub name: String,
+    pub perm_name: String,
+    pub primary: String,
+    pub secondary: String,
+    pub tertiary: String,
 }
 
 #[debug_handler]
@@ -114,6 +134,10 @@ pub async fn ucp_getpubfactions(ext: Extension<Driver>) -> Json<HashMap<String, 
                 PubFactionReturn {
                     icon_id: faction.settings.icon_id,
                     name: faction.settings.display.clone(),
+                    perm_name: faction.settings.perm_name.clone(),
+                    primary: faction.settings.color.primary.clone(),
+                    secondary: faction.settings.color.secondary.clone(),
+                    tertiary: faction.settings.color.tertiary.clone(),
                 },
             );
         }

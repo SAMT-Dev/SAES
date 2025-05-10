@@ -1,13 +1,7 @@
 import type { LayoutServerLoad } from "./$types";
 import { allowPerms, apiUrl, apiUrlPublic, cdnUrl, countPerms } from "$lib/api";
 import { isRedirect, redirect } from "@sveltejs/kit";
-import {
-	Factions,
-	factPermissions,
-	getAllFactionPermissions,
-	getFactionPerm,
-	Permissions,
-} from "$lib/permissions";
+import { getFactionPerm, Permissions } from "$lib/permissions";
 
 export type AccessType = "Write" | "Read" | "None";
 
@@ -99,9 +93,13 @@ export const load = (async ({ cookies, request, url }) => {
 						shiftname: string;
 					};
 				};
-				info: {
+				info?: {
 					display: string;
 					icon_id: number;
+					perm_name: string;
+					primary: string;
+					secondary: string;
+					tertiary: string;
 				};
 			} = await aha.json();
 			if (jeson.driver.name) {
@@ -109,22 +107,14 @@ export const load = (async ({ cookies, request, url }) => {
 					let sfact = url.searchParams.get(
 						"select_faction",
 					) as string;
-					if (Object.values(Factions).includes(sfact as Factions)) {
-						if (
-							allowPerms({ layout: jeson.driver }, [
-								getFactionPerm(Permissions.SaesFactUcp, sfact),
-							])
-						) {
-							cookies.set("selected_faction", sfact, {
-								path: "/",
-								maxAge: 360 * 24 * 60,
-								secure: true,
-								sameSite: true,
-								httpOnly: true,
-							});
-							throw redirect(303, url.pathname);
-						}
-					}
+					cookies.set("selected_faction", sfact, {
+						path: "/",
+						maxAge: 360 * 24 * 60,
+						secure: true,
+						sameSite: true,
+						httpOnly: true,
+					});
+					throw redirect(303, url.pathname);
 				}
 				if (url.searchParams.get("clear_faction")) {
 					cookies.delete("selected_faction", { path: "/" });
@@ -135,89 +125,61 @@ export const load = (async ({ cookies, request, url }) => {
 						refresh: true,
 					};
 				}
+				let selfactions = await fetch(`${apiUrl}/ucp/getfactions`, {
+					headers: {
+						cookie: cookies.get("auth_token")!,
+					},
+				});
+				if (!selfactions.ok) {
+					return {
+						error: "Frakcióid lekérése sikertelen.",
+					};
+				}
+				let factions: Record<
+					string,
+					{
+						icon_id: number;
+						name: string;
+						perm_name: string;
+						primary: string;
+						secondary: string;
+						tertiary: string;
+					}
+				> = await selfactions.json();
 				if (!cookies.get("selected_faction")) {
 					if (
-						countPerms(
-							{ layout: jeson },
-							getAllFactionPermissions(Permissions.SaesFactUcp),
-						) >= 2
+						Object.keys(factions).length > 1
 					) {
 						return {
-							layout: jeson,
+							layout: jeson.driver,
 							auth: cookies.get("auth_token")!,
 							api: apiUrlPublic,
-							nofact: true,
+							nofact: factions,
 						};
 					}
-					if (
-						allowPerms({ layout: jeson }, [
-							factPermissions[Factions.Taxi].SaesFactUcp,
-						])
-					) {
-						throw redirect(303, "?select_faction=SCKK");
-					}
-					if (
-						allowPerms({ layout: jeson }, [
-							factPermissions.APMS.SaesFactUcp,
-						])
-					) {
-						throw redirect(303, "?select_faction=APMS");
-					}
-					if (
-						allowPerms({ layout: jeson }, [
-							factPermissions[Factions.Tow].SaesFactUcp,
-						])
-					) {
-						throw redirect(303, "?select_faction=TOW");
-					}
-					if (
-						allowPerms({ layout: jeson }, [
-							factPermissions[Factions.Uni].SaesFactUcp,
-						])
-					) {
-						throw redirect(303, "?select_faction=UNI");
-					}
+					throw redirect(
+						303,
+						`?select_faction=${Object.keys(factions)[0]}`,
+					);
 				}
-				switch (cookies.get("selected_faction")) {
-					case Factions.Taxi:
-						if (
-							!allowPerms({ layout: jeson }, [
-								factPermissions[Factions.Taxi].SaesFactUcp,
-							])
-						) {
-							throw redirect(303, "?clear_faction=true");
-						}
-						break;
-					case Factions.Apms:
-						if (
-							!allowPerms({ layout: jeson }, [
-								factPermissions.APMS.SaesFactUcp,
-							])
-						) {
-							throw redirect(303, "?clear_faction=true");
-						}
-						break;
-					case Factions.Tow:
-						if (
-							!allowPerms({ layout: jeson }, [
-								factPermissions[Factions.Tow].SaesFactUcp,
-							])
-						) {
-							throw redirect(303, "?clear_faction=true");
-						}
-						break;
-					case Factions.Uni:
-						if (
-							!allowPerms({ layout: jeson }, [
-								factPermissions[Factions.Uni].SaesFactUcp,
-							])
-						) {
-							throw redirect(303, "?clear_faction=true");
-						}
-						break;
+				let selfact = cookies.get("selected_faction")!;
+				if (!factions[selfact]) {
+					throw redirect(303, "?clear_faction=true");
 				}
+				if (
+					!allowPerms({ layout: jeson.driver }, [
+						getFactionPerm(
+							Permissions.SaesFactUcp,
+							factions[selfact].perm_name,
+						),
+					])
+				) {
+					throw redirect(303, "?clear_faction=true");
+				}
+				console.log(jeson.info);
 				return {
-					layout: jeson,
+					layout: jeson.driver,
+					info: jeson.info,
 					api: apiUrlPublic,
 					cdn: cdnUrl,
 					faction: cookies.get("selected_faction"),

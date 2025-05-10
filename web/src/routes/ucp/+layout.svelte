@@ -8,9 +8,8 @@
 	import { socket } from '$lib/socket.js';
 	import ViewTransition from '$lib/navigation.svelte';
 	import Header from '$lib/ucp/header.svelte';
-	import { allowPerms } from '$lib/api.js';
-	import { Factions, factPermissions, Permissions } from '$lib/permissions.js';
-	import { goto } from '$app/navigation';
+	import { allowPerms, cdnUrl } from '$lib/api.js';
+	import { getFactionPerm, Permissions } from '$lib/permissions.js';
 	import { browser } from '$app/environment';
 	import { io } from 'socket.io-client';
 	let { data, children } = $props();
@@ -20,17 +19,10 @@
 	let nosocket: boolean | string = $state('Socket csatlakozás');
 	let tip = $state('SAMT');
 	if (!data.noaccess && !data.noauth) {
-		if (data.faction === Factions.Taxi) {
-			tip = 'TAXI';
-		}
-		if (data.faction === Factions.Apms) {
-			tip = 'APMS';
-		}
-		if (data.faction === Factions.Tow) {
-			tip = 'TOW';
-		}
-		if (data.faction === Factions.Uni) {
-			tip = 'Akadémia';
+		if (data.info?.display) {
+			tip = data.info?.display!;
+		} else {
+			tip = 'SAMT';
 		}
 	}
 	if (data.refresh && browser) {
@@ -95,15 +87,7 @@
 	{:else}
 		<title>{tip}</title>
 	{/if}
-	{#if data.faction === Factions.Taxi || data.faction === Factions.Tow}
-		<link rel="icon" href="/sckk_icon.png" />
-	{/if}
-	{#if data.faction === Factions.Apms}
-		<link rel="icon" href="/apms_icon.png" />
-	{/if}
-	{#if data.faction === Factions.Uni}
-		<link rel="icon" href="/uni_icon.png" />
-	{/if}
+	<link rel="icon" href={`${cdnUrl}/get?id=${data.info?.icon_id}`} />
 </svelte:head>
 <Error {data}>
 	{#if data.noauth}
@@ -161,78 +145,25 @@
 		<main>
 			<div class="flex h-screen items-center justify-center text-center text-black dark:text-white">
 				<div class="flex flex-col items-center justify-center gap-2 lg:flex-row lg:gap-5">
-					{#if allowPerms(data, [factPermissions[Factions.Taxi].SaesFactUcp])}
+					{#each Object.keys(data.nofact) as fact}
 						<a
-							href="?select_faction=SCKK"
+							href={`?select_faction=${fact}`}
 							data-sveltekit-reload
 							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
+							style={`--fact-primary: ${data.nofact[fact].primary};`}
 						>
 							<img
-								src="/sckk_icon.png"
-								class="group-hover:border-taxi m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
-								alt="SCKK Logo"
+								src={`${cdnUrl}/get?id=${data.nofact[fact].icon_id}`}
+								class="m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 group-hover:border-[--fact-primary] lg:min-w-40 lg:max-w-40"
+								alt="Logo"
 							/>
 							<h1
-								class="group-hover:text-taxi text-3xl font-bold tracking-wider transition-colors duration-300"
+								class="text-3xl font-bold tracking-wider transition-colors duration-300 group-hover:text-[--fact-primary]"
 							>
-								TAXI
+								{data.nofact[fact].name}
 							</h1>
 						</a>
-					{/if}
-					{#if allowPerms(data, [factPermissions[Factions.Tow].SaesFactUcp])}
-						<a
-							href="?select_faction=TOW"
-							data-sveltekit-reload
-							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
-						>
-							<img
-								src="/sckk_icon.png"
-								class="group-hover:border-tow m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
-								alt="SCKK Logo"
-							/>
-							<h1
-								class="group-hover:text-tow text-3xl font-bold tracking-wider transition-colors duration-300"
-							>
-								TOW
-							</h1>
-						</a>
-					{/if}
-					{#if allowPerms(data, [factPermissions.UNI.SaesFactUcp])}
-						<a
-							href="?select_faction=UNI"
-							data-sveltekit-reload
-							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
-						>
-							<img
-								src="/uni_icon.png"
-								class="group-hover:border-uni m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
-								alt="SCKK Logo"
-							/>
-							<h1
-								class="group-hover:text-uni text-3xl font-bold tracking-wider transition-colors duration-300"
-							>
-								Akadémia
-							</h1>
-						</a>
-					{/if}
-					{#if allowPerms(data, [factPermissions.APMS.SaesFactUcp])}
-						<a
-							href="?select_faction=APMS"
-							data-sveltekit-reload
-							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
-						>
-							<img
-								src="/apms_icon.png"
-								class="group-hover:border-apms m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 lg:min-w-40 lg:max-w-40"
-								alt="APMS Logo"
-							/>
-							<h1
-								class="group-hover:text-apms text-3xl font-bold tracking-wider transition-colors duration-300"
-							>
-								APMS
-							</h1>
-						</a>
-					{/if}
+					{/each}
 				</div>
 			</div>
 		</main>
@@ -280,30 +211,17 @@
 				<Header
 					{tip}
 					faction={data.faction!}
-					isAdmin={data.faction === Factions.Taxi
-						? allowPerms(data, [factPermissions[Factions.Taxi].SaesFactAdmin])
-						: data.faction === Factions.Tow
-							? allowPerms(data, [factPermissions[Factions.Tow].SaesFactAdmin])
-							: data.faction === Factions.Apms
-								? allowPerms(data, [factPermissions[Factions.Apms].SaesFactAdmin])
-								: data.faction === Factions.Uni
-									? allowPerms(data, [factPermissions[Factions.Uni].SaesFactAdmin])
-									: false}
+					isAdmin={data.layout?.perms.includes(
+						getFactionPerm(Permissions.SaesFactAdmin, data.faction!)
+					) || data.layout?.admin}
 					{data}
 					{nosocket}
 				/>
 			{/if}
 			<ViewTransition />
 			<main
-				class={data.faction === Factions.Taxi
-					? 'selection:bg-taxi'
-					: data.faction === Factions.Tow
-						? 'selection:bg-tow'
-						: data.faction === Factions.Apms
-							? 'selection:bg-apms'
-							: data.faction === Factions.Uni
-								? 'selection:bg-uni'
-								: ''}
+				style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
+				class="selection:bg-[var(--color-primary)]"
 			>
 				{@render children?.()}
 			</main>

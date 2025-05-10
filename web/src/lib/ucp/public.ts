@@ -1,5 +1,3 @@
-import { Factions } from "$lib/permissions";
-
 export function getRealText(text: string) {
 	switch (text) {
 		case "pótlék_délelőtti":
@@ -40,34 +38,32 @@ export const pages = (fact: string) => {
 		{
 			url: "/ucp",
 			display: "Kezdőlap",
-			faction: [Factions.Taxi, Factions.Apms, Factions.Tow, Factions.Uni],
+			faction: ["SCKK", "TOW", "APMS", "UNI"],
 		},
 		{
 			url: "/ucp/segedlet",
 			display: "Segédlet",
-			faction: [Factions.Taxi, Factions.Tow, Factions.Apms, Factions.Uni],
+			faction: ["SCKK", "TOW", "APMS", "UNI"],
 		},
 		{
 			url: "/ucp/links",
 			display: "Hasznos linkek",
-			faction: [Factions.Taxi, Factions.Tow, Factions.Uni],
+			faction: ["SCKK", "TOW", "UNI"],
 		},
 		{
 			url: "/ucp/potlekok",
 			display: "Pótlékok",
-			faction: [Factions.Taxi, Factions.Tow, Factions.Uni],
+			faction: ["SCKK", "TOW", "UNI"],
 		},
 		{
 			url: "/ucp/leintesek",
-			display: `Leintések${
-				fact === Factions.Tow ? " / Bejelentések" : ""
-			}`,
-			faction: [Factions.Taxi, Factions.Tow, Factions.Uni],
+			display: `Leintések${fact === "TOW" ? " / Bejelentések" : ""}`,
+			faction: ["SCKK", "TOW", "UNI"],
 		},
 		{
 			url: "/ucp/szamlak",
 			display: "Szereltetési számlák",
-			faction: [Factions.Taxi, Factions.Apms, Factions.Tow, Factions.Uni],
+			faction: ["SCKK", "TOW", "APMS", "UNI"],
 		},
 	];
 };
