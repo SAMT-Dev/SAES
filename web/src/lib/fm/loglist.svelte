@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {
 		Checkbox,
-		Select,
 		Table,
 		TableBody,
 		TableBodyCell,
@@ -201,7 +200,7 @@
 			{#if filters.includes('login')}
 				<Checkbox
 					bind:checked={selected_filters.login}
-					on:change={filter_check}
+					onchange={filter_check}
 					name="login"
 					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					>Bejelentkezés</Checkbox
@@ -210,7 +209,7 @@
 			{#if filters.includes('upload_item')}
 				<Checkbox
 					bind:checked={selected_filters.upload_item}
-					on:change={filter_check}
+					onchange={filter_check}
 					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					name="upload item">Elem feltöltés</Checkbox
 				>
@@ -218,7 +217,7 @@
 			{#if filters.includes('update_item')}
 				<Checkbox
 					bind:checked={selected_filters.update_item}
-					on:change={filter_check}
+					onchange={filter_check}
 					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					name="update item">Elem szerkesztés</Checkbox
 				>

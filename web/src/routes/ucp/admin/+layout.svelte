@@ -74,7 +74,7 @@
 		{/if}
 		{#if allowPerms(data, [])}
 			<a
-				href="/ucp/admin/sys"
+				href="/sys"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/sys') ? 'bg-emerald-600' : ''}`}
 				>Sysadmin</a
 			>

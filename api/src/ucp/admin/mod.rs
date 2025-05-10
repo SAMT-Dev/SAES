@@ -16,6 +16,7 @@ pub fn routes() -> Router {
     Router::new()
         .nest("/shift", shift::routes())
         .nest("/faction", faction::routes())
+        .route("/getfactions", get(base::get_factions))
         .route("/", get(base::admin_home))
         .route("/items/get", get(items::admin_items_get))
         .route("/items/post", post(items::admin_items_post))
