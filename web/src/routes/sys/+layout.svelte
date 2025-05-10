@@ -37,6 +37,7 @@
 		bind:this={nav}
 		class="child:px-2 child:rounded-lg child:drop-shadow-xl lg:flex! col-span-2 hidden flex-col items-center justify-center gap-2 text-center text-xl md:flex-row lg:z-auto lg:col-span-1 xl:mr-[10vw]"
 	>
+		<a href="/ucp" class="transition-all duration-200 hover:bg-rose-700">UCP</a>
 		<a
 			href="/sys"
 			class={`transition-all duration-200 hover:bg-rose-700 ${page.url.pathname.endsWith('/sys') ? 'bg-rose-700' : ''}`}

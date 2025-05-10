@@ -22,7 +22,6 @@
 		get_type_number,
 		get_type_string
 	} from '$lib/ucp/types';
-	import { Factions, get_faction_by_id } from '$lib/permissions';
 	import { page } from '$app/state';
 	let haveadmin = $state(false);
 	interface Props {
@@ -152,6 +151,25 @@
 			ev.cancel();
 		}
 	});
+
+	function get_faction_display_by_id(id: number) {
+		let ret;
+		for (const vf of Object.values(data.factionlist)) {
+			if (vf.id === id) {
+				ret = vf.name;
+			}
+		}
+		return ret;
+	}
+	function get_faction_by_id(id: number) {
+		let ret;
+		for (const vf of Object.keys(data.factionlist)) {
+			if (data.factionlist[vf].id === id) {
+				ret = vf;
+			}
+		}
+		return ret;
+	}
 
 	function edit(id: number) {
 		modal?.showModal();
@@ -355,8 +373,8 @@
 							bind:value={bindEdit.target_faction}
 							class="bg-emerald-600 text-xl text-black opacity-80 focus:opacity-100 dark:text-white"
 						>
-							{#each Object.values(Factions) as fact}
-								<option value={fact}>{fact}</option>
+							{#each Object.keys(data.factionlist) as vf}
+								<option value={vf}>{data.factionlist[vf].name}</option>
 							{/each}
 						</Select>
 					{/if}
@@ -491,7 +509,7 @@
 							{#if type === get_type_number('számla')}
 								<TableBodyCell
 									>{potle.target_faction
-										? get_faction_by_id(potle.target_faction)
+										? get_faction_display_by_id(potle.target_faction)
 										: 'nincs'}</TableBodyCell
 								>
 								<TableBodyCell

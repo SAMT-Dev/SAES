@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { cdnUrl } from '$lib/api';
 	import type { PageData } from './$types';
 
@@ -34,7 +35,8 @@
 		<div class="m-auto flex items-center justify-center gap-3">
 			{#each Object.keys(data.data!) as f}
 				{#if selector === 'all' || (selector === 'managed' && data.data![f].managed) || (selector === 'unmanaged' && !data.data![f].managed)}
-					<div
+					<a
+						href={`${page.url.pathname}/${f}`}
 						class:bg-green-500={data.data![f].managed}
 						class:bg-gray-700={!data.data![f].managed}
 						class="rounded-xl p-4"
@@ -47,7 +49,7 @@
 						{#if data.data![f].icon}
 							<img src={`${cdnUrl}/get?id=${data.data![f].icon}`} alt="Faction logo" class="w-64" />
 						{/if}
-					</div>
+					</a>
 				{/if}
 			{/each}
 		</div>
