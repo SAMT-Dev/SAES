@@ -176,7 +176,6 @@ export const load = (async ({ cookies, request, url }) => {
 				) {
 					throw redirect(303, "?clear_faction=true");
 				}
-				console.log(jeson.info);
 				return {
 					layout: jeson.driver,
 					info: jeson.info,

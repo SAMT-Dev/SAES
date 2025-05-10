@@ -2,7 +2,6 @@
 	import { allowFacts, christmas } from '$lib/api.js';
 
 	let { data } = $props();
-	console.log(data);
 	let date = new Date();
 	let hour = date.getHours();
 	let greet = $state('');

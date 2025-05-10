@@ -1,7 +1,6 @@
 import { apiUrl, apiUrlPublic } from "$lib/api";
 import { isRedirect, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import type { Factions } from "$lib/permissions";
 
 export type ShiftAccess = "SameShift" | "OtherManager" | "OtherShift";
 export type FactionAccess = "None" | "Read" | "Write";
