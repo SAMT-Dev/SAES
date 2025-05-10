@@ -64,6 +64,14 @@ pub struct FactionSettings {
     pub icon_id: i32,
     pub display: String,
     pub perm_name: String,
+    pub color: FactionColorConfig,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FactionColorConfig {
+    pub primary: String,
+    pub secondary: String,
+    pub tertiary: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

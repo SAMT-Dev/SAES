@@ -2,7 +2,6 @@
 // import { prisma } from '$lib/server/prisma';
 import type { PageServerLoad } from "./$types";
 import { apiUrl } from "$lib/api";
-import { Factions } from "$lib/permissions";
 
 export const load = (async ({ cookies }) => {
 	if (!cookies.get("auth_token")) {
@@ -12,7 +11,7 @@ export const load = (async ({ cookies }) => {
 	}
 	try {
 		const aha = await fetch(
-			cookies.get("selected_faction") === Factions.Apms
+			cookies.get("selected_faction") === "apms"
 				? `${apiUrl}/ucp/apms_calls`
 				: `${apiUrl}/ucp/calls`,
 			{
@@ -28,7 +27,7 @@ export const load = (async ({ cookies }) => {
 			};
 		}
 		if (aha.ok) {
-			if (cookies.get("selected_faction") === Factions.Apms) {
+			if (cookies.get("selected_faction") === "apms") {
 				const text: {
 					accepted?: number;
 					uploaded: number;

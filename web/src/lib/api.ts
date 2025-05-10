@@ -1,5 +1,3 @@
-import type { Factions } from "./permissions";
-
 export const apiUrl = process.env.NODE_ENV === "development"
 	? "http://localhost:3000"
 	: (process.env.api_url as string);
@@ -13,17 +11,15 @@ export const cdnUrl = process.env.NODE_ENV === "development"
 let date = new Date();
 
 // * Hó engedélyezése Mikulás-naptól vízkeresztig
-export const snow =
-	(date.getMonth() === 11 && date.getDate() >= 6) ||
+export const snow = (date.getMonth() === 11 && date.getDate() >= 6) ||
 		(date.getMonth() < 1 && date.getDate() < 20)
-		? true
-		: false;
+	? true
+	: false;
 
-export const christmas =
-	(date.getMonth() === 11 && date.getDate() >= 6) ||
+export const christmas = (date.getMonth() === 11 && date.getDate() >= 6) ||
 		(date.getMonth() == 0 && date.getDate() <= 7)
-		? true
-		: false;
+	? true
+	: false;
 
 export function allowPerms(
 	data: {
@@ -62,8 +58,8 @@ export function allowFacts(
 	data: {
 		faction?: string;
 	},
-	factions: Factions[],
+	factions: string[],
 ) {
-	if (factions.includes(data.faction as Factions)) return true;
+	if (factions.includes(data.faction as string)) return true;
 	return false;
 }

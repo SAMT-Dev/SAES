@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { allowFacts, christmas } from '$lib/api.js';
-	import { Factions } from '$lib/permissions.js';
 
 	let { data } = $props();
+	console.log(data);
 	let date = new Date();
 	let hour = date.getHours();
 	let greet = $state('');
@@ -56,7 +56,7 @@
 	{#if !data.error}
 		<div class="ml-16 mr-16 mt-16 rounded-lg bg-amber-600">
 			<h1 class="text-2xl drop-shadow-lg md:text-5xl md:font-bold">
-				{greet}, {data.layout?.admin ? 'szöszadmin ' : ''}{data.layout?.name}{end}
+				{greet}, {data.layout?.admin ? 'SA ' : ''}{data.layout?.name}{end}
 			</h1>
 			<a href="/logout" data-sveltekit-reload>Kijelentkezés</a>
 			{#if data.layout?.factions}
@@ -67,7 +67,7 @@
 					Műszakod: {data.layout.factions.shiftname}
 				</h2>
 			{/if}
-			{#if allowFacts(data, [Factions.Taxi, Factions.Tow, Factions.Uni])}
+			{#if allowFacts(data, ['SCKK', 'TOW', 'UNI'])}
 				{#if data.calls?.app === null}
 					<h2 class="text-xl drop-shadow-lg md:text-2xl">
 						Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}
@@ -89,7 +89,7 @@
 					</h2>
 				{/if}
 			{/if}
-			{#if allowFacts(data, [Factions.Apms]) && data.szamlak}
+			{#if allowFacts(data, ['APMS']) && data.szamlak}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Kezelt számlák (feltöltött+elfogadott): {data.szamlak?.uploaded}+{data.szamlak
 						?.accepted}={Number(data.szamlak?.uploaded) + Number(data.szamlak?.accepted)}
