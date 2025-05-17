@@ -1,4 +1,4 @@
-use crate::BASE_HASHMAP;
+use crate::config::loader::get_module_config;
 
 pub struct Apis {
     pub fms: String,
@@ -8,11 +8,11 @@ pub struct Apis {
 }
 
 pub async fn get_api_envs() -> Apis {
-    let hash = BASE_HASHMAP.read().await;
-    let fms = hash.get("env_fms_api").unwrap();
-    let fms_key = hash.get("env_fms_api_key").unwrap();
-    let sckkapp_taxi = hash.get("env_sckkapp_api_taxi").unwrap();
-    let sckkapp_tow = hash.get("env_sckkapp_api_tow").unwrap();
+    let conf = get_module_config().await.api.unwrap();
+    let fms = conf.fms_api;
+    let fms_key = conf.fms_api_key;
+    let sckkapp_taxi = conf.sckkapp_api_taxi;
+    let sckkapp_tow = conf.sckkapp_api_tow;
     Apis {
         fms: fms.to_owned(),
         fms_key: fms_key.to_owned(),

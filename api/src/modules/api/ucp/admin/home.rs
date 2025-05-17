@@ -8,7 +8,9 @@ use saes_shared::{
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Serialize;
 
-use crate::{config::loader::get_config, utils::types_statuses::get_statuses, DB_CLIENT};
+use crate::{
+    config::loader::get_config, modules::api::utils::types_statuses::get_statuses, DB_CLIENT,
+};
 
 #[derive(Debug, Serialize)]
 pub struct SMStat {

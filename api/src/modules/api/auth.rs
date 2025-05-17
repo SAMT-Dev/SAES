@@ -17,9 +17,10 @@ use url_builder::URLBuilder;
 
 use serde::{Deserialize, Serialize};
 
-use crate::utils::api::get_api_envs;
-use crate::utils::structs::{AuthJWT, StateList};
-use crate::{BASE_HASHMAP, WEB_CLIENT};
+use crate::config::loader::get_module_config;
+use crate::modules::api::utils::api::get_api_envs;
+use crate::modules::api::utils::structs::{AuthJWT, StateList};
+use crate::WEB_CLIENT;
 
 static STATE_MANAGEMENT: RwLock<Vec<StateList>> = RwLock::const_new(Vec::new());
 
@@ -34,14 +35,14 @@ pub struct AuthEnvs {
 }
 
 pub async fn get_auth_envs() -> AuthEnvs {
-    let hash = BASE_HASHMAP.read().await;
-    let id = hash.get("env_discord_id").unwrap();
-    let secret = hash.get("env_discord_secret").unwrap();
+    let conf = get_module_config().await.api.unwrap();
+    let id = conf.discord_id;
+    let secret = conf.discord_secret;
     let url = "https://discord.com";
-    let domain = hash.get("env_domain").unwrap();
-    let base_url = hash.get("env_api_base_url").unwrap();
-    let fdomain = hash.get("env_full_domain").unwrap();
-    let jwt = hash.get("env_jwt_key").unwrap();
+    let domain = conf.domain;
+    let base_url = conf.api_base_url;
+    let fdomain = conf.full_domain;
+    let jwt = conf.jwt_key;
     AuthEnvs {
         api_endpoint: url.to_owned(),
         domain: domain.to_owned(),
@@ -290,8 +291,8 @@ fn base_path() -> String {
 // }
 
 pub async fn validate_jwt(token: String) -> Option<AuthJWT> {
-    let hash = BASE_HASHMAP.read().await;
-    let key = hash.get("env_jwt_key").unwrap();
+    let conf = get_module_config().await.api.unwrap();
+    let key = conf.jwt_key;
     let jwt = decode::<AuthJWT>(
         &token,
         &DecodingKey::from_secret(key.as_bytes()),

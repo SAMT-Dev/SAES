@@ -4,7 +4,7 @@ use saes_shared::db::shorts;
 
 use sea_orm::EntityTrait;
 
-use crate::{utils::middle::AccessKeyExt, DB_CLIENT};
+use crate::{modules::api::utils::middle::AccessKeyExt, DB_CLIENT};
 
 #[debug_handler]
 pub async fn base_get_shorts(

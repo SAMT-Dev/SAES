@@ -2,7 +2,7 @@ use serde::Deserialize;
 use socketioxide::extract::SocketRef;
 use tracing::{info, warn};
 
-use crate::{auth::validate_jwt, config::loader::get_config, logging::db_log};
+use crate::{config::loader::get_config, logging::db_log, modules::api::auth::validate_jwt};
 
 #[derive(Debug, Deserialize)]
 pub struct InitialData {

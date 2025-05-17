@@ -3,7 +3,7 @@ use std::path::Path;
 use serde_json::to_string_pretty;
 use tokio::{fs::OpenOptions, io::AsyncWriteExt};
 
-use crate::SOCKET_IO;
+use crate::modules::api::SOCKET_IO;
 
 use super::structs::MainConfig;
 

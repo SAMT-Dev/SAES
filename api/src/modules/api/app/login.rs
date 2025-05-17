@@ -1,7 +1,7 @@
 use axum::response::IntoResponse;
 use http::{HeaderMap, StatusCode};
 
-use crate::APP_AUTHS;
+use crate::modules::api::APP_AUTHS;
 
 pub async fn withauth(headers: HeaderMap) -> Result<impl IntoResponse, (StatusCode, String)> {
     let code = headers.get("auth_code");

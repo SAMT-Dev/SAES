@@ -4,7 +4,7 @@ use axum::{
     Router,
 };
 
-use crate::utils::middle::admin_auth;
+use crate::modules::api::utils::middle::admin_auth;
 
 use super::{faction, shift};
 

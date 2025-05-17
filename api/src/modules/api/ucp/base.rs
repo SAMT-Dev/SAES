@@ -5,7 +5,7 @@ use http::{HeaderMap, StatusCode};
 use saes_shared::structs::{permissions::get_perm, user::Driver};
 use serde::{Deserialize, Serialize};
 
-use crate::{config::loader::get_config, utils::api::get_api_envs, WEB_CLIENT};
+use crate::{config::loader::get_config, modules::api::utils::api::get_api_envs, WEB_CLIENT};
 
 #[derive(Debug, Serialize)]
 struct HomeRet {

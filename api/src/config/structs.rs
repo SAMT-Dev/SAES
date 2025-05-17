@@ -91,3 +91,29 @@ impl Default for MainConfig {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ModuleConfig {
+    pub api: Option<ApiModuleConfig>,
+}
+
+impl Default for ModuleConfig {
+    fn default() -> Self {
+        Self { api: None }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ApiModuleConfig {
+    pub enabled: bool,
+    pub full_domain: String,
+    pub domain: String,
+    pub discord_secret: String,
+    pub discord_id: String,
+    pub api_base_url: String,
+    pub fms_api: String,
+    pub fms_api_key: String,
+    pub jwt_key: String,
+    pub sckkapp_api_taxi: String,
+    pub sckkapp_api_tow: String,
+}

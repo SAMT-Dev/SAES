@@ -1,6 +1,6 @@
 use axum::{middleware, routing::get, Router};
 
-use crate::utils::middle::ucp_auth;
+use crate::modules::api::utils::middle::ucp_auth;
 
 mod admin;
 mod base;

@@ -16,7 +16,7 @@ use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 use crate::{
     config::loader::get_config,
     logging::db_log,
-    utils::{
+    modules::api::utils::{
         queries::SMItemsQuery,
         structs::SMGetItemsFull,
         types_statuses::{get_statuses_as_list, get_types, get_types_as_list},

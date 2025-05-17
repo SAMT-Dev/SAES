@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
 use crate::config::loader::get_config;
-use crate::utils::api::get_api_envs;
-use crate::utils::functions::get_fridays;
-use crate::utils::types_statuses::get_statuses;
+use crate::modules::api::utils::api::get_api_envs;
+use crate::modules::api::utils::functions::get_fridays;
+use crate::modules::api::utils::types_statuses::get_statuses;
 use crate::{DB_CLIENT, WEB_CLIENT};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -185,7 +185,7 @@ pub async fn ucp_apms_calls(mut request: Request) -> Result<Json<ApmsCalls>, (St
         let db = DB_CLIENT.get().unwrap();
         let config = get_config().await;
         let statuses = get_statuses();
-        let fridays: crate::utils::functions::Friday = get_fridays();
+        let fridays: crate::modules::api::utils::functions::Friday = get_fridays();
         let dbreturn_bills = bills::Entity::find()
             .filter(bills::Column::Status.ne(statuses.rejected.id))
             .filter(bills::Column::Date.gt(fridays.last_friday))

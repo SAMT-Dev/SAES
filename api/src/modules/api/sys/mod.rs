@@ -7,7 +7,7 @@ use axum::{
 };
 use saes_shared::structs::user::Driver;
 
-use crate::utils::middle::{sysadmin_auth, ucp_auth};
+use crate::modules::api::utils::middle::{sysadmin_auth, ucp_auth};
 
 mod config_api;
 mod factions;
