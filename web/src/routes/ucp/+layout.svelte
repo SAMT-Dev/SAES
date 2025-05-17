@@ -87,7 +87,9 @@
 	{:else}
 		<title>{tip}</title>
 	{/if}
-	<link rel="icon" href={`${cdnUrl}/get?id=${data.info?.icon_id}`} />
+	{#if data.info?.icon_id}
+		<link rel="icon" href={`${cdnUrl}/get?id=${data.info?.icon_id}`} />
+	{/if}
 </svelte:head>
 <Error {data}>
 	{#if data.noauth}

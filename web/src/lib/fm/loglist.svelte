@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		Checkbox,
+		Select,
 		Table,
 		TableBody,
 		TableBodyCell,
@@ -16,6 +17,7 @@
 	import { loading } from '$lib/loading.svelte';
 	import type { LayoutData } from '../../routes/ucp/$types';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 
 	let modal: HTMLDialogElement | undefined = $state();
 	let modalItem: SMGetItemsFull | undefined = $state();
@@ -41,9 +43,15 @@
 		update_item: true
 	});
 
+	let real_logs: Logs[] = $state([]);
+
 	let filter: string[] = $state([]);
 
-	let details = $state('');
+	let pagen = $state(
+		page.url.searchParams.get('page') ? Number(page.url.searchParams.get('page')) : 0
+	);
+
+	let pagenums = $state(50);
 
 	function handle_msg(msg: string) {
 		let raw = ['status', 'price', 'supp_type', 'reason'];
@@ -111,8 +119,23 @@
 	}
 
 	onMount(() => {
-		filter_check();
+		render_logs();
 	});
+
+	function render_logs() {
+		filter_check();
+		if (data.logs.length > pagenums) {
+			real_logs = [];
+			let extra = 0;
+			for (let i = pagen * pagenums; i < pagenums * (pagen + 1) + extra; i++) {
+				if (!data.logs[i]) break;
+				if (filter.includes(data.logs[i].action.toLowerCase())) real_logs.push(data.logs[i]);
+				if (i === pagenums * (pagen + 1) + extra - 1 && real_logs.length < pagenums) extra++;
+			}
+		} else {
+			real_logs = data.logs;
+		}
+	}
 
 	function closeModal() {
 		modal!.close();
@@ -196,11 +219,17 @@
 <div class="flex">
 	<div class="m-auto text-center text-black dark:text-white">
 		<h1 class="font-itim mt-2 text-3xl font-bold">Események</h1>
+		<Select bind:value={pagenums} onchange={render_logs}>
+			<option value={10}>10</option>
+			<option value={20}>20</option>
+			<option value={50}>50</option>
+			<option value={100}>100</option>
+		</Select>
 		<div class="mt-3 flex items-center justify-center gap-5">
 			{#if filters.includes('login')}
 				<Checkbox
 					bind:checked={selected_filters.login}
-					onchange={filter_check}
+					onchange={render_logs}
 					name="login"
 					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					>Bejelentkezés</Checkbox
@@ -209,7 +238,7 @@
 			{#if filters.includes('upload_item')}
 				<Checkbox
 					bind:checked={selected_filters.upload_item}
-					onchange={filter_check}
+					onchange={render_logs}
 					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					name="upload item">Elem feltöltés</Checkbox
 				>
@@ -217,7 +246,7 @@
 			{#if filters.includes('update_item')}
 				<Checkbox
 					bind:checked={selected_filters.update_item}
-					onchange={filter_check}
+					onchange={render_logs}
 					class="gap-1 rounded-lg bg-gray-400 bg-opacity-30 px-2 py-1 font-sans text-black dark:text-white"
 					name="update item">Elem szerkesztés</Checkbox
 				>
@@ -236,7 +265,7 @@
 				<TableHeadCell>Részletek</TableHeadCell>
 			</TableHead>
 			<TableBody>
-				{#each data.logs as log}
+				{#each real_logs as log}
 					{#if filter.includes(log.action.toLowerCase())}
 						<TableBodyRow>
 							<TableBodyCell
