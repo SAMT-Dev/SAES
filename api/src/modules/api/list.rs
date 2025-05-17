@@ -6,7 +6,7 @@ use serde::Serialize;
 
 use crate::{
     config::loader::get_config,
-    utils::{
+    modules::api::utils::{
         functions::get_fridays,
         queries::BaseListQuery,
         types_statuses::{get_statuses, get_types},

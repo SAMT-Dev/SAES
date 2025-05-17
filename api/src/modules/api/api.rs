@@ -6,10 +6,11 @@ use http::StatusCode;
 use serde::Deserialize;
 
 use crate::{
-    shorts,
-    utils::middle::{key_auth, AccessKeyExt},
+    modules::api::utils::middle::{key_auth, AccessKeyExt},
     WEB_CLIENT,
 };
+
+use super::shorts;
 
 pub fn routes() -> Router {
     Router::new()

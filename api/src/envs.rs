@@ -6,19 +6,7 @@ use crate::BASE_HASHMAP;
 
 pub async fn load_envs() {
     info!("ENV Precheck");
-    let envs: Vec<&str> = vec![
-        "DATABASE_URL",
-        "API_BASE_URL",
-        "DOMAIN",
-        "FULL_DOMAIN",
-        "FMS_API",
-        "FMS_API_KEY",
-        "SCKKAPP_API_TAXI",
-        "SCKKAPP_API_TOW",
-        "DISCORD_ID",
-        "DISCORD_SECRET",
-        "JWT_KEY",
-    ];
+    let envs: Vec<&str> = vec!["DATABASE_URL"];
     let mut hash = BASE_HASHMAP.write().await;
     for env in envs {
         let env_val = env::var(env);

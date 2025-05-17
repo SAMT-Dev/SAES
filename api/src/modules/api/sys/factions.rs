@@ -4,7 +4,7 @@ use axum::{debug_handler, response::IntoResponse, Json};
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
 
-use crate::{config::loader::get_config, utils::api::get_api_envs, WEB_CLIENT};
+use crate::{config::loader::get_config, modules::api::utils::api::get_api_envs, WEB_CLIENT};
 
 #[derive(Debug, Deserialize)]
 struct GetCompanies {

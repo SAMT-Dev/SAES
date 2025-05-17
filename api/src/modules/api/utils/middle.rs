@@ -7,8 +7,8 @@ use saes_shared::structs::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    auth::validate_jwt,
     config::{loader::get_config, structs::AccessConfig},
+    modules::api::auth::validate_jwt,
 };
 
 use super::functions::{get_env_mode, EnvModes};

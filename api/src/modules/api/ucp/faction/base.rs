@@ -13,7 +13,7 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
 
 use crate::{
-    utils::{structs::SMGetItemsFull, types_statuses::get_types},
+    modules::api::utils::{structs::SMGetItemsFull, types_statuses::get_types},
     DB_CLIENT,
 };
 

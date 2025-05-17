@@ -15,7 +15,9 @@ use serde::Serialize;
 
 use crate::{
     config::loader::get_config,
-    utils::{functions::get_fridays, queries::SMStatQuery, types_statuses::get_statuses},
+    modules::api::utils::{
+        functions::get_fridays, queries::SMStatQuery, types_statuses::get_statuses,
+    },
     DB_CLIENT,
 };
 

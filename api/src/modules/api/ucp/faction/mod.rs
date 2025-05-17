@@ -1,6 +1,6 @@
 use axum::{middleware, routing::get, Router};
 
-use crate::utils::middle::faction_auth;
+use crate::modules::api::utils::middle::faction_auth;
 
 mod base;
 mod logs;
