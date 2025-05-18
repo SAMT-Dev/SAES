@@ -165,9 +165,10 @@ pub async fn shift_auth(
     let exts: Option<&Driver> = req.extensions_mut().get();
     let uwrp = exts.expect("Tag lekérése sikertelen, ucp_auth megtörtént?");
     let config = get_config().await;
+    let factconf = config.factions.get(&uwrp.faction.clone().unwrap()).unwrap();
     if uwrp.faction.is_some() {
         let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdminShift(
-            uwrp.faction.clone().unwrap(),
+            factconf.settings.perm_name.clone(),
         ))) {
             true
         } else {
@@ -201,9 +202,10 @@ pub async fn admin_auth(
     let exts: Option<&Driver> = req.extensions_mut().get();
     let uwrp = exts.expect("Tag lekérése sikertelen, ucp_auth megtörtént?");
     let config = get_config().await;
+    let factconf = config.factions.get(&uwrp.faction.clone().unwrap()).unwrap();
     if uwrp.faction.is_some() {
         let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdmin(
-            uwrp.faction.clone().unwrap(),
+            factconf.settings.perm_name.clone(),
         ))) {
             true
         } else {
@@ -246,8 +248,9 @@ pub async fn faction_auth(
             "Frakciójelölés hiányzik!".to_string(),
         ));
     }
+    let factconf = config.factions.get(&uwrp.faction.clone().unwrap()).unwrap();
     let fact = if uwrp.perms.contains(&get_perm(Permissions::SaesAdminFaction(
-        uwrp.faction.clone().unwrap(),
+        factconf.settings.perm_name.clone(),
     ))) {
         true
     } else {
