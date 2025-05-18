@@ -215,7 +215,7 @@
 					icon={data.info?.icon_id!}
 					faction={data.faction!}
 					isAdmin={data.layout?.perms.includes(
-						getFactionPerm(Permissions.SaesFactAdmin, data.faction!)
+						getFactionPerm(Permissions.SaesFactAdmin, data.info?.perm_name!)
 					) || data.layout?.admin}
 					{data}
 					{nosocket}
