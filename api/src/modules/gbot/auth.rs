@@ -2,8 +2,11 @@ use std::path::PathBuf;
 
 use gcp_auth::{CustomServiceAccount, TokenProvider};
 
+use crate::config::loader::get_module_config;
+
 pub async fn get_google_auth() -> String {
-    let credentials_path = PathBuf::from("google-service-account.json");
+    let config = get_module_config().await;
+    let credentials_path = PathBuf::from(config.gbot.unwrap().service_json);
     let service_account = CustomServiceAccount::from_file(credentials_path)
         .expect("Google Service Account létrehozása sikertelen");
     let scopes = &[

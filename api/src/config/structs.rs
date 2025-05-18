@@ -92,14 +92,18 @@ impl Default for MainConfig {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct ModuleConfig {
     pub api: Option<ApiModuleConfig>,
+    pub gbot: Option<GbotModuleConfig>,
 }
 
 impl Default for ModuleConfig {
     fn default() -> Self {
-        Self { api: None }
+        Self {
+            api: None,
+            gbot: None,
+        }
     }
 }
 
@@ -116,4 +120,40 @@ pub struct ApiModuleConfig {
     pub jwt_key: String,
     pub sckkapp_api_taxi: String,
     pub sckkapp_api_tow: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Hash, PartialEq)]
+pub enum GbotProviders {
+    TAXI,
+    TOW,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GbotRangeWeekConfig {
+    pub read: String,
+    pub write: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GbotRangeListConfig {
+    pub current: GbotRangeWeekConfig,
+    pub previous: GbotRangeWeekConfig,
+    pub table: String,
+    pub provider: GbotProviders,
+}
+
+#[derive(Debug, Serialize, Clone, Deserialize)]
+pub struct GbotModuleConfig {
+    pub enabled: bool,
+    pub service_json: String,
+    pub providers: HashMap<GbotProviders, GbotProviderConfig>,
+    pub spreadsheet_id: String,
+    pub interval_secs: u64,
+    pub ranges: Vec<GbotRangeListConfig>,
+}
+
+#[derive(Debug, Serialize, Clone, Deserialize)]
+pub struct GbotProviderConfig {
+    pub current: String,
+    pub previous: String,
 }
