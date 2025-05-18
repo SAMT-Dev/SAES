@@ -15,7 +15,7 @@
 				perms: string[];
 			};
 			info?: {
-				icon_id?: number;
+				icon_id?: string;
 				primary?: string;
 				secondary?: string;
 				tertiary?: string;

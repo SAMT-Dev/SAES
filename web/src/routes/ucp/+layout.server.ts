@@ -95,7 +95,7 @@ export const load = (async ({ cookies, request, url }) => {
 				};
 				info?: {
 					display: string;
-					icon_id: number;
+					icon_id: string;
 					perm_name: string;
 					primary: string;
 					secondary: string;
@@ -175,6 +175,10 @@ export const load = (async ({ cookies, request, url }) => {
 					])
 				) {
 					throw redirect(303, "?clear_faction=true");
+				}
+				if (jeson.info) {
+					jeson.info.icon_id =
+						`${cdnUrl}/get?id=${jeson.info.icon_id}`;
 				}
 				return {
 					layout: jeson.driver,

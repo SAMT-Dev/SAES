@@ -88,7 +88,7 @@
 		<title>{tip}</title>
 	{/if}
 	{#if data.info?.icon_id}
-		<link rel="icon" href={`${cdnUrl}/get?id=${data.info?.icon_id}`} />
+		<link rel="icon" href={data.info?.icon_id} />
 	{/if}
 </svelte:head>
 <Error {data}>
@@ -212,7 +212,7 @@
 			{#if !page.url.pathname.startsWith('/ucp/admin/')}
 				<Header
 					{tip}
-					icon={`${cdnUrl}/get?id=${data.info?.icon_id}`}
+					icon={data.info?.icon_id!}
 					faction={data.faction!}
 					isAdmin={data.layout?.perms.includes(
 						getFactionPerm(Permissions.SaesFactAdmin, data.faction!)
