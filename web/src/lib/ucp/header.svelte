@@ -10,8 +10,6 @@
 		faction: string;
 		data: {
 			layout?: {
-				taxi?: any;
-				tow?: any;
 				admin: boolean;
 				perms: string[];
 			};

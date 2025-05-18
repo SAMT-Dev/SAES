@@ -96,7 +96,8 @@ pub async fn ucp_auth(
                 } else {
                     if jwt.permissions.contains(&get_perm(Permissions::SaesUcp(
                         conf.unwrap().settings.perm_name.clone(),
-                    ))) {
+                    ))) || jwt.admin
+                    {
                         Some(f.to_str().unwrap().to_string())
                     } else {
                         None
