@@ -212,6 +212,7 @@
 			{#if !page.url.pathname.startsWith('/ucp/admin/')}
 				<Header
 					{tip}
+					icon={`${cdnUrl}/get?id=${data.info?.icon_id}`}
 					faction={data.faction!}
 					isAdmin={data.layout?.perms.includes(
 						getFactionPerm(Permissions.SaesFactAdmin, data.faction!)

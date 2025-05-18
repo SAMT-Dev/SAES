@@ -8,6 +8,7 @@
 		tip: any;
 		isAdmin?: boolean;
 		faction: string;
+		icon: string;
 		data: {
 			layout?: {
 				admin: boolean;
@@ -23,7 +24,7 @@
 		nosocket: string | boolean;
 	}
 
-	let { tip, isAdmin = false, faction = 'SAMT', data, nosocket }: Props = $props();
+	let { tip, isAdmin = false, faction = 'SAMT', data, nosocket, icon }: Props = $props();
 
 	let pagesz = pages(faction);
 </script>
@@ -45,7 +46,7 @@
 							class="pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200 group-hover:border-[var(--color-primary)]"
 						>
 							<img
-								src={`${cdnUrl}/get?id=${data.info!.icon_id}`}
+								src={icon}
 								class="border-1 pointer-events-none rounded-full border-solid border-black"
 								width="40"
 								height="40"
