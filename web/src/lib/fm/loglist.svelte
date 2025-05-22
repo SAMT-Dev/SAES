@@ -18,6 +18,7 @@
 	import type { LayoutData } from '../../routes/ucp/$types';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 
 	let modal: HTMLDialogElement | undefined = $state();
 	let modalItem: SMGetItemsFull | undefined = $state();
@@ -43,6 +44,7 @@
 		update_item: true
 	});
 
+	let pre_logs: Logs[] = $state([]);
 	let real_logs: Logs[] = $state([]);
 
 	let filter: string[] = $state([]);
@@ -124,16 +126,40 @@
 
 	function render_logs() {
 		filter_check();
-		if (data.logs.length > pagenums) {
-			real_logs = [];
-			let extra = 0;
-			for (let i = pagen * pagenums; i < pagenums * (pagen + 1) + extra; i++) {
-				if (!data.logs[i]) break;
-				if (filter.includes(data.logs[i].action.toLowerCase())) real_logs.push(data.logs[i]);
-				if (i === pagenums * (pagen + 1) + extra - 1 && real_logs.length < pagenums) extra++;
+		pre_logs = [];
+		real_logs = [];
+		for (const log of data.logs) {
+			if (filter.includes(log.action.toLowerCase())) {
+				pre_logs.push(log);
+			}
+		}
+		if (pre_logs.length > pagenums * (pagen + 1)) {
+			for (let i = pagen * pagenums; i < pagenums * (pagen + 1); i++) {
+				real_logs.push(pre_logs[i]);
 			}
 		} else {
-			real_logs = data.logs;
+			if (pre_logs.length < pagenums) {
+				real_logs = pre_logs;
+			} else {
+				for (let i = pagen * pagenums; i < pre_logs.length; i++) {
+					real_logs.push(pre_logs[i]);
+				}
+			}
+		}
+	}
+
+	function nextPage() {
+		page.url.searchParams.set('page', (pagen + 1).toString());
+		pagen++;
+		goto(`?${page.url.searchParams.toString()}`);
+		render_logs();
+	}
+	function prevPage() {
+		if (pagen > 0) {
+			page.url.searchParams.set('page', (pagen - 1).toString());
+			pagen--;
+			goto(`?${page.url.searchParams.toString()}`);
+			render_logs();
 		}
 	}
 
@@ -218,7 +244,11 @@
 
 <div class="flex">
 	<div class="m-auto text-center text-black dark:text-white">
-		<h1 class="font-itim mt-2 text-3xl font-bold">Események</h1>
+		<div class="flex items-center justify-center gap-2">
+			<button onclick={() => prevPage()}>Előző oldal</button>
+			<h1 class="font-itim mt-2 text-3xl font-bold">Események</h1>
+			<button onclick={() => nextPage()}>Következő oldal</button>
+		</div>
 		<Select bind:value={pagenums} onchange={render_logs}>
 			<option value={10}>10</option>
 			<option value={20}>20</option>
