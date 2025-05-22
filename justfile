@@ -8,7 +8,7 @@ alias wd := w_dev
 alias dtt := dev_to_test
 alias td := t_dev
 alias dbg := db_gen
-alias cdnd := cdn_dev
+alias cdn := cdn_dev
 
 #* DEV scripts
 
@@ -19,6 +19,9 @@ r_dev soft:
 [linux]
 r_dev soft:
     cd {{ soft }} && cargo watch -x run
+
+api:
+    just rd api
 
 [windows]
 w_dev:
