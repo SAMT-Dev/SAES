@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { cdnUrl } from '$lib/api';
+	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	let selector: 'all' | 'managed' | 'unmanaged' = $state('all');
+	let showicon = $state(false);
+	onMount(() => {
+		showicon = true;
+	});
 </script>
 
 <div class="m-auto w-[80dvw] text-center text-white">
@@ -46,7 +51,7 @@
 						</h1>
 						<h1>{data.data![f].name} ({f})</h1>
 						<h1>Rövid név: {data.data![f].shortname}</h1>
-						{#if data.data![f].icon}
+						{#if data.data![f].icon && showicon}
 							<img src={`${cdnUrl}/get?id=${data.data![f].icon}`} alt="Faction logo" class="w-64" />
 						{/if}
 					</a>
