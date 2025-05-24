@@ -1,5 +1,3 @@
-use std::thread::{self};
-
 use api::run_api;
 use gbot::run_gbot;
 use tracing::{info, warn};
@@ -15,16 +13,9 @@ pub async fn enable_modules() {
     // * API
     if module_config.api.is_some() && module_config.api.unwrap().enabled {
         info!("Module API ENABLED");
-        threads.push(
-            thread::Builder::new()
-                .name("module_api".to_string())
-                .spawn(|| {
-                    tokio::runtime::Runtime::new()
-                        .unwrap()
-                        .block_on(run_api())
-                        .unwrap();
-                }),
-        );
+        threads.push(tokio::spawn(async {
+            run_api().await.unwrap();
+        }));
     } else {
         warn!("Module API DISABLED");
     }
@@ -32,20 +23,13 @@ pub async fn enable_modules() {
     // * GBOT
     if module_config.gbot.is_some() && module_config.gbot.unwrap().enabled {
         info!("Module GBOT ENABLED");
-        threads.push(
-            thread::Builder::new()
-                .name("module_gbot".to_string())
-                .spawn(|| {
-                    tokio::runtime::Runtime::new()
-                        .unwrap()
-                        .block_on(run_gbot())
-                        .unwrap();
-                }),
-        );
+        threads.push(tokio::spawn(async {
+            run_gbot().await.unwrap();
+        }));
     } else {
         warn!("Module GBOT DISABLED");
     }
     for thread in threads {
-        let _ = thread.unwrap().join();
+        let _ = thread.await.unwrap();
     }
 }
