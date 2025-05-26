@@ -3,7 +3,6 @@ use std::{error::Error, thread, time::Duration};
 use google_sheets4::{api::ValueRange, hyper_rustls, hyper_util, Sheets};
 use serde::Deserialize;
 use serde_json::Value;
-use tokio::time::interval;
 use tracing::info;
 
 use crate::config::{loader::get_module_config, structs::GbotProviders};
@@ -41,11 +40,7 @@ async fn get_week(mode: GbotProviders, week: Week) -> Vec<DriverData> {
 
 pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
     let config = get_module_config().await;
-    let mut interval = interval(Duration::from_secs(
-        config.gbot.clone().unwrap().interval_secs,
-    ));
     loop {
-        interval.tick().await;
         info!("Calls sync BEGIN");
         let mut runners = Vec::new();
         for range in config.gbot.clone().unwrap().ranges {
@@ -79,6 +74,9 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
             runner.join().unwrap();
         }
         info!("Calls sync DONE");
+        thread::sleep(Duration::from_secs(
+            config.gbot.clone().unwrap().interval_secs,
+        ));
     }
 }
 
