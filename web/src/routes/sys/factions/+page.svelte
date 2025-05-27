@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { cdnUrl } from '$lib/api';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 
@@ -52,7 +51,11 @@
 						<h1>{data.data![f].name} ({f})</h1>
 						<h1>Rövid név: {data.data![f].shortname}</h1>
 						{#if data.data![f].icon && showicon}
-							<img src={`${cdnUrl}/get?id=${data.data![f].icon}`} alt="Faction logo" class="w-64" />
+							<img
+								src={`${data.cdn}/get?id=${data.data![f].icon}`}
+								alt="Faction logo"
+								class="w-64"
+							/>
 						{/if}
 					</a>
 				{/if}

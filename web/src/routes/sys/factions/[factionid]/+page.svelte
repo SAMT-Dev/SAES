@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { cdnUrl } from '$lib/api';
 	import { loading } from '$lib/loading.svelte';
 	import type { PageData } from './$types';
 
@@ -35,7 +34,7 @@
 
 <div class="m-auto items-center justify-center text-center text-white">
 	<h1>Új ikon feltöltése</h1>
-	<img src={`${cdnUrl}/get?id=${data.factinfo?.icon}`} alt="" class="m-auto w-64" />
+	<img src={`${data.cdn}/get?id=${data.factinfo?.icon}`} alt="" class="m-auto w-64" />
 	<form
 		onsubmit={(ev) => upload(ev)}
 		enctype="multipart/form-data"

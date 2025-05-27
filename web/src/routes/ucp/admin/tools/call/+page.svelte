@@ -61,8 +61,8 @@
 			multiple={true}
 			accept=".log"
 			onchange={zoneChange}
-			bind:files
-		/>
+			bind:files>Húzd ide</Dropzone
+		>
 	{:else}
 		<h2>
 			Ha egy hívásszám után egy szép hosszú szám van, akkor az egy meglévő szám későbbi elvitele.

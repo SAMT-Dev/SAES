@@ -1,4 +1,4 @@
-import { apiUrl } from "$lib/api";
+import { apiUrl, cdnUrl } from "$lib/api";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ cookies }) => {
@@ -17,6 +17,7 @@ export const load = (async ({ cookies }) => {
             }> = await get.json();
             return {
                 data,
+                cdn: cdnUrl,
             };
         }
     } catch (e) {

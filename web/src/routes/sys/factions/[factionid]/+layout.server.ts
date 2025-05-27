@@ -1,4 +1,4 @@
-import { apiUrl } from "$lib/api";
+import { apiUrl, cdnUrl } from "$lib/api";
 import type { LayoutServerLoad } from "./$types";
 
 export const load = (async ({ cookies, params }) => {
@@ -18,6 +18,7 @@ export const load = (async ({ cookies, params }) => {
             return {
                 factinfo: data[params.factionid],
                 id: params.factionid,
+                cdn: cdnUrl,
             };
         }
     } catch (e) {
