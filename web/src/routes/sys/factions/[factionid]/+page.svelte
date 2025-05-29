@@ -33,25 +33,32 @@
 </script>
 
 <div class="m-auto items-center justify-center text-center text-white">
-	<h1>Új ikon feltöltése</h1>
-	<img src={`${data.cdn}/get?id=${data.factinfo?.icon}`} alt="" class="m-auto w-64" />
-	<form
-		onsubmit={(ev) => upload(ev)}
-		enctype="multipart/form-data"
-		class="flex justify-center gap-4"
-	>
-		<input class="hidden" type="file" name="file" id="file" accept="image/*" required />
-		<label
-			for="file"
-			class="bg-linear-to-r mb-2 cursor-pointer rounded-xl from-gray-600 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-3 py-1 text-xl font-bold uppercase drop-shadow-lg transition-all duration-300 hover:bg-[position:100%]"
-			>Fájl kiválasztása</label
+	{#if data.factinfo?.managed}
+		<h1>Új ikon feltöltése</h1>
+		<img src={`${data.cdn}/get?id=${data.factinfo?.icon}`} alt="" class="m-auto w-64" />
+		<form
+			onsubmit={(ev) => upload(ev)}
+			enctype="multipart/form-data"
+			class="flex justify-center gap-4"
 		>
-		<button
-			type="submit"
-			aria-label="Feltöltés"
-			class="bg-linear-to-r mb-2 w-16 rounded-xl from-gray-600 via-amber-400 to-emerald-400 bg-[size:200%] bg-[position:0] px-3 py-1 text-xl font-bold uppercase drop-shadow-lg transition-all duration-300 hover:bg-[position:100%] disabled:cursor-not-allowed"
-		>
-			<span class="icon-[material-symbols--upload] h-full w-full"></span>
-		</button>
-	</form>
+			<input class="hidden" type="file" name="file" id="file" accept="image/*" required />
+			<label
+				for="file"
+				class="bg-linear-to-r mb-2 cursor-pointer rounded-xl from-gray-600 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-3 py-1 text-xl font-bold uppercase drop-shadow-lg transition-all duration-300 hover:bg-[position:100%]"
+				>Fájl kiválasztása</label
+			>
+			<button
+				type="submit"
+				aria-label="Feltöltés"
+				class="bg-linear-to-r mb-2 w-16 rounded-xl from-gray-600 via-amber-400 to-emerald-400 bg-[size:200%] bg-[position:0] px-3 py-1 text-xl font-bold uppercase drop-shadow-lg transition-all duration-300 hover:bg-[position:100%] disabled:cursor-not-allowed"
+			>
+				<span class="icon-[material-symbols--upload] h-full w-full"></span>
+			</button>
+		</form>
+	{/if}
+	<h1 class="text-3xl">{data.factinfo?.name} ({data.factinfo?.shortname})</h1>
+	{#if data.factinfo?.comment}
+		<h2 class="text-gray-300">Megjegyzés: {data.factinfo.comment}</h2>
+	{/if}
+	<h1>Alappozíció: {data.factinfo?.defpos}</h1>
 </div>

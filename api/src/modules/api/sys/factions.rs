@@ -1,16 +1,21 @@
 use std::collections::HashMap;
 
-use axum::{debug_handler, response::IntoResponse, Json};
+use axum::{Json, debug_handler, response::IntoResponse};
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
 
-use crate::{config::loader::get_config, modules::api::utils::api::get_api_envs, WEB_CLIENT};
+use crate::{WEB_CLIENT, config::loader::get_config, modules::api::utils::api::get_api_envs};
 
 #[derive(Debug, Deserialize)]
 struct GetCompanies {
     archived: bool,
     name: String,
     shortname: String,
+    sheetkey: Option<String>,
+    dcrole: Option<isize>,
+    defpos: Option<i32>,
+    permgroup: Option<i32>,
+    comment: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -20,6 +25,11 @@ struct GetFactionRet {
     archived: bool,
     managed: bool,
     icon: Option<i32>,
+    sheetkey: Option<String>,
+    dcrole: Option<isize>,
+    defpos: Option<i32>,
+    permgroup: Option<i32>,
+    comment: Option<String>,
 }
 
 #[debug_handler]
@@ -53,6 +63,11 @@ pub async fn get_all_factions() -> Result<impl IntoResponse, (StatusCode, String
                 managed: cfact.is_some(),
                 name: v.name.clone(),
                 shortname: v.shortname.clone(),
+                comment: v.comment.clone(),
+                sheetkey: v.sheetkey.clone(),
+                dcrole: v.dcrole.clone(),
+                defpos: v.defpos,
+                permgroup: v.permgroup,
             },
         );
     }

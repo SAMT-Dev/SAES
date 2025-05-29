@@ -4,17 +4,25 @@ import type { LayoutServerLoad } from "./$types";
 export const load = (async ({ cookies, params }) => {
     let auth = cookies.get("auth_token")!;
     try {
-        let get = await fetch(`${apiUrl}/sys/getfactions`, {
+        let factget = await fetch(`${apiUrl}/sys/getfactions`, {
             headers: { cookie: auth },
         });
-        if (get.ok) {
+        let posget = await fetch(`${apiUrl}/sys/getpositions`, {
+            headers: { cookie: auth },
+        });
+        if (factget.ok) {
             let data: Record<string, {
                 name: string;
                 shortname: string;
                 archived: boolean;
                 managed: boolean;
                 icon: string | undefined;
-            }> = await get.json();
+                comment: string | undefined;
+                sheetkey: string | undefined;
+                dcrole: string | undefined;
+                defpos: number | undefined;
+                permgroup: number | undefined;
+            }> = await factget.json();
             return {
                 factinfo: data[params.factionid],
                 id: params.factionid,
