@@ -46,38 +46,39 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
         let mut runners = Vec::new();
         for range in config.gbot.clone().unwrap().ranges {
             let range2 = range.clone();
-            runners.push(thread::spawn(move || {
-                tokio::runtime::Runtime::new()
-                    .unwrap()
-                    .block_on(handle_tables(
-                        range2.table.clone(),
-                        range2.current.read,
-                        range2.current.write,
-                        Week::Current,
-                        range2.provider.clone(),
-                    ));
+            runners.push(tokio::spawn(async move {
+                handle_tables(
+                    range2.table.clone(),
+                    range2.current.read,
+                    range2.current.write,
+                    Week::Current,
+                    range2.provider.clone(),
+                )
+                .await;
                 info!("{} CURRENT week DONE", range2.table);
             }));
-            runners.push(thread::spawn(move || {
-                tokio::runtime::Runtime::new()
-                    .unwrap()
-                    .block_on(handle_tables(
-                        range.table.clone(),
-                        range.previous.read,
-                        range.previous.write,
-                        Week::Previous,
-                        range.provider,
-                    ));
+
+            runners.push(tokio::spawn(async move {
+                handle_tables(
+                    range.table.clone(),
+                    range.previous.read,
+                    range.previous.write,
+                    Week::Previous,
+                    range.provider,
+                )
+                .await;
                 info!("{} PREVIOUS week DONE", range.table);
             }));
         }
         for runner in runners {
-            runner.join().unwrap();
+            runner.await.unwrap();
         }
         info!("Calls sync DONE");
         while i < config.gbot.clone().unwrap().interval_secs / 60 {
-            thread::sleep(Duration::from_secs(60));
-            warn!("Giving life signs.");
+            thread::sleep(Duration::from_secs(30));
+            warn!("Giving life signs. 1/2");
+            thread::sleep(Duration::from_secs(30));
+            warn!("Giving life signs. 2/2");
             i += 1;
         }
     }
