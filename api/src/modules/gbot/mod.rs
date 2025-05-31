@@ -1,9 +1,9 @@
 use std::{error::Error, thread, time::Duration};
 
-use google_sheets4::{api::ValueRange, hyper_rustls, hyper_util, Sheets};
+use google_sheets4::{Sheets, api::ValueRange, hyper_rustls, hyper_util};
 use serde::Deserialize;
 use serde_json::Value;
-use tracing::info;
+use tracing::{info, warn};
 
 use crate::config::{loader::get_module_config, structs::GbotProviders};
 
@@ -41,6 +41,7 @@ async fn get_week(mode: GbotProviders, week: Week) -> Vec<DriverData> {
 pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
     let config = get_module_config().await;
     loop {
+        let mut i = 0;
         info!("Calls sync BEGIN");
         let mut runners = Vec::new();
         for range in config.gbot.clone().unwrap().ranges {
@@ -74,9 +75,11 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
             runner.join().unwrap();
         }
         info!("Calls sync DONE");
-        thread::sleep(Duration::from_secs(
-            config.gbot.clone().unwrap().interval_secs,
-        ));
+        while i < config.gbot.clone().unwrap().interval_secs / 60 {
+            thread::sleep(Duration::from_secs(60));
+            warn!("Giving life signs.");
+            i += 1;
+        }
     }
 }
 
