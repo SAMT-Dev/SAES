@@ -27,6 +27,9 @@ ENV COMMIT_HASH=${COMMIT_HASH}
 
 COPY --from=build /usr/src/api/dev/target/release/saes-api /usr/src/api/prod/
 
+RUN apk add --no-cache tzdata
+RUN ln -s /usr/share/zoneinfo/Europe/Budapest /etc/localtime
+
 RUN apk add --no-cache curl
 HEALTHCHECK CMD curl --fail http://localhost:3000 || exit 1
 
