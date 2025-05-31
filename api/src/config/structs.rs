@@ -140,6 +140,7 @@ pub struct GbotRangeListConfig {
     pub previous: GbotRangeWeekConfig,
     pub table: String,
     pub provider: GbotProviders,
+    pub check_range: String,
 }
 
 #[derive(Debug, Serialize, Clone, Deserialize)]

@@ -1,5 +1,6 @@
 use std::{error::Error, thread, time::Duration};
 
+use chrono::{Datelike, Local, Timelike};
 use google_sheets4::{Sheets, api::ValueRange, hyper_rustls, hyper_util};
 use serde::Deserialize;
 use serde_json::Value;
@@ -53,6 +54,7 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
                     range2.current.write,
                     Week::Current,
                     range2.provider.clone(),
+                    range2.check_range,
                 )
                 .await;
                 info!("{} CURRENT week DONE", range2.table);
@@ -65,6 +67,7 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
                     range.previous.write,
                     Week::Previous,
                     range.provider,
+                    range.check_range,
                 )
                 .await;
                 info!("{} PREVIOUS week DONE", range.table);
@@ -90,6 +93,7 @@ async fn handle_tables(
     write_range: String,
     week: Week,
     mode: GbotProviders,
+    check_cell: String,
 ) {
     let client = hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new());
     let config = get_module_config().await;
@@ -144,4 +148,27 @@ async fn handle_tables(
         .doit()
         .await
         .expect("Táblázat írás sikertelen");
+    let mut checkval = ValueRange::default();
+    let now = Local::now();
+    checkval.values = vec![vec![serde_json::Value::String(format!(
+        "{}.{}.{}. {}:{}:{}",
+        now.year(),
+        now.month(),
+        now.day(),
+        now.hour(),
+        now.minute(),
+        now.second()
+    ))]]
+    .into();
+    sheets
+        .spreadsheets()
+        .values_update(
+            checkval,
+            &spread_id,
+            format!("{}!{}", table, check_cell).as_str(),
+        )
+        .value_input_option("USER_ENTERED")
+        .doit()
+        .await
+        .expect("Check írás sikertelen");
 }
