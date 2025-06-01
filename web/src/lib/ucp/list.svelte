@@ -108,11 +108,12 @@
 						<h1 class="-mb-2 text-2xl font-bold text-white drop-shadow-xl">
 							{get_status_string(potle.status).toUpperCase()}
 						</h1>
-						<h1 class="text-gray-200 drop-shadow-xl">
+						<!-- <h1 class="text-gray-200 drop-shadow-xl">
 							{formatRelative(new Date(potle.date), new Date(), {
 								locale
 							})}
-						</h1>
+						</h1> -->
+						<h1 class="text-gray-200 drop-shadow-xl">{potle.date}</h1>
 						{#if data.layout?.driverid !== potle.owner}
 							<h1 class="drop-shadow-xl">
 								Feltöltő: {usernames[potle.owner] ? usernames[potle.owner].name : potle.owner}

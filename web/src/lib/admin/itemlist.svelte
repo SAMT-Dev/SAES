@@ -463,9 +463,10 @@
 					{#each potleks.data.items as potle}
 						<TableBodyRow>
 							<TableBodyCell>{potle.id}</TableBodyCell>
-							<TableBodyCell
+							<!-- <TableBodyCell
 								>{formatRelative(new Date(potle.date), new Date(), { locale })}</TableBodyCell
-							>
+							> -->
+							<TableBodyCell>{potle.date}</TableBodyCell>
 							<TableBodyCell
 								>{usernames[potle.owner] ? usernames[potle.owner].name : potle.owner}</TableBodyCell
 							>
