@@ -1,9 +1,10 @@
 use axum::{
-    debug_handler,
+    Json, debug_handler,
     extract::{Query, Request},
     response::IntoResponse,
-    Json,
 };
+use chrono::TimeZone;
+use chrono_tz::Europe::Budapest;
 use http::StatusCode;
 use saes_shared::{
     db::{bills, hails, supplements},
@@ -13,8 +14,8 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
 
 use crate::{
-    modules::api::utils::{structs::SMGetItemsFull, types_statuses::get_types},
     DB_CLIENT,
+    modules::api::utils::{structs::SMGetItemsFull, types_statuses::get_types},
 };
 
 #[debug_handler]
@@ -47,7 +48,7 @@ pub async fn get_images_by_id(query: Query<GetImageQuery>) -> impl IntoResponse 
                 img_2: None,
                 r#type: ret.r#type,
                 price: None,
-                date: ret.date,
+                date: Budapest.from_utc_datetime(&ret.date.naive_local().into()),
                 faction: ret.faction,
                 handled_by: ret.handled_by,
                 reason: ret.reason,
@@ -73,7 +74,7 @@ pub async fn get_images_by_id(query: Query<GetImageQuery>) -> impl IntoResponse 
                 id: ret.id,
                 img_1: ret.image_1,
                 img_2: Some(ret.image_2),
-                date: ret.date,
+                date: Budapest.from_utc_datetime(&ret.date.naive_local().into()),
                 faction: ret.faction,
                 handled_by: ret.handled_by,
                 price: None,
@@ -101,7 +102,7 @@ pub async fn get_images_by_id(query: Query<GetImageQuery>) -> impl IntoResponse 
                 id: ret.id,
                 img_1: ret.image,
                 img_2: None,
-                date: ret.date,
+                date: Budapest.from_utc_datetime(&ret.date.naive_local().into()),
                 faction: ret.faction,
                 price: ret.price,
                 r#type: None,

@@ -1,9 +1,10 @@
 use axum::{
-    debug_handler,
+    Extension, Json, debug_handler,
     extract::{self, Query},
     response::IntoResponse,
-    Extension, Json,
 };
+use chrono::TimeZone;
+use chrono_tz::Europe::Budapest;
 use http::StatusCode;
 use saes_shared::{
     db::{bills, hails, supplements},
@@ -14,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder, Set};
 
 use crate::{
+    DB_CLIENT,
     config::loader::get_config,
     logging::db_log,
     modules::api::utils::{
@@ -21,7 +23,6 @@ use crate::{
         structs::SMGetItemsFull,
         types_statuses::{get_statuses_as_list, get_types, get_types_as_list},
     },
-    DB_CLIENT,
 };
 
 #[derive(Debug, Deserialize)]
@@ -88,7 +89,7 @@ pub async fn admin_items_get(
                     img_2: None,
                     faction: item.faction,
                     status: item.status,
-                    date: item.date,
+                    date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
                     price: None,
                     r#type: item.r#type,
                     handled_by: item.handled_by.clone(),
@@ -140,7 +141,7 @@ pub async fn admin_items_get(
                     img_2: Some(item.image_2),
                     faction: item.faction,
                     status: item.status,
-                    date: item.date,
+                    date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
                     price: None,
                     r#type: None,
                     handled_by: item.handled_by.clone(),
@@ -194,7 +195,7 @@ pub async fn admin_items_get(
                     price: item.price,
                     r#type: None,
                     status: item.status,
-                    date: item.date,
+                    date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
                     handled_by: item.handled_by.clone(),
                     reason: item.reason.clone(),
                     owner: item.owner,
@@ -329,7 +330,7 @@ pub async fn admin_items_post(
             Ok(Json(SMGetItemsFull {
                 faction: statreturn.faction,
                 status: statreturn.status,
-                date: statreturn.date,
+                date: Budapest.from_utc_datetime(&statreturn.date.naive_local().into()),
                 handled_by: statreturn.handled_by,
                 reason: statreturn.reason,
                 id: statreturn.id,
@@ -424,7 +425,7 @@ pub async fn admin_items_post(
             Ok(Json(SMGetItemsFull {
                 faction: statreturn.faction,
                 status: statreturn.status,
-                date: statreturn.date,
+                date: Budapest.from_utc_datetime(&statreturn.date.naive_local().into()),
                 handled_by: statreturn.handled_by,
                 reason: statreturn.reason,
                 id: statreturn.id,
@@ -600,7 +601,7 @@ pub async fn admin_items_post(
             Ok(Json(SMGetItemsFull {
                 faction: statreturn.faction,
                 status: statreturn.status,
-                date: statreturn.date,
+                date: Budapest.from_utc_datetime(&statreturn.date.naive_local().into()),
                 handled_by: statreturn.handled_by,
                 reason: statreturn.reason,
                 id: statreturn.id,

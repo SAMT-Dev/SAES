@@ -464,11 +464,7 @@
 						<TableBodyRow>
 							<TableBodyCell>{potle.id}</TableBodyCell>
 							<TableBodyCell
-								>{formatRelative(
-									new Date(new Date(potle.date).valueOf() - data.offset!),
-									new Date(),
-									{ locale }
-								)}</TableBodyCell
+								>{formatRelative(new Date(potle.date), new Date(), { locale })}</TableBodyCell
 							>
 							<TableBodyCell
 								>{usernames[potle.owner] ? usernames[potle.owner].name : potle.owner}</TableBodyCell

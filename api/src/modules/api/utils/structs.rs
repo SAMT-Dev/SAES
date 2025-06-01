@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::Utc;
+use chrono_tz::Tz;
 use saes_shared::structs::factions::FactionRecord;
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +18,7 @@ pub struct SMGetItemsFull {
     pub price: Option<i32>,
     pub faction: i8,
     pub handled_by: Option<i32>,
-    pub date: chrono::DateTime<Utc>,
+    pub date: chrono::DateTime<Tz>,
     pub item_type: i8,
 }
 

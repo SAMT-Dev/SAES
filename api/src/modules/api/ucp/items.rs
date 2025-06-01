@@ -5,13 +5,13 @@ use std::{
 };
 
 use axum::{
-    debug_handler,
+    Extension, Json, Router, debug_handler,
     extract::{DefaultBodyLimit, Multipart, Query},
     response::IntoResponse,
     routing::{get, post},
-    Extension, Json, Router,
 };
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, TimeZone};
+use chrono_tz::{Europe::Budapest, Tz};
 use reqwest::StatusCode;
 use saes_shared::{
     db::{bills, hails, images, images_bind, supplements},
@@ -23,6 +23,7 @@ use sha2::Digest;
 use tokio::fs::remove_file;
 
 use crate::{
+    DB_CLIENT,
     config::loader::get_config,
     logging::db_log,
     modules::api::utils::{
@@ -30,10 +31,9 @@ use crate::{
         queries::{UCPTypeExtraQuery, UCPTypeQuery},
         types_statuses::{get_statuses, get_types, get_types_as_list},
     },
-    DB_CLIENT,
 };
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct ItemsStruct {
     pub id: i32,
     pub owner: i32,
@@ -45,7 +45,7 @@ pub struct ItemsStruct {
     pub faction: String,
     pub handled_by: Option<i32>,
     pub price: Option<i32>,
-    pub date: chrono::DateTime<Utc>,
+    pub date: chrono::DateTime<Tz>,
 }
 
 pub fn routes() -> Router {
@@ -112,7 +112,7 @@ pub async fn ucp_items_get(
                     driver: None,
                     reason: strucc.reason.clone(),
                     status: strucc.status,
-                    date: strucc.date,
+                    date: Budapest.from_utc_datetime(&strucc.date.naive_local().into()),
                     price: None,
                     id: strucc.id,
                     handled_by: strucc.handled_by.clone(),
@@ -161,7 +161,7 @@ pub async fn ucp_items_get(
                     reason: strucc.reason.clone(),
                     driver: None,
                     status: strucc.status,
-                    date: strucc.date,
+                    date: Budapest.from_utc_datetime(&strucc.date.naive_local().into()),
                     id: strucc.id,
                     price: None,
                     handled_by: strucc.handled_by.clone(),
@@ -213,7 +213,7 @@ pub async fn ucp_items_get(
                     img_2: None,
                     reason: strucc.reason.clone(),
                     status: strucc.status,
-                    date: strucc.date,
+                    date: Budapest.from_utc_datetime(&strucc.date.naive_local().into()),
                     driver: strucc.driver,
                     id: strucc.id,
                     price: strucc.price,
@@ -311,7 +311,8 @@ pub async fn ucp_items_post(
                                     date: Set(DateTime::from_timestamp_millis(
                                         ditas[i].parse().unwrap(),
                                     )
-                                    .unwrap()),
+                                    .unwrap()
+                                    .into()),
                                     ..Default::default()
                                 };
                                 let new_img = if same_file.is_none() {
@@ -334,7 +335,8 @@ pub async fn ucp_items_post(
                                     date: Set(DateTime::from_timestamp_millis(
                                         ditas[i].parse().unwrap(),
                                     )
-                                    .unwrap()),
+                                    .unwrap()
+                                    .into()),
                                     owner: Set(ext.driverid),
                                     status: Set(statuses.uploaded.id),
                                     image_1: Set(files_for_leintes[0]),
@@ -398,7 +400,8 @@ pub async fn ucp_items_post(
                                     date: Set(DateTime::from_timestamp_millis(
                                         ditas[i].parse().unwrap(),
                                     )
-                                    .unwrap()),
+                                    .unwrap()
+                                    .into()),
                                     ..Default::default()
                                 };
                                 let new_img = if same_file.is_none() {
@@ -435,7 +438,8 @@ pub async fn ucp_items_post(
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
-                                .unwrap()),
+                                .unwrap()
+                                .into()),
                                 ..Default::default()
                             };
                             let new_img = if same_file.is_none() {
@@ -457,7 +461,8 @@ pub async fn ucp_items_post(
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
-                                .unwrap()),
+                                .unwrap()
+                                .into()),
                                 owner: Set(ext.driverid),
                                 status: Set(statuses.uploaded.id),
                                 image: Set(new_img),
@@ -517,7 +522,8 @@ pub async fn ucp_items_post(
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
-                                .unwrap()),
+                                .unwrap()
+                                .into()),
                                 ..Default::default()
                             };
                             let new_img = if same_file.is_none() {
@@ -539,7 +545,8 @@ pub async fn ucp_items_post(
                                 date: Set(DateTime::from_timestamp_millis(
                                     ditas[i].parse().unwrap(),
                                 )
-                                .unwrap()),
+                                .unwrap()
+                                .into()),
                                 owner: Set(ext.driverid),
                                 driver: Set(Some(ext.driverid)),
                                 target_faction: Set(Some(
@@ -662,7 +669,7 @@ pub async fn get_item_info_by_id(
         }
         let item = item.unwrap();
         return Ok(Json(ItemsStruct {
-            date: item.date,
+            date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
             driver: None,
             faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
@@ -687,7 +694,7 @@ pub async fn get_item_info_by_id(
         }
         let item = item.unwrap();
         return Ok(Json(ItemsStruct {
-            date: item.date,
+            date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
             driver: None,
             faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
@@ -712,7 +719,7 @@ pub async fn get_item_info_by_id(
         }
         let item = item.unwrap();
         return Ok(Json(ItemsStruct {
-            date: item.date,
+            date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
             driver: None,
             faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,

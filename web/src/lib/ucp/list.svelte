@@ -109,7 +109,7 @@
 							{get_status_string(potle.status).toUpperCase()}
 						</h1>
 						<h1 class="text-gray-200 drop-shadow-xl">
-							{formatRelative(new Date(new Date(potle.date).valueOf() - data.offset!), new Date(), {
+							{formatRelative(new Date(potle.date), new Date(), {
 								locale
 							})}
 						</h1>

@@ -5,10 +5,9 @@ use std::{
 };
 
 use axum::{
-    debug_handler,
+    Extension, Json, debug_handler,
     extract::{Multipart, Query},
     response::IntoResponse,
-    Extension, Json,
 };
 
 use chrono::DateTime;
@@ -22,8 +21,8 @@ use tokio::fs::remove_file;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, Set};
 
 use crate::{
-    config::{editor::write_config, loader::get_config},
     DB_CLIENT,
+    config::{editor::write_config, loader::get_config},
 };
 
 #[derive(Debug, Deserialize)]
@@ -87,7 +86,9 @@ pub async fn sys_change_faction_image(
                     converted: Set(1),
                     filename: Set(real_file_name[1].clone()),
                     checksum: Set(Some(hash_text)),
-                    date: Set(DateTime::from_timestamp_millis(ditas[0].parse().unwrap()).unwrap()),
+                    date: Set(DateTime::from_timestamp_millis(ditas[0].parse().unwrap())
+                        .unwrap()
+                        .into()),
                     ..Default::default()
                 };
                 let new_img = if same_file.is_none() {

@@ -190,9 +190,6 @@ export const load = (async ({ cookies, request, url }) => {
 						? "HU"
 						: (request.headers.get("cf-ipcountry") as string),
 					auth: cookies.get("auth_token")!,
-					offset: process.env.SUMMER_TIMEZONE === "true"
-						? -60 * 60 * 1000 * 2
-						: -60 * 60 * 1000,
 					agent: request.headers.get("user-agent") as string,
 				};
 			} else {

@@ -1,4 +1,4 @@
-use axum::{middleware, routing::get, Router};
+use axum::{Router, middleware, routing::get};
 
 use crate::modules::api::utils::middle::ucp_auth;
 
