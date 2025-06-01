@@ -28,10 +28,8 @@
 			const formData = new FormData();
 			let dates: string[] = [];
 			for (let i = 0; i < files.files.length; i++) {
-				const offsetMs =
-					new Date(Number(files.files[i].lastModified.toString())).getTimezoneOffset() * 60 * 1000;
 				formData.append('files', files.files[i]);
-				dates.push((Number(files.files[i].lastModified.toString()) + offsetMs).toString());
+				dates.push(new Date(files.files[i].lastModified).toUTCString());
 			}
 			formerror = '';
 			const mama = await fetch('/web-api/upload', {
