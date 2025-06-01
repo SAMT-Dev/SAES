@@ -13,7 +13,7 @@
 	import { browser } from '$app/environment';
 	import { io } from 'socket.io-client';
 	let { data, children } = $props();
-	let maintenance = $state(false);
+	let maintenance: string | boolean = $state(false);
 	let initial_socket = $state(false);
 	let announcement = $state(false);
 	let nosocket: boolean | string = $state('Socket csatlakozás');
@@ -28,8 +28,18 @@
 	if (data.refresh && browser) {
 		location.reload();
 	}
+	if (data.maintenance) {
+		maintenance = data.maintenance;
+	}
 	onMount(() => {
-		if (!data.noaccess && !data.noauth && !data.error && !data.nofact && !data.refresh) {
+		if (
+			!data.noaccess &&
+			!data.noauth &&
+			!data.error &&
+			!data.nofact &&
+			!data.refresh &&
+			!data.maintenance
+		) {
 			$socket = io(data.api, {
 				auth: {
 					auth_token: data.auth
@@ -89,6 +99,9 @@
 	{/if}
 	{#if data.info?.icon_id}
 		<link rel="icon" href={data.info?.icon_id} />
+	{/if}
+	{#if maintenance}
+		<title>Karbantartás - {tip}</title>
 	{/if}
 </svelte:head>
 <Error {data}>

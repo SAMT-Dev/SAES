@@ -1,7 +1,7 @@
 use axum::{extract::Request, http::HeaderMap, middleware::Next, response::IntoResponse};
 use reqwest::StatusCode;
 use saes_shared::structs::{
-    permissions::{get_perm, Permissions},
+    permissions::{Permissions, get_perm},
     user::Driver,
 };
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,7 @@ use crate::{
     modules::api::auth::validate_jwt,
 };
 
-use super::functions::{get_env_mode, EnvModes};
+use super::functions::{EnvModes, get_env_mode};
 
 #[derive(Debug, Serialize)]
 pub struct SAMTAuth {
@@ -84,6 +84,12 @@ pub async fn ucp_auth(
         return Err((
             StatusCode::FORBIDDEN,
             "Nincs jogod a dev oldalhoz!".to_string(),
+        ));
+    }
+    if config.global.maintenance.is_some() && !jwt.admin {
+        return Err((
+            StatusCode::TOO_EARLY,
+            config.global.maintenance.clone().unwrap(),
         ));
     }
     if jwt.permissions.contains(&get_perm(Permissions::SaesLogin)) || jwt.admin {

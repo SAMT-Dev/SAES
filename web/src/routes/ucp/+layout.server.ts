@@ -62,6 +62,11 @@ export const load = (async ({ cookies, request, url }) => {
 				error: await aha.text(),
 			};
 		}
+		if (aha.status === 425) {
+			return {
+				maintenance: await aha.text(),
+			};
+		}
 		if (aha.ok) {
 			const jeson: {
 				driver: {
