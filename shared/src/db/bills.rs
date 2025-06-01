@@ -2,7 +2,7 @@
 
 use sea_orm::{
     entity::prelude::*,
-    sqlx::types::chrono::{self, Local},
+    sqlx::types::chrono::{self},
 };
 use serde::Serialize;
 
@@ -20,7 +20,7 @@ pub struct Model {
     pub handled_by: Option<i32>,
     pub faction: i8,
     pub target_faction: Option<i8>,
-    pub date: chrono::DateTime<Local>,
+    pub date: chrono::NaiveDateTime,
     pub modified: DateTimeUtc,
 }
 

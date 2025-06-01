@@ -2,7 +2,7 @@
 
 use sea_orm::{
     entity::prelude::*,
-    sqlx::types::chrono::{self, Local},
+    sqlx::types::chrono::{self},
 };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
@@ -17,7 +17,7 @@ pub struct Model {
     pub tmp: i8,
     pub converted: i8,
     pub faction: i8,
-    pub date: chrono::DateTime<Local>,
+    pub date: chrono::NaiveDateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

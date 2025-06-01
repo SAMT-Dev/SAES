@@ -29,7 +29,7 @@
 			let dates: string[] = [];
 			for (let i = 0; i < files.files.length; i++) {
 				formData.append('files', files.files[i]);
-				dates.push(new Date(files.files[i].lastModified).toUTCString());
+				dates.push(Number(new Date(files.files[i].lastModified)).toString());
 			}
 			formerror = '';
 			const mama = await fetch('/web-api/upload', {

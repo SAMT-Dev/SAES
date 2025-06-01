@@ -112,7 +112,7 @@ pub async fn ucp_items_get(
                     driver: None,
                     reason: strucc.reason.clone(),
                     status: strucc.status,
-                    date: Budapest.from_utc_datetime(&strucc.date.naive_local().into()),
+                    date: Budapest.from_utc_datetime(&strucc.date),
                     price: None,
                     id: strucc.id,
                     handled_by: strucc.handled_by.clone(),
@@ -161,7 +161,7 @@ pub async fn ucp_items_get(
                     reason: strucc.reason.clone(),
                     driver: None,
                     status: strucc.status,
-                    date: Budapest.from_utc_datetime(&strucc.date.naive_local().into()),
+                    date: Budapest.from_utc_datetime(&strucc.date),
                     id: strucc.id,
                     price: None,
                     handled_by: strucc.handled_by.clone(),
@@ -213,7 +213,7 @@ pub async fn ucp_items_get(
                     img_2: None,
                     reason: strucc.reason.clone(),
                     status: strucc.status,
-                    date: Budapest.from_utc_datetime(&strucc.date.naive_local().into()),
+                    date: Budapest.from_utc_datetime(&strucc.date),
                     driver: strucc.driver,
                     id: strucc.id,
                     price: strucc.price,
@@ -312,7 +312,7 @@ pub async fn ucp_items_post(
                                         ditas[i].parse().unwrap(),
                                     )
                                     .unwrap()
-                                    .into()),
+                                    .naive_utc()),
                                     ..Default::default()
                                 };
                                 let new_img = if same_file.is_none() {
@@ -336,7 +336,7 @@ pub async fn ucp_items_post(
                                         ditas[i].parse().unwrap(),
                                     )
                                     .unwrap()
-                                    .into()),
+                                    .naive_utc()),
                                     owner: Set(ext.driverid),
                                     status: Set(statuses.uploaded.id),
                                     image_1: Set(files_for_leintes[0]),
@@ -401,7 +401,7 @@ pub async fn ucp_items_post(
                                         ditas[i].parse().unwrap(),
                                     )
                                     .unwrap()
-                                    .into()),
+                                    .naive_utc()),
                                     ..Default::default()
                                 };
                                 let new_img = if same_file.is_none() {
@@ -439,7 +439,7 @@ pub async fn ucp_items_post(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()
-                                .into()),
+                                .naive_utc()),
                                 ..Default::default()
                             };
                             let new_img = if same_file.is_none() {
@@ -462,7 +462,7 @@ pub async fn ucp_items_post(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()
-                                .into()),
+                                .naive_utc()),
                                 owner: Set(ext.driverid),
                                 status: Set(statuses.uploaded.id),
                                 image: Set(new_img),
@@ -523,7 +523,7 @@ pub async fn ucp_items_post(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()
-                                .into()),
+                                .naive_utc()),
                                 ..Default::default()
                             };
                             let new_img = if same_file.is_none() {
@@ -546,7 +546,7 @@ pub async fn ucp_items_post(
                                     ditas[i].parse().unwrap(),
                                 )
                                 .unwrap()
-                                .into()),
+                                .naive_utc()),
                                 owner: Set(ext.driverid),
                                 driver: Set(Some(ext.driverid)),
                                 target_faction: Set(Some(
@@ -669,7 +669,7 @@ pub async fn get_item_info_by_id(
         }
         let item = item.unwrap();
         return Ok(Json(ItemsStruct {
-            date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
+            date: Budapest.from_utc_datetime(&item.date),
             driver: None,
             faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
@@ -694,7 +694,7 @@ pub async fn get_item_info_by_id(
         }
         let item = item.unwrap();
         return Ok(Json(ItemsStruct {
-            date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
+            date: Budapest.from_utc_datetime(&item.date),
             driver: None,
             faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,
@@ -719,7 +719,7 @@ pub async fn get_item_info_by_id(
         }
         let item = item.unwrap();
         return Ok(Json(ItemsStruct {
-            date: Budapest.from_utc_datetime(&item.date.naive_local().into()),
+            date: Budapest.from_utc_datetime(&item.date),
             driver: None,
             faction: get_faction_by_id(item.faction).await.unwrap(),
             handled_by: item.handled_by,

@@ -88,7 +88,7 @@ pub async fn sys_change_faction_image(
                     checksum: Set(Some(hash_text)),
                     date: Set(DateTime::from_timestamp_millis(ditas[0].parse().unwrap())
                         .unwrap()
-                        .into()),
+                        .naive_utc()),
                     ..Default::default()
                 };
                 let new_img = if same_file.is_none() {
