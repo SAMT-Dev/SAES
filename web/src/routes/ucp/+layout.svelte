@@ -267,8 +267,10 @@
 	{/if}
 </Error>
 
-<a
-	href="/sys"
-	class="text-shadow-taxi text-shadow-md hover:text-shadow-black hover:text-taxi fixed bottom-4 left-4 cursor-pointer text-xl font-bold uppercase text-white transition-all duration-200"
-	>Sysadmin</a
->
+{#if data.layout?.admin}
+	<a
+		href="/sys"
+		class="text-shadow-taxi text-shadow-md hover:text-shadow-black hover:text-taxi fixed bottom-4 left-4 cursor-pointer text-xl font-bold uppercase text-white transition-all duration-200"
+		>Sysadmin</a
+	>
+{/if}
