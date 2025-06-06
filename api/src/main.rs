@@ -4,14 +4,13 @@ use dotenvy::dotenv;
 use lazy_static::lazy_static;
 use modules::enable_modules;
 use reqwest::Client;
-use saes_shared::sql::get_db_conn;
+use saes_shared::sql::{get_db_conn, test_db_conn};
 use sea_orm::DatabaseConnection;
 use tokio::sync::{OnceCell, RwLock};
 use tracing_subscriber::FmtSubscriber;
 
 mod config;
 mod envs;
-mod init;
 mod logging;
 mod modules;
 
@@ -44,7 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "env_mode".to_string(),
         env_mode.clone().to_uppercase().to_string(),
     );
-    init::main().await;
+    test_db_conn().await;
     DB_CLIENT.set(get_db_conn().await).unwrap();
     enable_modules().await;
     Ok(())

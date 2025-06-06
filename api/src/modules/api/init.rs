@@ -4,8 +4,6 @@ use std::{
     path::Path,
 };
 
-use saes_shared::sql::test_db_conn;
-
 use crate::config::loader::get_config;
 
 fn image_init() {
@@ -30,7 +28,6 @@ fn image_tmp_init() {
 
 pub async fn main() {
     get_config().await;
-    test_db_conn().await;
     image_init();
     image_tmp_init();
 }

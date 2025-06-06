@@ -1,10 +1,10 @@
 use std::{env, error::Error};
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use socket::InitialData;
 use socketioxide::{
-    extract::{Data, SocketRef},
     SocketIo,
+    extract::{Data, SocketRef},
 };
 use tokio::sync::{OnceCell, RwLock};
 use tower::ServiceBuilder;
@@ -16,6 +16,7 @@ use utils::structs::AppUser;
 pub mod api;
 pub mod app;
 pub mod auth;
+mod init;
 pub mod list;
 pub mod shorts;
 pub mod socket;
@@ -28,6 +29,7 @@ pub static APP_AUTHS: OnceCell<RwLock<Vec<AppUser>>> = OnceCell::const_new();
 
 pub async fn run_api() -> Result<(), Box<dyn Error>> {
     let env_mode = env::var("ENV_MODE").unwrap();
+    init::main().await;
     let hash = env::var("COMMIT_HASH");
     let (layer, io) = SocketIo::new_layer();
     SOCKET_IO.set(io).unwrap();
