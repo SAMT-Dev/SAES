@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-use axum::{debug_handler, response::IntoResponse, Extension, Json};
+use axum::{Extension, Json, debug_handler, response::IntoResponse};
 use http::{HeaderMap, StatusCode};
-use saes_shared::structs::{permissions::get_perm, user::Driver};
+use saes_shared::structs::{api_config::PubFactionReturn, permissions::get_perm, user::Driver};
 use serde::{Deserialize, Serialize};
 
-use crate::{config::loader::get_config, modules::api::utils::api::get_api_envs, WEB_CLIENT};
+use crate::{WEB_CLIENT, config::loader::get_config, modules::api::utils::api::get_api_envs};
 
 #[derive(Debug, Serialize)]
 struct HomeRet {
@@ -106,16 +106,6 @@ pub async fn ucp_getuserid(h: HeaderMap) -> Json<UserId> {
         .unwrap();
     let res = req.json().await.unwrap();
     Json(res)
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PubFactionReturn {
-    pub icon_id: i32,
-    pub name: String,
-    pub perm_name: String,
-    pub primary: String,
-    pub secondary: String,
-    pub tertiary: String,
 }
 
 #[debug_handler]

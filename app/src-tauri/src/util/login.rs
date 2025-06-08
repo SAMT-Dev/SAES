@@ -1,13 +1,8 @@
-use std::{
-    env,
-    fs::{self, File},
-    path::Path,
-    thread,
-    time::Duration,
-};
+use std::{collections::HashMap, env, thread, time::Duration};
 
 use reqwest::StatusCode;
 use saes_shared::structs::{
+    api_config::PubFactionReturn,
     permissions::{get_perm, Permissions},
     user::Driver,
 };
@@ -17,10 +12,10 @@ use tauri_plugin_dialog::DialogExt;
 use tiny_http::{Response, Server};
 use url::Url;
 
-use crate::{AUTH, DISCORD_TOKEN};
+use crate::{util::structs::BundledDriver, AUTH, DISCORD_TOKEN, JWT_TOKEN, WEB_CLIENT};
 
 use super::{
-    config::{get_conf_path, load_config, save_config, Config},
+    config::{load_config, save_config, Config},
     structs::UCPReturn,
 };
 
@@ -64,6 +59,8 @@ pub async fn begin_login(app: AppHandle) {
         return;
     }
     let jwt: JWTRet = getjwt.unwrap().json().await.unwrap();
+    let mut jwtwriter = JWT_TOKEN.write().await;
+    *jwtwriter = Some(jwt.jwt.clone());
     let get = client
         .get(format!("{}/ucp", api))
         .header("cookie", jwt.jwt)
@@ -73,39 +70,24 @@ pub async fn begin_login(app: AppHandle) {
     let data: Result<UCPReturn, reqwest::Error> = get.json().await;
     if data.is_ok() {
         let data = data.unwrap();
-        if data.perms.contains(&"saes.login".to_string()) {
-            app.emit("loginDone", format!("{}-{}", data.name, data.admin))
-                .unwrap();
+        if data.driver.perms.contains(&"saes.login".to_string()) {
+            app.emit(
+                "loginDone",
+                format!("{}-{}", data.driver.name, data.driver.admin),
+            )
+            .unwrap();
         } else {
             app.emit("loginFailed", "noperms").unwrap();
         }
     } else {
-        app.emit("loginFailed", "unknown").unwrap();
+        app.emit("loginFailed", format!("unknown/{:?}", data.unwrap_err()))
+            .unwrap();
     }
-}
-
-#[tauri::command]
-pub async fn check_envs() -> String {
-    let pat = get_conf_path();
-    let realpat = format!("{}/.enverr", pat);
-    let errcheck = Path::new(&realpat);
-    let api = env::var("API_URL");
-    if api.is_ok() {
-        if errcheck.exists() {
-            fs::remove_file(realpat).unwrap();
-        }
-        return String::from("ok");
-    }
-    if errcheck.exists() {
-        return String::from("second");
-    }
-    File::create(&errcheck).unwrap();
-    return String::from("first");
 }
 
 #[tauri::command]
 pub fn get_api_url() -> String {
-    env::var("API_URL").unwrap()
+    env!("API_URL").to_owned()
 }
 
 #[tauri::command]
@@ -116,25 +98,24 @@ pub async fn check_auth(app: AppHandle) -> bool {
     }
     let mut rauth = AUTH.write().await;
     *rauth = Some(auth.unwrap());
+    let mut rjwt = JWT_TOKEN.write().await;
+    let jwt_tok = get_jwt_token().await.unwrap();
+    *rjwt = Some(jwt_tok.jwt);
     return true;
 }
 
 #[derive(Debug, Deserialize)]
-struct JWTRet {
-    jwt: String,
+pub struct JWTRet {
+    pub jwt: String,
 }
 
-pub async fn get_auth(app: AppHandle) -> Option<Driver> {
-    let conf = load_config();
-    if conf.is_none() {
-        app.restart();
-    }
-    let conf = conf.unwrap();
+pub async fn get_jwt_token() -> Option<JWTRet> {
+    let conf = load_config().unwrap();
     let api = get_api_url();
     let client = reqwest::Client::new();
     let jwt = client
         .get(format!("{}/auth/jwt", api))
-        .header("cookie", conf.auth)
+        .header("cookie", conf.dc_auth)
         .send()
         .await;
     if jwt.is_err() {
@@ -145,9 +126,24 @@ pub async fn get_auth(app: AppHandle) -> Option<Driver> {
         return None;
     }
     let authkey: JWTRet = jwt.json().await.unwrap();
+    Some(authkey)
+}
+
+pub async fn get_auth(app: AppHandle) -> Option<Driver> {
+    let conf = load_config();
+    if conf.is_none() {
+        app.restart();
+    }
+    let api = get_api_url();
+    let client = reqwest::Client::new();
+    let jwt = get_jwt_token().await;
+    if jwt.is_none() {
+        return None;
+    }
+    let jwt = jwt.unwrap();
     let check = client
         .get(format!("{}/ucp", api))
-        .header("cookie", authkey.jwt.clone())
+        .header("cookie", jwt.jwt.clone())
         .send()
         .await;
     if check.is_err() {
@@ -157,8 +153,8 @@ pub async fn get_auth(app: AppHandle) -> Option<Driver> {
     }
     let check = check.unwrap();
     if StatusCode::is_success(&check.status()) {
-        let json: Driver = check.json().await.unwrap();
-        return Some(json);
+        let json: BundledDriver = check.json().await.unwrap();
+        return Some(json.driver);
     }
     return None;
 }
@@ -175,7 +171,8 @@ pub async fn set_game_dir(app: AppHandle) {
 #[tauri::command]
 pub async fn save_game_dir(dir: String) {
     let config = Config {
-        auth: DISCORD_TOKEN.read().await.clone().unwrap(),
+        dc_auth: DISCORD_TOKEN.read().await.clone().unwrap(),
+        jwt_token: JWT_TOKEN.read().await.clone().unwrap(),
         game_dir: dir.clone(),
         faction: None,
     };
@@ -186,7 +183,8 @@ pub async fn save_game_dir(dir: String) {
 pub async fn save_auth_token() {
     let conf = load_config().unwrap();
     let new_conf = Config {
-        auth: DISCORD_TOKEN.read().await.clone().unwrap(),
+        dc_auth: DISCORD_TOKEN.read().await.clone().unwrap(),
+        jwt_token: DISCORD_TOKEN.read().await.clone().unwrap(),
         game_dir: conf.game_dir,
         faction: conf.faction,
     };
@@ -216,20 +214,29 @@ pub async fn check_faction() -> bool {
 }
 
 #[tauri::command]
-pub async fn get_faction_options() -> Vec<String> {
-    let auth = AUTH.read().await.clone().unwrap();
-    let facts = get_factions_list();
-    facts
-        .into_iter()
-        .filter(|f| auth.perms.contains(&get_perm(Permissions::SaesUcp(*f))) || auth.admin)
-        .collect()
+pub async fn get_faction_options() -> HashMap<String, PubFactionReturn> {
+    let jwt = JWT_TOKEN.read().await;
+    let api = get_api_url();
+    let check = WEB_CLIENT
+        .get()
+        .unwrap()
+        .get(format!("{}/ucp/getfactions", api))
+        .header("cookie", jwt.clone().unwrap())
+        .send()
+        .await;
+    if check.is_err() {
+        return HashMap::new();
+    };
+    let factions: HashMap<String, PubFactionReturn> = check.unwrap().json().await.unwrap();
+    factions
 }
 
 #[tauri::command]
-pub async fn set_faction(faction: Factions) {
+pub async fn set_faction(faction: String) {
     let conf = load_config().unwrap();
     let new_conf = Config {
-        auth: conf.auth,
+        dc_auth: conf.dc_auth,
+        jwt_token: conf.jwt_token,
         game_dir: conf.game_dir,
         faction: Some(faction),
     };

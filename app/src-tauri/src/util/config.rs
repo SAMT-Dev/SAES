@@ -10,7 +10,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    pub auth: String,
+    pub dc_auth: String,
+    pub jwt_token: String,
     pub game_dir: String,
     pub faction: Option<String>,
 }

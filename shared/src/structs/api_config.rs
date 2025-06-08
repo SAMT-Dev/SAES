@@ -28,3 +28,13 @@ impl Default for ItemAccess {
         Self::Write
     }
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PubFactionReturn {
+    pub icon_id: i32,
+    pub name: String,
+    pub perm_name: String,
+    pub primary: String,
+    pub secondary: String,
+    pub tertiary: String,
+}

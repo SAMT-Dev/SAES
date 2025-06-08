@@ -45,22 +45,10 @@
 			text = 'Frissítés kész, újraindítás';
 			await relaunch();
 		}
-		text = 'ENV ellenőrzése';
-		let envs: string = await invoke('check_envs');
-		if (envs === 'ok') {
-			text = 'App indítása';
-			setTimeout(() => {
-				invoke('update_done');
-			}, 500);
-		}
-		if (envs === 'second') {
-			envserr = true;
-			text = '';
-		}
-		if (envs === 'first') {
-			text = 'Kérlek indítsd újra az appot!';
-			stopbtn = true;
-		}
+		text = 'App indítása';
+		setTimeout(() => {
+			invoke('update_done');
+		}, 500);
 	});
 </script>
 

@@ -7,18 +7,20 @@ use tauri::{
     tray::TrayIconBuilder,
     AppHandle, Emitter, Listener, Manager, PhysicalSize, Size,
 };
-use tokio::sync::RwLock;
+use tokio::sync::{OnceCell, RwLock};
 use util::login::{
-    begin_login, check_auth, check_envs, check_faction, done_setup, get_api_url,
-    get_faction_options, save_auth_token, save_game_dir, set_faction, set_game_dir,
+    begin_login, check_auth, check_faction, done_setup, get_api_url, get_faction_options,
+    save_auth_token, save_game_dir, set_faction, set_game_dir,
 };
 
 mod hash;
 mod util;
 
 pub static DISCORD_TOKEN: RwLock<Option<String>> = RwLock::const_new(None);
+pub static JWT_TOKEN: RwLock<Option<String>> = RwLock::const_new(None);
 pub static API_URL: RwLock<Option<String>> = RwLock::const_new(None);
 pub static AUTH: RwLock<Option<Driver>> = RwLock::const_new(None);
+pub static WEB_CLIENT: OnceCell<reqwest::Client> = OnceCell::const_new();
 
 #[tauri::command]
 async fn update_done(app: AppHandle) {
@@ -70,6 +72,7 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::Builder::new().build())
         .setup(|app| {
+            WEB_CLIENT.set(reqwest::Client::new()).unwrap();
             util::config::setup_folders();
             let quit_i = MenuItem::with_id(app, "quit", "Kilépés", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&quit_i])?;
@@ -94,7 +97,6 @@ pub fn run() {
             update_done,
             begin_login,
             get_api_url,
-            check_envs,
             set_game_dir,
             save_game_dir,
             done_setup,

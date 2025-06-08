@@ -19,15 +19,7 @@
 		userinfo.admin = infos[1] == 'true' ? true : false;
 		setupStep = 2;
 	});
-	listen<string>('loginFailed', (ev) => {
-		let err = ev.payload;
-		if (err === 'noperms') {
-			alert('Nincs jogod belépni!');
-		}
-		if (err === 'unknown') {
-			alert('Ismeretlen hiba miatt nem tudsz belépni!');
-		}
-	});
+
 	async function setGameDir() {
 		await invoke('set_game_dir');
 	}
@@ -79,7 +71,7 @@
 	{#if setupStep === 2}
 		<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw]">
 			<h1 class="text-3xl font-bold mt-2">
-				Üdv {userinfo.admin ? 'szöszadmin ' : ''}{userinfo.name}!
+				Üdv {userinfo.admin ? 'SA ' : ''}{userinfo.name}!
 			</h1>
 			<h2>A továbblépéshez kérlek válaszd ki a játékod mappáját!</h2>
 			<h2 class="text-gray-300">Amennyiben ez az alap, nem kell megváltoztatnod!</h2>
