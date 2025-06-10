@@ -4,9 +4,9 @@ default:
 set windows-powershell
 
 alias rd := r_dev
-alias wd := w_dev
+alias web := w_dev
 alias dtt := dev_to_test
-alias td := t_dev
+alias app := t_dev
 alias dbg := db_gen
 alias cdn := cdn_dev
 
