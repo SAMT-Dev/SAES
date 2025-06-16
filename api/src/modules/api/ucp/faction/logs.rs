@@ -1,27 +1,11 @@
-use axum::{debug_handler, response::IntoResponse, routing::get, Extension, Json, Router};
-use chrono::{DateTime, Utc};
-use http::StatusCode;
+use axum::{Extension, Json, Router, debug_handler, response::IntoResponse, routing::get};
 use saes_shared::{db::logs, structs::user::Driver};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder};
-use serde::Serialize;
 
-use crate::{config::loader::get_config, DB_CLIENT};
-
-#[derive(Debug, Serialize)]
-pub struct Logs {
-    owner: i32,
-    item_id: Option<i32>,
-    item_type: Option<i8>,
-    action: String,
-    faction: Option<i8>,
-    message: Option<String>,
-    date: DateTime<Utc>,
-}
+use crate::{DB_CLIENT, config::loader::get_config, modules::api::utils::structs::Logs};
 
 pub fn get_routes() -> Router {
-    Router::new()
-        .route("/get", get(fm_get_logs))
-        .route("/get_all", get(fm_get_all_logs))
+    Router::new().route("/get", get(fm_get_logs))
 }
 
 #[debug_handler]
@@ -56,35 +40,4 @@ pub async fn fm_get_logs(ext: Extension<Driver>) -> impl IntoResponse {
         })
         .collect();
     return Json(logs);
-}
-
-#[debug_handler]
-pub async fn fm_get_all_logs(ext: Extension<Driver>) -> impl IntoResponse {
-    if ext.admin {
-        let db = DB_CLIENT.get().unwrap();
-        let logs = logs::Entity::find()
-            .order_by(logs::Column::Date, Order::Desc)
-            .all(db)
-            .await
-            .unwrap();
-        let logs: Vec<Logs> = logs
-            .iter()
-            .map(|log| -> Logs {
-                Logs {
-                    owner: log.owner.clone(),
-                    item_id: log.item_id,
-                    item_type: log.item_type,
-                    action: log.action.clone(),
-                    faction: log.faction,
-                    message: log.message.clone(),
-                    date: log.date.clone(),
-                }
-            })
-            .collect();
-        return Ok(Json(logs));
-    }
-    return Err((
-        StatusCode::FORBIDDEN,
-        "This is only accessible to sysadmins!",
-    ));
 }

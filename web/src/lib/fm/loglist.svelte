@@ -22,6 +22,8 @@
 
 	let modal: HTMLDialogElement | undefined = $state();
 	let modalItem: SMGetItemsFull | undefined = $state();
+	let usernames: Record<string, { name: string }> = $state({});
+	let factions: Record<number, string> = $state({});
 	let modaltype: string | undefined = $state();
 	let modalDetails: string | undefined = $state();
 	let {
@@ -124,7 +126,7 @@
 		render_logs();
 	});
 
-	function render_logs() {
+	async function render_logs() {
 		filter_check();
 		pre_logs = [];
 		real_logs = [];
@@ -145,6 +147,21 @@
 					real_logs.push(pre_logs[i]);
 				}
 			}
+		}
+		let ids: number[] = [];
+		for (const elem of real_logs) {
+			if (!ids.includes(elem.owner)) {
+				ids.push(elem.owner);
+			}
+		}
+		if (ids.length > 0) {
+			const fetcs = await fetch('/web-api/getusernames', {
+				headers: {
+					ids: JSON.stringify(ids)
+				}
+			});
+			let names = await fetcs.json();
+			usernames = names;
 		}
 	}
 
@@ -215,7 +232,11 @@
 					/></a
 				>
 			{/if}
-			<h2>Feltöltő: {modalItem.owner}</h2>
+			<h2>
+				Feltöltő: {usernames[modalItem.owner].name
+					? usernames[modalItem.owner].name
+					: modalItem.owner}
+			</h2>
 			<h2>
 				Kép dátuma: {formatRelative(
 					new Date(new Date(modalItem.date).valueOf() - data.offset!),
@@ -316,7 +337,9 @@
 									locale
 								})}</TableBodyCell
 							>
-							<TableBodyCell>{log.owner}</TableBodyCell>
+							<TableBodyCell
+								>{usernames[log.owner] ? usernames[log.owner].name : log.owner}</TableBodyCell
+							>
 							<TableBodyCell
 								>{#if log.action === 'UPLOAD ITEM'}
 									Elem feltöltés

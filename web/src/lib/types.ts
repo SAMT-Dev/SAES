@@ -30,7 +30,7 @@ export interface SMGetItemsFull {
 }
 
 export interface Logs {
-	owner: string;
+	owner: number;
 	item_id: number | undefined;
 	item_type: number | undefined;
 	action: string;

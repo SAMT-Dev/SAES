@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
 use saes_shared::structs::factions::FactionRecord;
 use serde::{Deserialize, Serialize};
@@ -42,4 +43,15 @@ pub struct AuthJWT {
     pub factions: HashMap<i8, FactionRecord>,
     pub permissions: Vec<String>,
     pub exp: i64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Logs {
+    pub owner: i32,
+    pub item_id: Option<i32>,
+    pub item_type: Option<i8>,
+    pub action: String,
+    pub faction: Option<i8>,
+    pub message: Option<String>,
+    pub date: DateTime<Utc>,
 }

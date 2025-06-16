@@ -1,17 +1,20 @@
 use axum::{
-    debug_handler,
+    Json, Router, debug_handler,
     extract::Request,
     middleware,
     routing::{get, post},
-    Json, Router,
 };
 use saes_shared::structs::user::Driver;
 
-use crate::modules::api::utils::middle::{sysadmin_auth, ucp_auth};
+use crate::modules::api::{
+    sys::logs::sys_get_logs,
+    utils::middle::{sysadmin_auth, ucp_auth},
+};
 
 mod config_api;
 mod factions;
 mod image;
+mod logs;
 
 #[debug_handler]
 pub async fn sys_home(mut request: Request) -> Json<Driver> {
@@ -35,6 +38,7 @@ pub fn routes() -> Router {
             "/factions/change_image",
             post(image::sys_change_faction_image),
         )
+        .route("/factions/logs", get(sys_get_logs))
         .route("/getfactions", get(factions::get_all_factions))
         .layer(middleware::from_fn(sysadmin_auth))
         .layer(middleware::from_fn(ucp_auth))
