@@ -2,6 +2,7 @@
 	import '../app.css';
 	import '../snow.css';
 	import { navigating, page } from '$app/state';
+	import { ModeWatcher } from 'mode-watcher';
 	import { loading } from '$lib/loading.svelte';
 	import { fade } from 'svelte/transition';
 	import Snow from '$lib/snow.svelte';
@@ -22,6 +23,9 @@
 	<meta content="/favicon.png" property="og:image" />
 	<meta content="#fece01" data-react-helmet="true" name="theme-color" />
 </svelte:head>
+
+<ModeWatcher />
+
 {#if snow}
 	<Snow />
 {/if}
