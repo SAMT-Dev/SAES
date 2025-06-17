@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { cdnUrl, christmas } from '$lib/api';
+	import { christmas } from '$lib/api';
 	import { pages } from './public';
 	import { page as statepage } from '$app/state';
-	import { Tooltip } from 'flowbite-svelte';
+
+	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	interface Props {
 		tip: any;
@@ -37,42 +39,58 @@
 		<div class="mx-0 px-0 xl:container lg:mx-auto lg:py-4">
 			<div class="flex items-center justify-between gap-2">
 				<div class="m-auto flex items-center justify-center gap-2">
-					<a
-						class="group relative z-20 flex items-center gap-3"
-						data-sveltekit-reload={true}
-						href="?clear_faction=true"
-					>
-						<div
-							class="pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200 group-hover:border-[var(--color-primary)]"
-						>
-							<img
-								src={icon}
-								class="border-1 pointer-events-none rounded-full border-solid border-black"
-								width="40"
-								height="40"
-								alt="Logó"
-							/>
-						</div>
-						<h1
-							class="text-3xl font-bold drop-shadow-xl transition-colors duration-200 group-hover:text-[var(--color-primary)]"
-						>
-							{tip}
-						</h1>
-						{#if christmas}
-							<img
-								src="/santa.svg"
-								class="absolute bottom-2 left-3.5 w-14 -rotate-[24deg]"
-								alt=""
-							/>
-						{/if}
-					</a>
-					<Tooltip class="bg-gray-600">Frakcióváltás</Tooltip>
-					<a href="/ucp/settings" aria-label="Beállítások" class="group hidden"
-						><span
-							class="icon-[material-symbols--settings] h-6 w-6 transition-colors duration-200 group-hover:text-[var(--color-primary)]"
-						></span></a
-					>
-					<Tooltip class="bg-gray-600">Beállítások</Tooltip>
+					<Tooltip.Provider>
+						<Tooltip.Root>
+							<Tooltip.Trigger>
+								<a
+									class="group relative z-20 flex items-center gap-3"
+									data-sveltekit-reload={true}
+									href="?clear_faction=true"
+								>
+									<div
+										class="pointer-events-none ml-5 rounded-full border-2 border-solid drop-shadow-xl duration-200 group-hover:border-[var(--color-primary)]"
+									>
+										<img
+											src={icon}
+											class="border-1 pointer-events-none rounded-full border-solid border-black"
+											width="40"
+											height="40"
+											alt="Logó"
+										/>
+									</div>
+									<h1
+										class="text-3xl font-bold drop-shadow-xl transition-colors duration-200 group-hover:text-[var(--color-primary)]"
+									>
+										{tip}
+									</h1>
+									{#if christmas}
+										<img
+											src="/santa.svg"
+											class="absolute bottom-2 left-3.5 w-14 -rotate-[24deg]"
+											alt=""
+										/>
+									{/if}
+								</a>
+							</Tooltip.Trigger>
+							<Tooltip.Content>
+								<h1>Frakcióváltás</h1>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					</Tooltip.Provider>
+					<Tooltip.Provider>
+						<Tooltip.Root>
+							<Tooltip.Trigger>
+								<a href="/ucp/settings" aria-label="Beállítások" class="group hidden"
+									><span
+										class="icon-[material-symbols--settings] h-6 w-6 transition-colors duration-200 group-hover:text-[var(--color-primary)]"
+									></span></a
+								>
+							</Tooltip.Trigger>
+							<Tooltip.Content>
+								<h1>Beállítások</h1>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					</Tooltip.Provider>
 				</div>
 				<div class="flex items-center justify-end border-l lg:border-l-0">
 					<input type="checkbox" name="hamburger" id="hamburger" class="peer opacity-0" hidden />
@@ -90,48 +108,45 @@
 						></div>
 					</label>
 
-					<div
-						class="fixed inset-0 z-20 w-[calc(100%-4.5rem)] translate-x-[-100%] border-r bg-gray-700 shadow-xl transition duration-300 peer-checked:translate-x-0 lg:static lg:w-auto lg:translate-x-0 lg:border-r-0 lg:shadow-none"
+					<NavigationMenu.Root
+						class="flex h-full flex-col justify-between lg:flex-row lg:items-center"
 					>
-						<div class="flex h-full flex-col justify-between lg:flex-row lg:items-center">
-							<ul
-								class="flex flex-col items-center gap-5 pt-32 text-center text-gray-700 md:space-y-8 lg:flex-row lg:space-x-3 lg:space-y-0 lg:px-2 lg:pt-0 xl:space-x-12 xl:px-12"
-							>
-								{#each pagesz as page}
-									{#if page.faction.includes(faction)}
-										<li>
-											<a
-												href={page.url}
-												class={`group relative text-white before:absolute before:inset-x-0 before:-bottom-1.5 before:h-2 before:origin-right before:scale-x-0 before:bg-[var(--color-primary)] before:transition before:duration-200 hover:before:origin-left ${statepage.url.pathname === page.url ? 'before:scale-x-100' : 'hover:before:scale-x-100'}`}
-											>
-												<span class="relative" class:text-red-500={nosocket}>{page.display}</span>
-											</a>
-										</li>
-									{/if}
-								{/each}
-							</ul>
-
-							<div
-								class="border-t px-6 py-8 md:px-12 md:py-16 lg:border-l lg:border-t-0 lg:py-0 lg:pl-6 lg:pr-0"
-							>
-								{#if isAdmin}
-									<div class="flex items-center gap-3">
+						<NavigationMenu.List
+							class="flex flex-col items-center gap-5 pt-32 text-center text-gray-700 md:space-y-8 lg:flex-row lg:space-x-3 lg:space-y-0 lg:px-2 lg:pt-0 xl:space-x-12 xl:px-12"
+						>
+							{#each pagesz as page}
+								{#if page.faction.includes(faction)}
+									<NavigationMenu.Item>
 										<a
-											href="/ucp/admin"
-											class:text-red-500={nosocket}
-											class="bg-linear-to-r block rounded-full from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-tertiary)] bg-[size:200%] bg-[position:0] px-6 py-3 text-center font-bold drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+											href={page.url}
+											class={`group relative text-white before:absolute before:inset-x-0 before:-bottom-1.5 before:h-2 before:origin-right before:scale-x-0 before:bg-[var(--color-primary)] before:transition before:duration-200 hover:before:origin-left ${statepage.url.pathname === page.url ? 'before:scale-x-100' : 'hover:before:scale-x-100'}`}
 										>
-											Adminisztráció
-											{#if christmas}
-												<span class="icon-[fluent-emoji--sled] absolute bottom-11 right-8 h-6 w-6"
-												></span>
-											{/if}
+											<span class="relative" class:text-red-500={nosocket}>{page.display}</span>
 										</a>
-									</div>
+									</NavigationMenu.Item>
 								{/if}
-							</div>
+							{/each}
+						</NavigationMenu.List>
+						<div
+							class="border-t px-6 py-8 md:px-12 md:py-16 lg:border-l lg:border-t-0 lg:py-0 lg:pl-6 lg:pr-0"
+						>
+							{#if isAdmin}
+								<div class="flex items-center gap-3">
+									<a
+										href="/ucp/admin"
+										class:text-red-500={nosocket}
+										class="bg-linear-to-r block rounded-full from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-tertiary)] bg-[size:200%] bg-[position:0] px-6 py-3 text-center font-bold drop-shadow-lg transition-all duration-500 hover:bg-[position:100%]"
+									>
+										Adminisztráció
+										{#if christmas}
+											<span class="icon-[fluent-emoji--sled] absolute bottom-11 right-8 h-6 w-6"
+											></span>
+										{/if}
+									</a>
+								</div>
+							{/if}
 						</div>
-					</div>
+					</NavigationMenu.Root>
 				</div>
 			</div>
 		</div>
