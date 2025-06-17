@@ -16,7 +16,11 @@ pub async fn enable_modules() {
     if module_config.api.is_some() && module_config.api.unwrap().enabled {
         info!("Module API ENABLED");
         threads.push(thread::spawn(|| {
-            let rt = tokio::runtime::Runtime::new().unwrap();
+            let rt = tokio::runtime::Builder::new_multi_thread()
+                .worker_threads(4)
+                .enable_all()
+                .build()
+                .unwrap();
             rt.block_on(run_api()).unwrap();
         }));
     } else {
