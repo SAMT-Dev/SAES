@@ -1,18 +1,22 @@
-<div class="flex h-screen text-center text-black dark:text-white">
-	<a
-		href="/ucp"
-		class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
-	>
-		<img
-			src="/favicon.png"
-			class="group-hover:border-taxi m-auto w-52 rounded-full border-4 border-solid border-white transition-colors duration-300"
-			alt="SAMT Logo"
-		/>
-		<h1
-			class="group-hover:text-taxi text-3xl font-bold tracking-wider transition-colors duration-300"
-		>
-			SAMT UCP
-		</h1>
+<script lang="ts">
+	import * as Card from '$lib/components/ui/card/index.js';
+</script>
+
+<div class="flex h-screen text-center">
+	<a href="/ucp" class="m-auto">
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="text-3xl font-bold">SAMT UCP</Card.Title>
+				<Card.Description>Bejelentkezéshez kattints ide</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<img
+					src="/favicon.png"
+					class="group-hover:border-taxi m-auto w-52 rounded-full border-4 border-solid border-white transition-colors duration-300"
+					alt="SAMT Logo"
+				/>
+			</Card.Content>
+		</Card.Root>
 	</a>
 </div>
 

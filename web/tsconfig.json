@@ -8,33 +8,12 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"allowArbitraryExtensions": true,
 		"strict": true,
 		"moduleResolution": "bundler"
-	},
-	"include": [
-		"src/**/*",
-		"@types/**/*",
-		"@sveltejs/kit/types/**/*.d.ts",
-		"@sveltejs/kit/types/**/*.js",
-		"@sveltejs/kit/types/**/*.ts",
-		"@sveltejs/kit/types/**/*.json"
-	],
-	"exclude": [
-		"node_modules",
-		"build",
-		"dist",
-		"public",
-		"static",
-		"__sapper__",
-		"__sapper_app__",
-		"__sapper__/build",
-		"__sapper__/dist",
-		"__sapper__/public",
-		"__sapper__/static"
-	]
-	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
-	// asd
+	}
+	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
+	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
+	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
 	// from the referenced tsconfig.json - TypeScript does not merge them in
 }
