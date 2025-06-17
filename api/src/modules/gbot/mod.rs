@@ -47,34 +47,30 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
         let mut runners = Vec::new();
         for range in config.gbot.clone().unwrap().ranges {
             let range2 = range.clone();
-            runners.push(tokio::spawn(async move {
-                handle_tables(
+            runners.push(thread::spawn(move || {
+                let rt = tokio::runtime::Runtime::new().unwrap();
+                rt.block_on(handle_tables(
                     range2.table.clone(),
                     range2.current.read,
                     range2.current.write,
                     Week::Current,
                     range2.provider.clone(),
                     range2.check_range,
-                )
-                .await;
+                ));
                 info!("{} CURRENT week DONE", range2.table);
-            }));
-
-            runners.push(tokio::spawn(async move {
-                handle_tables(
+                rt.block_on(handle_tables(
                     range.table.clone(),
                     range.previous.read,
                     range.previous.write,
                     Week::Previous,
                     range.provider,
                     range.check_range,
-                )
-                .await;
+                ));
                 info!("{} PREVIOUS week DONE", range.table);
             }));
         }
         for runner in runners {
-            runner.await.unwrap();
+            runner.join().unwrap();
         }
         info!("Calls sync DONE");
         while i < config.gbot.clone().unwrap().interval_secs / 60 {
