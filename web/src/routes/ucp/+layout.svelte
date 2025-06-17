@@ -208,7 +208,7 @@
 			</header>
 		{:else}
 			{#if maintenance}
-				<div class="z-90 absolute left-2 top-2">
+				<div class="z-90 absolute bottom-12 left-2">
 					<Alert.Root variant="destructive">
 						<AlertCircleIcon />
 						<Alert.Title>Karbantartás aktív</Alert.Title>
