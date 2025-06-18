@@ -3,14 +3,14 @@
 </script>
 
 <div class="flex flex-col items-center justify-center">
-	{#each data.cucc as puszedli}
+	{#each data.cucc as puszedli, i (i)}
 		{#if data.type === 'szamla'}
 			<h2 class="mt-5 text-center text-xl text-black dark:text-white">
-				{data.cucc.indexOf(puszedli) + 1}. ({puszedli.price}$):
+				{i + 1}. ({puszedli.price}$):
 			</h2>
 		{:else}
 			<h2 class="mt-5 text-center text-xl text-black dark:text-white">
-				{data.cucc.indexOf(puszedli) + 1}:
+				{i + 1}:
 			</h2>
 		{/if}
 		{#if puszedli.reason}
