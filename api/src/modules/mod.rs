@@ -19,6 +19,7 @@ pub async fn enable_modules() {
             let rt = tokio::runtime::Builder::new_multi_thread()
                 .worker_threads(4)
                 .enable_all()
+                .thread_name("api")
                 .build()
                 .unwrap();
             rt.block_on(run_api()).unwrap();
@@ -30,7 +31,12 @@ pub async fn enable_modules() {
     if module_config.gbot.is_some() && module_config.gbot.unwrap().enabled {
         info!("Module GBOT ENABLED");
         threads.push(thread::spawn(|| {
-            let rt = tokio::runtime::Runtime::new().unwrap();
+            let rt = tokio::runtime::Builder::new_multi_thread()
+                .worker_threads(1)
+                .enable_all()
+                .thread_name("gbot")
+                .build()
+                .unwrap();
             rt.block_on(run_gbot()).unwrap();
         }));
     } else {
