@@ -2,7 +2,7 @@ name: SAMT App Build
 
 on:
   push:
-    branches: ['main']
+    branches: ['release']
     paths:
       - 'app/**/*'
       - '.github/workflows/build-app.yml'
