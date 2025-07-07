@@ -3,6 +3,9 @@
 	import { navigating, page } from '$app/state';
 	import Error from '$lib/error.svelte';
 	import { Reeler_keys, Reeler_vals } from '$lib/ucp/public.js';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Alert from '$lib/components/ui/alert/index.js';
+	import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
 	import { onMount } from 'svelte';
 	import { loading } from '$lib/loading.svelte';
 	import { socket } from '$lib/socket.js';
@@ -162,19 +165,25 @@
 						<a
 							href={`?select_faction=${fact}`}
 							data-sveltekit-reload
-							class="group m-auto items-center justify-center rounded-xl bg-black bg-opacity-60 p-5"
 							style={`--fact-primary: ${data.nofact[fact].primary};`}
 						>
-							<img
-								src={`${cdnUrl}/get?id=${data.nofact[fact].icon_id}`}
-								class="m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 group-hover:border-[--fact-primary] lg:min-w-40 lg:max-w-40"
-								alt="Logo"
-							/>
-							<h1
-								class="text-3xl font-bold tracking-wider transition-colors duration-300 group-hover:text-[--fact-primary]"
-							>
-								{data.nofact[fact].name}
-							</h1>
+							<Card.Root class="h-full w-full">
+								<Card.Header>
+									<Card.Title class="text-3xl font-bold">
+										{data.nofact[fact].name}
+									</Card.Title>
+									<Card.Description>
+										{data.nofact[fact].perm_name}
+									</Card.Description>
+								</Card.Header>
+								<Card.Content>
+									<img
+										src={`${cdnUrl}/get?id=${data.nofact[fact].icon_id}`}
+										class="m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 group-hover:border-[--fact-primary] lg:min-w-40 lg:max-w-40"
+										alt="Logo"
+									/>
+								</Card.Content>
+							</Card.Root>
 						</a>
 					{/each}
 				</div>
@@ -197,17 +206,17 @@
 			</header>
 		{:else}
 			{#if maintenance}
-				<header>
-					<div
-						class="flex items-center justify-center bg-rose-900 text-center text-2xl font-bold uppercase text-black dark:text-white"
-					>
-						<h1 class="drop-shadow-lg">
-							Karbantartás mód aktív {#if typeof maintenance === 'string'}
-								- {maintenance}
+				<div class="z-90 absolute bottom-12 left-2">
+					<Alert.Root variant="destructive">
+						<AlertCircleIcon />
+						<Alert.Title>Karbantartás aktív</Alert.Title>
+						<Alert.Description>
+							{#if typeof maintenance === 'string'}
+								{maintenance}
 							{/if}
-						</h1>
-					</div>
-				</header>
+						</Alert.Description>
+					</Alert.Root>
+				</div>
 			{/if}
 			{#if announcement}
 				<header>
