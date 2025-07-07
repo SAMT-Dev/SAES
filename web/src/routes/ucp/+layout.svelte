@@ -14,7 +14,6 @@
 	import { io } from 'socket.io-client';
 	let { data, children } = $props();
 	let maintenance: string | boolean = $state(false);
-	let initial_socket = $state(false);
 	let announcement = $state(false);
 	let nosocket: boolean | string = $state('Socket csatlakozás');
 	let tip = $state('SAMT');
@@ -58,7 +57,6 @@
 			$socket.on('doneload', () => {
 				console.log('[SOCKET] Socket csatlakozva');
 				nosocket = false;
-				initial_socket = true;
 				loading.value = false;
 			});
 			$socket.on('disconnect', () => {
@@ -221,27 +219,25 @@
 				</header>
 			{/if}
 		{/if}
-		{#if initial_socket}
-			{#if !page.url.pathname.startsWith('/ucp/admin/')}
-				<Header
-					{tip}
-					icon={data.info?.icon_id!}
-					faction={data.faction!}
-					isAdmin={data.layout?.perms.includes(
-						getFactionPerm(Permissions.SaesFactAdmin, data.info?.perm_name!)
-					) || data.layout?.admin}
-					{data}
-					{nosocket}
-				/>
-			{/if}
-			<ViewTransition />
-			<main
-				style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
-				class="selection:bg-[var(--color-primary)]"
-			>
-				{@render children?.()}
-			</main>
+		{#if !page.url.pathname.startsWith('/ucp/admin/')}
+			<Header
+				{tip}
+				icon={data.info?.icon_id!}
+				faction={data.faction!}
+				isAdmin={data.layout?.perms.includes(
+					getFactionPerm(Permissions.SaesFactAdmin, data.info?.perm_name!)
+				) || data.layout?.admin}
+				{data}
+				{nosocket}
+			/>
 		{/if}
+		<ViewTransition />
+		<main
+			style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
+			class="selection:bg-[var(--color-primary)]"
+		>
+			{@render children?.()}
+		</main>
 	{:else}
 		<main>
 			<div class="flex h-screen">
