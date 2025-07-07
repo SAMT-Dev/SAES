@@ -7,7 +7,7 @@ name: SAES CDN Build
 
 on:
   push:
-    branches: ['main', 'test']
+    branches: ['release', 'test']
     paths:
       - 'cdn/**/*'
       - '.github/workflows/build-cdn.yml'

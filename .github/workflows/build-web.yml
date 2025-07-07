@@ -7,7 +7,7 @@ name: SAES Web Build
 
 on:
   push:
-    branches: ['main', 'test']
+    branches: ['release', 'test']
     paths:
       - 'web/**/*'
       - '.github/workflows/build-web.yml'

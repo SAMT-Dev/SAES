@@ -7,7 +7,7 @@ name: SAES Converter Build
 
 on:
   push:
-    branches: ['main', 'test']
+    branches: ['release', 'test']
     paths:
       - 'converter/**/*'
       - 'shared/**/*'
