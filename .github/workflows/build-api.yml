@@ -49,12 +49,12 @@ jobs:
       - name: Determine environment
         id: env_info
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
             echo "env=production" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/test" ]]; then
             echo "env=testing" >> $GITHUB_OUTPUT
           else
-            echo "env=development" >> $GITHUB_OUTPUT # Default or other branches
+            echo "env=development" >> $GITHUB_OUTPUT
           fi
       
       # Set up BuildKit Docker container builder to be able to build
