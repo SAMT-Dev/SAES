@@ -53,7 +53,7 @@ export const pages = (fact: string) => {
 		{
 			url: "/ucp/potlekok",
 			display: "Pótlékok",
-			faction: ["SCKK", "TOW", "UNI"],
+			faction: ["SCKK", "TOW", "APMS", "UNI"],
 		},
 		{
 			url: "/ucp/leintesek",

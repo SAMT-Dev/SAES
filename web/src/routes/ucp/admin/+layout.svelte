@@ -51,7 +51,7 @@
 			class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/items') ? 'bg-emerald-600' : ''}`}
 			>Feltöltött elemek</a
 		>
-		{#if allowPerms( data, [getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'), getFactionPerm(Permissions.SaesFactAdminShift, 'tow'), getFactionPerm(Permissions.SaesFactAdminShift, 'uni')] )}
+		{#if allowPerms( data, [getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'), getFactionPerm(Permissions.SaesFactAdminShift, 'tow'), getFactionPerm(Permissions.SaesFactAdminShift, 'uni'), getFactionPerm(Permissions.SaesFactAdminShift, 'apms')] )}
 			<a
 				href="/ucp/admin/shift"
 				class={`transition-all duration-200 hover:bg-emerald-600 ${page.url.pathname.startsWith('/ucp/admin/shift') ? 'bg-emerald-600' : ''}`}

@@ -20,7 +20,8 @@
 			permission: [
 				getFactionPerm(Permissions.SaesFactAdminShift, 'taxi'),
 				getFactionPerm(Permissions.SaesFactAdminShift, 'tow'),
-				getFactionPerm(Permissions.SaesFactAdminShift, 'uni')
+				getFactionPerm(Permissions.SaesFactAdminShift, 'uni'),
+				getFactionPerm(Permissions.SaesFactAdminShift, 'apms')
 			]
 		},
 		{
