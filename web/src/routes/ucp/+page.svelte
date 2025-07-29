@@ -78,15 +78,17 @@
 						) + Number(data.calls?.leintes)}
 					</h2>
 				{/if}
+			{/if}
+			{#if (data.calls?.potlek.de && data.calls?.potlek.de > 0) || (data.calls?.potlek.du && data.calls?.potlek.du > 0)}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
 					Elfogadott pótlékaid: délelőtti: {data.calls?.potlek.de}, éjszakai: {data.calls?.potlek
 						.du}
 				</h2>
-				{#if data.calls?.price! > 0}
-					<h2 class="text-xl drop-shadow-lg md:text-2xl">
-						Elfogadott számlák összege: {data.calls?.price}$.
-					</h2>
-				{/if}
+			{/if}
+			{#if data.calls?.price! > 0}
+				<h2 class="text-xl drop-shadow-lg md:text-2xl">
+					Elfogadott számlák összege: {data.calls?.price}$.
+				</h2>
 			{/if}
 			{#if allowFacts(data, ['APMS']) && data.szamlak}
 				<h2 class="text-xl drop-shadow-lg md:text-2xl">
