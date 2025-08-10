@@ -4,6 +4,8 @@ export function getRealText(text: string) {
 			return "Délelőtti pótlékok";
 		case "pótlék_éjszakai":
 			return "Éjszakai pótlékok";
+		case "pótlék_event":
+			return "Event pótlékok";
 		case "számla":
 			return "Számlák";
 		case "leintés":
@@ -17,6 +19,8 @@ export function getAlterText(text: string) {
 			return "potlek_de";
 		case "pótlék_éjszakai":
 			return "potlek_ej";
+		case "pótlék_event":
+			return "potlek_ev";
 		case "számla":
 			return "szamla";
 		case "leintés":

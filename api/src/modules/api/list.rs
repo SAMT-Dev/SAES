@@ -1,17 +1,17 @@
-use axum::{debug_handler, extract::Query, response::IntoResponse, Json};
+use axum::{Json, debug_handler, extract::Query, response::IntoResponse};
 use http::StatusCode;
 use saes_shared::db::{bills, hails, supplements};
 use sea_orm::{ColumnTrait, EntityTrait, Order, QueryFilter, QueryOrder};
 use serde::Serialize;
 
 use crate::{
+    DB_CLIENT,
     config::loader::get_config,
     modules::api::utils::{
         functions::get_fridays,
         queries::BaseListQuery,
         types_statuses::{get_statuses, get_types},
     },
-    DB_CLIENT,
 };
 
 #[derive(Debug, Serialize)]
@@ -52,6 +52,8 @@ pub async fn base_list_get(
                 1
             } else if quer.tipus == "potlek_ej" {
                 2
+            } else if quer.tipus == "potlek_ev" {
+                3
             } else {
                 return Err((
                     StatusCode::BAD_REQUEST,
