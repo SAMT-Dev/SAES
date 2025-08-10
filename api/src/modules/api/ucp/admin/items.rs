@@ -315,7 +315,7 @@ pub async fn admin_items_post(
                 reason: Set(body.reason),
                 r#type: Set(if !body.supp_type.is_some() {
                     None
-                } else if vec![1, 2].contains(&body.supp_type.unwrap()) {
+                } else if vec![1, 2, 3].contains(&body.supp_type.unwrap()) {
                     body.supp_type
                 } else {
                     None

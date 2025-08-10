@@ -199,12 +199,12 @@
 						? get_status_number('elfogadva')
 						: timpo === 'decline'
 							? get_status_number('elutasítva')
-							: timpo === 'de' || 'du'
+							: timpo === 'de' || 'du' || 'event'
 								? get_status_number('elfogadva')
 								: potleks.data.items[id].status,
 				reason: potleks.data.items[id].reason,
 				tipus: type,
-				supp_type: timpo === 'de' ? 1 : timpo === 'du' ? 2 : 0
+				supp_type: timpo === 'de' ? 1 : timpo === 'du' ? 2 : timpo === 'event' ? 3 : 0
 			})
 		});
 		if (fatcs.ok) {
@@ -389,6 +389,7 @@
 							>
 								<option value={1}>délelőtti</option>
 								<option value={2}>éjszakai</option>
+								<option value={3}>event</option>
 							</Select>
 						{:else}
 							<input
@@ -523,7 +524,9 @@
 											? 'délelőtti'
 											: potle.type == 2
 												? 'éjszakai'
-												: 'nincs'}</TableBodyCell
+												: potle.type == 3
+													? 'event'
+													: 'nincs'}</TableBodyCell
 								>
 							{/if}
 							{#if haveadmin}
@@ -555,6 +558,16 @@
 										<Tooltip class="bg-slate-500"
 											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
 											elfogadása éjszakaiként</Tooltip
+										>
+									{/if}
+									{#if tools.includes('event') && jona === get_status_number('feltöltve').toString()}
+										<Button
+											class="icon-[lucide--atom] h-6 w-6 rounded-xl bg-black font-bold transition-all duration-150 hover:bg-cyan-800 dark:bg-white"
+											onclick={() => quickTools('event', potleks.data.items.indexOf(potle))}
+										></Button>
+										<Tooltip class="bg-slate-500"
+											>{get_type_string(type)[0].toUpperCase() + get_type_string(type).substring(1)}
+											elfogadása eventesként</Tooltip
 										>
 									{/if}
 									{#if tools.includes('accept') && jona === get_status_number('feltöltve').toString()}

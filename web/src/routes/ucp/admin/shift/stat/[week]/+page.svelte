@@ -37,6 +37,14 @@
 						aha['pótlék_éjszakai'][potlek.owner] = 1;
 					}
 				}
+				if (potlek.type === 3) {
+					if (!aha['pótlék_event']) aha['pótlék_event'] = {};
+					if (aha['pótlék_event'][potlek.owner]) {
+						aha['pótlék_event'][potlek.owner]++;
+					} else {
+						aha['pótlék_event'][potlek.owner] = 1;
+					}
+				}
 			}
 
 			for (const leintes of data.stats.leintesek) {

@@ -11,5 +11,5 @@
 	editdes="pótlékának"
 	extraText="Típus"
 	{data}
-	tools={['délelőtti', 'éjszakai', 'decline', 'edit']}
+	tools={['délelőtti', 'éjszakai', 'event', 'decline', 'edit']}
 />
