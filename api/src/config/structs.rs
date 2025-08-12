@@ -122,12 +122,6 @@ pub struct ApiModuleConfig {
     pub sckkapp_api_tow: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, Hash, PartialEq)]
-pub enum GbotProviders {
-    TAXI,
-    TOW,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GbotRangeWeekConfig {
     pub read: String,
@@ -139,7 +133,7 @@ pub struct GbotRangeListConfig {
     pub current: GbotRangeWeekConfig,
     pub previous: GbotRangeWeekConfig,
     pub table: String,
-    pub provider: GbotProviders,
+    pub provider: String,
     pub check_range: String,
 }
 
@@ -147,7 +141,7 @@ pub struct GbotRangeListConfig {
 pub struct GbotModuleConfig {
     pub enabled: bool,
     pub service_json: String,
-    pub providers: HashMap<GbotProviders, GbotProviderConfig>,
+    pub providers: HashMap<String, GbotProviderConfig>,
     pub spreadsheet_id: String,
     pub interval_secs: u64,
     pub ranges: Vec<GbotRangeListConfig>,

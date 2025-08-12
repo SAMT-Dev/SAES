@@ -1,4 +1,4 @@
-use std::{error::Error, thread, time::Duration};
+use std::{collections::HashMap, error::Error, thread, time::Duration};
 
 use chrono::{Datelike, Local, Timelike};
 use google_sheets4::{Sheets, api::ValueRange, hyper_rustls, hyper_util};
@@ -6,26 +6,26 @@ use serde::Deserialize;
 use serde_json::Value;
 use tracing::info;
 
-use crate::config::{loader::get_module_config, structs::GbotProviders};
+use crate::config::loader::get_module_config;
 
 mod auth;
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 struct DriverData {
     driver: String,
     count: u32,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 enum Week {
     Current,
     Previous,
 }
 
-async fn get_week(mode: GbotProviders, week: Week) -> Vec<DriverData> {
+async fn get_week(prov: &String, week: Week) -> Vec<DriverData> {
     let config = get_module_config().await;
     let config = config.gbot.unwrap();
-    let provider = config.providers.get(&mode).unwrap();
+    let provider = config.providers.get(prov).unwrap();
     let calls_url = if week == Week::Current {
         provider.current.clone()
     } else {
@@ -43,17 +43,25 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
     let config = get_module_config().await;
     loop {
         info!("Calls sync BEGIN");
+        let mut calls: HashMap<String, HashMap<Week, Vec<DriverData>>> = HashMap::new();
+        for (k, _) in config.gbot.clone().unwrap().providers.iter() {
+            let mut c = HashMap::new();
+            c.insert(Week::Current, get_week(k, Week::Current).await);
+            c.insert(Week::Previous, get_week(k, Week::Previous).await);
+            calls.insert(k.to_owned(), c);
+        }
         let mut runners = Vec::new();
         for range in config.gbot.clone().unwrap().ranges {
             let range2 = range.clone();
+            let cc = calls.clone();
             runners.push(thread::spawn(move || {
                 let rt = tokio::runtime::Runtime::new().unwrap();
+                let cc = cc.get(&range2.provider).unwrap().clone();
                 rt.block_on(handle_tables(
                     range2.table.clone(),
                     range2.current.read,
                     range2.current.write,
-                    Week::Current,
-                    range2.provider.clone(),
+                    cc.get(&Week::Current).unwrap().clone(),
                     range2.check_range,
                 ));
                 info!("{} CURRENT week DONE", range2.table);
@@ -61,8 +69,7 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
                     range.table.clone(),
                     range.previous.read,
                     range.previous.write,
-                    Week::Previous,
-                    range.provider,
+                    cc.get(&Week::Previous).unwrap().clone(),
                     range.check_range,
                 ));
                 info!("{} PREVIOUS week DONE", range.table);
@@ -82,15 +89,13 @@ async fn handle_tables(
     table: String,
     read_range: String,
     write_range: String,
-    week: Week,
-    mode: GbotProviders,
+    calls: Vec<DriverData>,
     check_cell: String,
 ) {
     let client = hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new());
     let config = get_module_config().await;
     let spread_id = config.gbot.unwrap().spreadsheet_id;
     let token = auth::get_google_auth().await;
-    let calls = get_week(mode.clone(), week).await;
     let sheets = Sheets::new(
         client.build(
             hyper_rustls::HttpsConnectorBuilder::new()
