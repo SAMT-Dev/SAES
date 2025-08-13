@@ -67,16 +67,18 @@
 				</h2>
 			{/if}
 			{#if allowFacts(data, ['SCKK', 'TOW', 'UNI'])}
-				{#if data.calls?.app === null}
-					<h2 class="text-xl drop-shadow-lg md:text-2xl">
-						Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}
-					</h2>
-				{:else}
-					<h2 class="text-xl drop-shadow-lg md:text-2xl">
-						Hívásaid (app+leintés): {data.calls?.app}+{data.calls?.leintes}={Number(
-							data.calls?.app
-						) + Number(data.calls?.leintes)}
-					</h2>
+				{#if Number(data.calls?.app) + Number(data.calls?.leintes) > 0}
+					{#if data.calls?.app === null}
+						<h2 class="text-xl drop-shadow-lg md:text-2xl">
+							Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}
+						</h2>
+					{:else}
+						<h2 class="text-xl drop-shadow-lg md:text-2xl">
+							Hívásaid (app+leintés): {data.calls?.app}+{data.calls?.leintes}={Number(
+								data.calls?.app
+							) + Number(data.calls?.leintes)}
+						</h2>
+					{/if}
 				{/if}
 			{/if}
 			{#if (data.calls?.potlek.de && data.calls?.potlek.de > 0) || (data.calls?.potlek.du && data.calls?.potlek.du > 0)}
