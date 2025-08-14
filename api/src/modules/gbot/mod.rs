@@ -4,6 +4,7 @@ use chrono::{Datelike, Local, Timelike};
 use google_sheets4::{Sheets, api::ValueRange, hyper_rustls, hyper_util};
 use serde::Deserialize;
 use serde_json::Value;
+use tokio::time::sleep;
 use tracing::info;
 
 use crate::config::loader::get_module_config;
@@ -37,6 +38,28 @@ async fn get_week(prov: &String, week: Week) -> Vec<DriverData> {
     let json_data = res.text().await.unwrap();
     let drivers: Vec<DriverData> = serde_json::from_str(&json_data).expect("Átalakítás sikertelen");
     drivers
+}
+
+async fn retry_google_api<F, Fut, T>(mut f: F, desc: &str) -> Option<T>
+where
+    F: FnMut() -> Fut,
+    Fut: std::future::Future<Output = Result<T, google_sheets4::Error>>,
+{
+    let mut attempts = 0;
+    loop {
+        match f().await {
+            Ok(val) => return Some(val),
+            Err(e) => {
+                attempts += 1;
+                tracing::error!("{}: {} (attempt {})", desc, e, attempts);
+                if attempts >= 5 {
+                    tracing::error!("{}: giving up after {} attempts", desc, attempts);
+                    return None;
+                }
+                sleep(Duration::from_secs(2 * attempts)).await;
+            }
+        }
+    }
 }
 
 pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
@@ -108,13 +131,25 @@ async fn handle_tables(
         token,
     );
 
-    let res = sheets
-        .spreadsheets()
-        .values_get(&spread_id, format!("{}!{}", table, read_range).as_str())
-        .doit()
-        .await
-        .expect("Táblázat lekérés sikertelen.");
-    let values: Vec<Vec<serde_json::value::Value>> = res.1.values.unwrap_or_default();
+    let res = retry_google_api(
+        || {
+            sheets
+                .spreadsheets()
+                .values_get(&spread_id, format!("{}!{}", table, read_range).as_str())
+                .doit()
+        },
+        "Táblázat lekérés sikertelen.",
+    )
+    .await;
+    if res.is_none() {
+        tracing::error!(
+            "Táblázat lekérés véglegesen sikertelen: {}!{}",
+            table,
+            read_range
+        );
+        return;
+    }
+    let values: Vec<Vec<serde_json::value::Value>> = res.unwrap().1.values.unwrap_or_default();
     let mut req = ValueRange::default();
     let mut vals: Vec<Vec<Value>> = vec![];
     for tag in values.iter() {
@@ -133,17 +168,29 @@ async fn handle_tables(
         }
     }
     req.values = vals.into();
-    sheets
-        .spreadsheets()
-        .values_update(
-            req,
-            &spread_id,
-            format!("{}!{}", table, write_range).as_str(),
-        )
-        .value_input_option("USER_ENTERED")
-        .doit()
-        .await
-        .expect("Táblázat írás sikertelen");
+    let update_res = retry_google_api(
+        || {
+            sheets
+                .spreadsheets()
+                .values_update(
+                    req.clone(),
+                    &spread_id,
+                    format!("{}!{}", table, write_range).as_str(),
+                )
+                .value_input_option("USER_ENTERED")
+                .doit()
+        },
+        "Táblázat írás sikertelen",
+    )
+    .await;
+    if update_res.is_none() {
+        tracing::error!(
+            "Táblázat írás véglegesen sikertelen: {}!{}",
+            table,
+            write_range
+        );
+        return;
+    }
     let mut checkval = ValueRange::default();
     let now = Local::now();
     checkval.values = vec![vec![serde_json::Value::String(format!(
@@ -156,15 +203,22 @@ async fn handle_tables(
         now.second()
     ))]]
     .into();
-    sheets
-        .spreadsheets()
-        .values_update(
-            checkval,
-            &spread_id,
-            format!("{}!{}", table, check_cell).as_str(),
-        )
-        .value_input_option("USER_ENTERED")
-        .doit()
-        .await
-        .expect("Check írás sikertelen");
+    let check_res = retry_google_api(
+        || {
+            sheets
+                .spreadsheets()
+                .values_update(
+                    checkval.clone(),
+                    &spread_id,
+                    format!("{}!{}", table, check_cell).as_str(),
+                )
+                .value_input_option("USER_ENTERED")
+                .doit()
+        },
+        "Check írás sikertelen",
+    )
+    .await;
+    if check_res.is_none() {
+        tracing::error!("Check írás véglegesen sikertelen: {}!{}", table, check_cell);
+    }
 }
