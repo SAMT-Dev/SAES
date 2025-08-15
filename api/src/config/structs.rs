@@ -96,6 +96,7 @@ impl Default for MainConfig {
 pub struct ModuleConfig {
     pub api: Option<ApiModuleConfig>,
     pub gbot: Option<GbotModuleConfig>,
+    pub cdn: Option<CdnModuleConfig>,
 }
 
 impl Default for ModuleConfig {
@@ -103,6 +104,7 @@ impl Default for ModuleConfig {
         Self {
             api: None,
             gbot: None,
+            cdn: None,
         }
     }
 }
@@ -145,6 +147,12 @@ pub struct GbotModuleConfig {
     pub spreadsheet_id: String,
     pub interval_secs: u64,
     pub ranges: Vec<GbotRangeListConfig>,
+}
+
+#[derive(Debug, Serialize, Clone, Deserialize)]
+pub struct CdnModuleConfig {
+    pub enabled: bool,
+    pub files_path: String,
 }
 
 #[derive(Debug, Serialize, Clone, Deserialize)]

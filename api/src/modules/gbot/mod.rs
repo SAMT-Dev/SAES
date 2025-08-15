@@ -23,7 +23,7 @@ enum Week {
     Previous,
 }
 
-async fn get_week(prov: &String, week: Week) -> Vec<DriverData> {
+async fn get_week(prov: &String, week: Week) -> Option<Vec<DriverData>> {
     let config = get_module_config().await;
     let config = config.gbot.unwrap();
     let provider = config.providers.get(prov).unwrap();
@@ -32,12 +32,13 @@ async fn get_week(prov: &String, week: Week) -> Vec<DriverData> {
     } else {
         provider.previous.clone()
     };
-    let res = reqwest::get(calls_url)
-        .await
-        .expect("Hívás lekérés sikertelen");
-    let json_data = res.text().await.unwrap();
+    let res = reqwest::get(calls_url).await;
+    if res.is_err() {
+        return None;
+    }
+    let json_data = res.unwrap().text().await.unwrap();
     let drivers: Vec<DriverData> = serde_json::from_str(&json_data).expect("Átalakítás sikertelen");
-    drivers
+    Some(drivers)
 }
 
 async fn retry_google_api<F, Fut, T>(mut f: F, desc: &str) -> Option<T>
@@ -56,7 +57,7 @@ where
                     tracing::error!("{}: giving up after {} attempts", desc, attempts);
                     return None;
                 }
-                sleep(Duration::from_secs(2 * attempts)).await;
+                sleep(Duration::from_secs(20 * attempts)).await;
             }
         }
     }
@@ -64,19 +65,40 @@ where
 
 pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
     let config = get_module_config().await;
-    loop {
+    'outer: loop {
         info!("Calls sync BEGIN");
         let mut calls: HashMap<String, HashMap<Week, Vec<DriverData>>> = HashMap::new();
         for (k, _) in config.gbot.clone().unwrap().providers.iter() {
             let mut c = HashMap::new();
-            c.insert(Week::Current, get_week(k, Week::Current).await);
-            c.insert(Week::Previous, get_week(k, Week::Previous).await);
+            let cw = get_week(k, Week::Current).await;
+            let pw = get_week(k, Week::Previous).await;
+            if cw.is_none() || pw.is_none() {
+                sleep(Duration::from_secs(15)).await;
+                continue 'outer;
+            }
+            c.insert(Week::Current, cw.unwrap());
+            c.insert(Week::Previous, pw.unwrap());
             calls.insert(k.to_owned(), c);
         }
         let mut runners = Vec::new();
+        let client =
+            hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new());
+        let token = auth::get_google_auth().await;
+        let sheets = Sheets::new(
+            client.build(
+                hyper_rustls::HttpsConnectorBuilder::new()
+                    .with_native_roots()
+                    .unwrap()
+                    .https_or_http()
+                    .enable_http1()
+                    .build(),
+            ),
+            token,
+        );
         for range in config.gbot.clone().unwrap().ranges {
             let range2 = range.clone();
             let cc = calls.clone();
+            let cs = sheets.clone();
             runners.push(thread::spawn(move || {
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 let cc = cc.get(&range2.provider).unwrap().clone();
@@ -86,6 +108,7 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
                     range2.current.write,
                     cc.get(&Week::Current).unwrap().clone(),
                     range2.check_range,
+                    cs.clone(),
                 ));
                 info!("{} CURRENT week DONE", range2.table);
                 rt.block_on(handle_tables(
@@ -94,6 +117,7 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
                     range.previous.write,
                     cc.get(&Week::Previous).unwrap().clone(),
                     range.check_range,
+                    cs,
                 ));
                 info!("{} PREVIOUS week DONE", range.table);
             }));
@@ -114,22 +138,12 @@ async fn handle_tables(
     write_range: String,
     calls: Vec<DriverData>,
     check_cell: String,
+    sheets: Sheets<
+        hyper_rustls::HttpsConnector<hyper_util::client::legacy::connect::HttpConnector>,
+    >,
 ) {
-    let client = hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new());
     let config = get_module_config().await;
     let spread_id = config.gbot.unwrap().spreadsheet_id;
-    let token = auth::get_google_auth().await;
-    let sheets = Sheets::new(
-        client.build(
-            hyper_rustls::HttpsConnectorBuilder::new()
-                .with_native_roots()
-                .unwrap()
-                .https_or_http()
-                .enable_http1()
-                .build(),
-        ),
-        token,
-    );
 
     let res = retry_google_api(
         || {
