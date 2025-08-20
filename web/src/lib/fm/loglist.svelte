@@ -205,28 +205,28 @@
 			<h1 class="mb-3 text-3xl font-bold">Feltöltött elem információi:</h1>
 			{#if modalItem?.item_type === 2}
 				<div class="flex gap-1">
-					<a target="_blank" href={`${data.cdn}/get?id=${modalItem?.img_1}`}
+					<a target="_blank" href={`${data.cdn}/get/${modalItem?.img_1}.png`}
 						><img
 							class="m-auto"
-							src={`${data.cdn}/get?id=${modalItem?.img_1}`}
+							src={`${data.cdn}/get/${modalItem?.img_1}.png`}
 							width="300vw"
 							alt=""
 						/></a
 					>
-					<a target="_blank" href={`${data.cdn}/get?id=${modalItem?.img_2}`}
+					<a target="_blank" href={`${data.cdn}/get/${modalItem?.img_2}.png`}
 						><img
 							class="m-auto"
-							src={`${data.cdn}/get?id=${modalItem?.img_2}`}
+							src={`${data.cdn}/get/${modalItem?.img_2}.png`}
 							width="300vw"
 							alt=""
 						/></a
 					>
 				</div>
 			{:else}
-				<a target="_blank" href={`${data.cdn}/get?id=${modalItem?.img_1}`}
+				<a target="_blank" href={`${data.cdn}/get/${modalItem?.img_1}.png`}
 					><img
 						class="m-auto"
-						src={`${data.cdn}/get?id=${modalItem?.img_1}`}
+						src={`${data.cdn}/get/${modalItem?.img_1}.png`}
 						width="300vw"
 						alt=""
 					/></a

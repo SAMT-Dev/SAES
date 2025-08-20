@@ -183,7 +183,7 @@ export const load = (async ({ cookies, request, url }) => {
 				}
 				if (jeson.info) {
 					jeson.info.icon_id =
-						`${cdnUrl}/get?id=${jeson.info.icon_id}`;
+						`${cdnUrl}/get/${jeson.info.icon_id}.png`;
 				}
 				return {
 					layout: jeson.driver,

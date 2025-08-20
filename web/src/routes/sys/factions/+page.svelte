@@ -52,7 +52,7 @@
 						<h1>Rövid név: {data.data![f].shortname}</h1>
 						{#if data.data![f].icon && showicon}
 							<img
-								src={`${data.cdn}/get?id=${data.data![f].icon}`}
+								src={`${data.cdn}/get/${data.data![f].icon}.png`}
 								alt="Faction logo"
 								class="w-64"
 							/>

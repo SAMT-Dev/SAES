@@ -34,7 +34,7 @@
 					onclick={async () => selectFact(f)}
 				>
 					<img
-						src={`https://cdn.samt.hu/get?id=${facts[f].icon_id}`}
+						src={`https://cdn.samt.hu/get/${facts[f].icon_id}.png`}
 						alt=""
 						class="min-w-28 max-w-28 mx-auto bg-black bg-opacity-60 p-0.5 rounded-full border-4 border-solid border-white group-hover:border-gray-400 transition-all duration-200"
 					/>

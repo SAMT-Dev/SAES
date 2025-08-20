@@ -35,7 +35,7 @@
 <div class="m-auto items-center justify-center text-center text-white">
 	{#if data.factinfo?.managed}
 		<h1>Új ikon feltöltése</h1>
-		<img src={`${data.cdn}/get?id=${data.factinfo?.icon}`} alt="" class="m-auto w-64" />
+		<img src={`${data.cdn}/get/${data.factinfo?.icon}.png`} alt="" class="m-auto w-64" />
 		<form
 			onsubmit={(ev) => upload(ev)}
 			enctype="multipart/form-data"

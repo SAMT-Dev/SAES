@@ -136,13 +136,13 @@
 					<div class="flex flex-col">
 						<img
 							loading="lazy"
-							src={`${data.cdn}/get?id=${nyam[0]}`}
+							src={`${data.cdn}/get/${nyam[0]}.png`}
 							alt=""
 							class="max-h-5xl m-auto max-w-5xl py-3"
 						/>
 						<img
 							loading="lazy"
-							src={`${data.cdn}/get?id=${nyam[1]}`}
+							src={`${data.cdn}/get/${nyam[1]}.png`}
 							alt=""
 							class="max-h-5xl m-auto max-w-5xl py-3"
 						/>
@@ -150,7 +150,7 @@
 				{:else}
 					<img
 						loading="lazy"
-						src={`${data.cdn}/get?id=${nyam[0]}`}
+						src={`${data.cdn}/get/${nyam[0]}.png`}
 						alt=""
 						class="max-h-5xl m-auto max-w-5xl py-3"
 					/>

@@ -4,9 +4,10 @@ use api::run_api;
 use gbot::run_gbot;
 use tracing::{info, warn};
 
-use crate::config::loader::get_module_config;
+use crate::{config::loader::get_module_config, modules::cdn::run_cdn};
 
 pub mod api;
+pub mod cdn;
 pub mod gbot;
 
 pub async fn enable_modules() {
@@ -32,12 +33,26 @@ pub async fn enable_modules() {
         info!("Module GBOT ENABLED");
         threads.push(thread::spawn(|| {
             let rt = tokio::runtime::Builder::new_multi_thread()
-                .worker_threads(1)
                 .enable_all()
                 .thread_name("gbot")
                 .build()
                 .unwrap();
             rt.block_on(run_gbot()).unwrap();
+        }));
+    } else {
+        warn!("Module GBOT DISABLED");
+    }
+    // * CDN
+    if module_config.cdn.is_some() && module_config.cdn.unwrap().enabled {
+        info!("Module CDN ENABLED");
+        threads.push(thread::spawn(|| {
+            let rt = tokio::runtime::Builder::new_multi_thread()
+                .worker_threads(4)
+                .enable_all()
+                .thread_name("cdn")
+                .build()
+                .unwrap();
+            rt.block_on(run_cdn()).unwrap();
         }));
     } else {
         warn!("Module GBOT DISABLED");

@@ -178,7 +178,7 @@
 								</Card.Header>
 								<Card.Content>
 									<img
-										src={`${cdnUrl}/get?id=${data.nofact[fact].icon_id}`}
+										src={`${cdnUrl}/get/${data.nofact[fact].icon_id}.png`}
 										class="m-auto min-w-20 max-w-20 rounded-full border-4 border-solid border-white bg-black p-0.5 transition-colors duration-300 group-hover:border-[--fact-primary] lg:min-w-40 lg:max-w-40"
 										alt="Logo"
 									/>

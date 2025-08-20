@@ -37,3 +37,4 @@ cookie = "0.18.1"
 gcp_auth = "0.12.3"
 google-sheets4 = "6.0.0"
 chrono-tz = { version = "0.10.3", features = ["serde"] }
+tokio-util = "0.7.16"
