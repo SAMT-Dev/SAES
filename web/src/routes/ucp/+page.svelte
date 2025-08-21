@@ -50,7 +50,7 @@
 </script>
 
 <div
-	class="child:p-2 md:child:p-16 grid grid-cols-1 grid-rows-1 text-center text-black dark:text-white"
+	class="child:p-2 md:child:p-16 grid grid-cols-1 grid-rows-1 pb-[800px] text-center text-black dark:text-white"
 >
 	{#if !data.error}
 		<div class="ml-16 mr-16 mt-16 rounded-lg bg-amber-600">

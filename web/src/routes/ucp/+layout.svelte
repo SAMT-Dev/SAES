@@ -71,7 +71,7 @@
 </script>
 
 <svelte:head>
-	{#if !maintenance && !data.noauth && !data.error && !data.nofact}
+	{#if !data.noauth && !data.error && !data.nofact}
 		{#if !navigating.type}
 			{#if page.url.pathname.includes('shift')}
 				<title>Műszakvezetői felület - {tip}</title>
@@ -101,7 +101,7 @@
 	{#if data.info?.icon_id}
 		<link rel="icon" href={data.info?.icon_id} />
 	{/if}
-	{#if maintenance}
+	{#if data.maintenance}
 		<title>Karbantartás - {tip}</title>
 	{/if}
 </svelte:head>
@@ -115,13 +115,13 @@
 					</h1>
 					<button
 						aria-label="Belépés Discord használatával"
-						class="from-taxi bg-linear-to-r group relative m-auto mt-3 flex h-12 animate-bounce items-center space-x-2 overflow-hidden rounded-full via-rose-500 to-red-600 bg-[size:200%] bg-[position:0] px-6 transition-all duration-500 hover:bg-[position:100%]"
+						class="bg-linear-to-r group relative m-auto mt-3 flex h-12 animate-bounce items-center space-x-2 overflow-hidden rounded-full from-yellow-300 via-rose-500 to-red-600 bg-[size:200%] bg-[position:0] px-6 transition-all duration-500 hover:bg-[position:100%]"
 					>
 						<a
 							href={`${data.api}/auth?path=${page.url.pathname}`}
 							aria-label="Belépés Discord használatával"
 							class="flex w-full justify-end gap-2 text-black transition-colors duration-300 hover:text-black dark:text-white"
-							><span class="icon-[ic--baseline-discord] m-auto h-12 w-12"></span>
+						>
 							<h2 class="m-auto text-xl font-bold">Discord</h2></a
 						>
 						<div class="flex translate-x-3 items-center -space-x-3">
@@ -190,44 +190,6 @@
 			</div>
 		</main>
 	{:else if !maintenance || data.layout?.admin || allowPerms(data, [Permissions.SaesMaintenance])}
-		{#if nosocket}
-			<header>
-				<div
-					class="flex items-center justify-center bg-red-500 text-center text-2xl font-semibold uppercase text-black dark:text-white"
-				>
-					<h1>
-						{#if nosocket !== true}
-							{nosocket}
-						{:else}
-							Sikertelen socket csatlakozás
-						{/if}
-					</h1>
-				</div>
-			</header>
-		{:else}
-			{#if maintenance}
-				<div class="z-90 absolute bottom-12 left-2">
-					<Alert.Root variant="destructive">
-						<AlertCircleIcon />
-						<Alert.Title>Karbantartás aktív</Alert.Title>
-						<Alert.Description>
-							{#if typeof maintenance === 'string'}
-								{maintenance}
-							{/if}
-						</Alert.Description>
-					</Alert.Root>
-				</div>
-			{/if}
-			{#if announcement}
-				<header>
-					<div
-						class="flex items-center justify-center bg-blue-500 text-center text-2xl text-black dark:text-white"
-					>
-						{@html marked(announcement.toString())}
-					</div>
-				</header>
-			{/if}
-		{/if}
 		{#if !page.url.pathname.startsWith('/ucp/admin/')}
 			<Header
 				{tip}
@@ -238,6 +200,8 @@
 				) || data.layout?.admin}
 				{data}
 				{nosocket}
+				announcement={announcement ? announcement.toString() : undefined}
+				maintenance={maintenance ? maintenance : undefined}
 			/>
 		{/if}
 		<ViewTransition />
@@ -256,15 +220,7 @@
 						Jelenleg karbantartás zajlik, kérlek nézz vissza később!
 					</h1>
 					{#if typeof maintenance === 'string'}
-						<h1 class="text-2xl text-gray-300">Indoklás: {@html marked(maintenance)}</h1>
-					{/if}
-					{#if allowPerms(data, [Permissions.SaesMaintenance])}
-						<a
-							data-sveltekit-reload
-							href="/ucp/keine"
-							class="bg-linear-to-r mb-5 ml-5 mr-5 mt-5 block rounded-full from-red-500 via-amber-400 to-rose-600 bg-[size:200%] bg-[position:0] px-2 py-1 text-center text-lg font-bold text-black drop-shadow-lg transition-all duration-500 hover:bg-[position:100%] dark:text-white"
-							>Továbblépés</a
-						>
+						<h1 class="text-2xl text-gray-300">{@html marked(maintenance)}</h1>
 					{/if}
 				</div>
 			</div>

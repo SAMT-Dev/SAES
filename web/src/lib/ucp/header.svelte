@@ -6,10 +6,13 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { marked } from 'marked';
 
 	interface Props {
 		tip: any;
 		isAdmin?: boolean;
+		announcement?: string;
+		maintenance?: string | true;
 		faction: string;
 		icon: string;
 		data: {
@@ -27,7 +30,16 @@
 		nosocket: string | boolean;
 	}
 
-	let { tip, isAdmin = false, faction = 'SAMT', data, nosocket, icon }: Props = $props();
+	let {
+		tip,
+		isAdmin = false,
+		faction = 'SAMT',
+		data,
+		nosocket,
+		icon,
+		announcement,
+		maintenance
+	}: Props = $props();
 
 	let pagesz = pages(faction);
 
@@ -58,8 +70,34 @@
 
 <nav
 	style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
-	class="bg-background/20 fixed left-1/2 top-0 z-50 mt-2 flex h-16 w-11/12 max-w-7xl -translate-x-1/2 items-center justify-between rounded-full px-5 backdrop-blur-lg"
+	class="bg-background/20 fixed left-1/2 top-0 z-50 mt-2 flex h-20 w-11/12 max-w-[80dvw] -translate-x-1/2 flex-col items-center justify-between overflow-hidden rounded-full px-5 backdrop-blur-lg"
 >
+	{#if maintenance}
+		<div
+			class="text-md absolute top-0 flex h-4 w-full items-center justify-center gap-1 bg-red-400/40 text-center text-black backdrop-blur-lg dark:text-white"
+		>
+			{#if typeof maintenance == 'string'}
+				<h2>Karbantartás:</h2>
+				<h2>
+					{@html marked(maintenance.toString())}
+				</h2>
+			{:else}
+				Karbantartás
+			{/if}
+		</div>
+	{/if}
+	{#if announcement}
+		<div
+			class={`text-md absolute bottom-0 flex h-4 w-full items-center justify-center text-center text-black backdrop-blur-lg dark:text-white ${nosocket === false ? 'bg-blue-400/40' : 'bg-red-500/80'}`}
+		>
+			{#if nosocket}
+				{nosocket}
+			{:else}
+				{@html marked(announcement.toString())}
+			{/if}
+		</div>
+	{/if}
+	<div></div>
 	<div class="m-auto flex w-full items-center justify-between gap-2">
 		<a
 			class="group relative z-20 flex items-center gap-3"
@@ -119,10 +157,12 @@
 					{/each}
 				</NavigationMenu.List>
 			</NavigationMenu.Root>
-			<Button
-				class="text-foreground bg-[var(--color-primary)] font-bold hover:bg-[var(--color-secondary)]"
-				>Adminisztráció</Button
-			>
+			{#if isAdmin}
+				<Button
+					class="text-foreground bg-[var(--color-primary)] font-bold hover:bg-[var(--color-secondary)]"
+					>Adminisztráció</Button
+				>
+			{/if}
 		</div>
 	</div>
 </nav>
