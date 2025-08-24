@@ -1,10 +1,12 @@
 use std::thread;
 
 use api::run_api;
-use gbot::run_gbot;
 use tracing::{info, warn};
 
-use crate::{config::loader::get_module_config, modules::cdn::run_cdn};
+use crate::{
+    config::loader::get_module_config,
+    modules::{cdn::run_cdn, gbot::run_gbot_checks},
+};
 
 pub mod api;
 pub mod cdn;
@@ -37,7 +39,7 @@ pub async fn enable_modules() {
                 .thread_name("gbot")
                 .build()
                 .unwrap();
-            rt.block_on(run_gbot()).unwrap();
+            rt.block_on(run_gbot_checks()).unwrap();
         }));
     } else {
         warn!("Module GBOT DISABLED");
@@ -55,7 +57,7 @@ pub async fn enable_modules() {
             rt.block_on(run_cdn()).unwrap();
         }));
     } else {
-        warn!("Module GBOT DISABLED");
+        warn!("Module CDN DISABLED");
     }
     for thread in threads {
         let _ = thread.join().unwrap();

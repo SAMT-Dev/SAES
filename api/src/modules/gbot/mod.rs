@@ -5,7 +5,7 @@ use google_sheets4::{Sheets, api::ValueRange, hyper_rustls, hyper_util};
 use serde::Deserialize;
 use serde_json::Value;
 use tokio::time::sleep;
-use tracing::info;
+use tracing::{info, warn};
 
 use crate::config::loader::get_module_config;
 
@@ -60,6 +60,13 @@ where
                 sleep(Duration::from_secs(20 * attempts)).await;
             }
         }
+    }
+}
+
+pub async fn run_gbot_checks() -> Result<(), Box<dyn Error>> {
+    loop {
+        let run = run_gbot().await;
+        warn!("GBOT crashed, restarting...")
     }
 }
 
