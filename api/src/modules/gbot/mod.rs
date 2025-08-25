@@ -65,7 +65,7 @@ where
 
 pub async fn run_gbot_checks() -> Result<(), Box<dyn Error>> {
     loop {
-        let run = run_gbot().await;
+        let _ = run_gbot().await;
         warn!("GBOT crashed, restarting...")
     }
 }
@@ -91,6 +91,11 @@ pub async fn run_gbot() -> Result<(), Box<dyn Error>> {
         let client =
             hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new());
         let token = auth::get_google_auth().await;
+        if token.is_none() {
+            warn!("[GBOT] Couldn't get the token!");
+            return Err("Couldn't get the token!".into());
+        }
+        let token = token.unwrap();
         let sheets = Sheets::new(
             client.build(
                 hyper_rustls::HttpsConnectorBuilder::new()
