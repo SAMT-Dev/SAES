@@ -7,6 +7,7 @@
 	import { navigationMenuTriggerStyle } from '@/components/ui/navigation-menu/navigation-menu-trigger.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { marked } from 'marked';
+	import { goto } from '$app/navigation';
 
 	interface Props {
 		tip: any;
@@ -70,35 +71,40 @@
 
 <nav
 	style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
-	class="bg-background/20 fixed left-1/2 top-0 z-50 mt-2 flex h-20 w-11/12 max-w-[80dvw] -translate-x-1/2 flex-col items-center justify-between overflow-hidden rounded-full px-5 backdrop-blur-lg"
+	class="bg-background/20 fixed left-1/2 top-0 z-50 mt-2 flex h-20 w-11/12 max-w-[80dvw] -translate-x-1/2 flex-col items-center justify-between rounded-full px-5 backdrop-blur-lg"
 >
 	{#if maintenance}
 		<div
-			class="text-md absolute top-0 flex h-4 w-full items-center justify-center gap-1 bg-red-400/40 text-center text-black backdrop-blur-lg dark:text-white"
+			class="text-md absolute top-0 flex h-full w-full items-start justify-center gap-1 overflow-hidden rounded-full text-center text-black dark:text-white"
 		>
-			{#if typeof maintenance == 'string'}
-				<h2>Karbantartás:</h2>
-				<h2>
-					{@html marked(maintenance.toString())}
-				</h2>
-			{:else}
-				Karbantartás
-			{/if}
+			<div class="flex h-4 w-full items-center justify-center gap-1 bg-red-400/40 backdrop-blur-lg">
+				{#if typeof maintenance == 'string'}
+					<h2>Karbantartás:</h2>
+					<h2>
+						{@html marked(maintenance.toString())}
+					</h2>
+				{:else}
+					Karbantartás
+				{/if}
+			</div>
 		</div>
 	{/if}
 	{#if announcement}
 		<div
-			class={`text-md absolute bottom-0 flex h-4 w-full items-center justify-center text-center text-black backdrop-blur-lg dark:text-white ${nosocket === false ? 'bg-blue-400/40' : 'bg-red-500/80'}`}
+			class="text-md absolute bottom-0 flex h-full w-full items-end justify-center overflow-hidden rounded-full text-center text-black dark:text-white"
 		>
-			{#if nosocket}
-				{nosocket}
-			{:else}
-				{@html marked(announcement.toString())}
-			{/if}
+			<h2
+				class={`flex h-4 w-full items-center justify-center backdrop-blur-lg ${nosocket === false ? 'bg-blue-400/40' : 'bg-red-500/80'}`}
+			>
+				{#if nosocket}
+					{nosocket}
+				{:else}
+					{@html marked(announcement.toString())}
+				{/if}
+			</h2>
 		</div>
 	{/if}
-	<div></div>
-	<div class="m-auto flex w-full items-center justify-between gap-2">
+	<div class="z-30 m-auto flex w-full items-center justify-between gap-2">
 		<a
 			class="group relative z-20 flex items-center gap-3"
 			data-sveltekit-reload={true}
@@ -130,7 +136,7 @@
 					{#each pagesz as page}
 						{#if page.faction.includes(faction)}
 							<NavigationMenu.Item>
-								{#if !page.child}
+								{#if !page.children}
 									<NavigationMenu.Link>
 										{#snippet child()}
 											<a
@@ -144,7 +150,7 @@
 									<NavigationMenu.Trigger>{page.display}</NavigationMenu.Trigger>
 									<NavigationMenu.Content>
 										<ul class="grid gap-2 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-											{#each page.child as pc}
+											{#each page.children as pc}
 												{#if pc.faction.includes(faction)}
 													{@render ListItem({ title: pc.display, href: pc.url })}
 												{/if}
@@ -159,6 +165,7 @@
 			</NavigationMenu.Root>
 			{#if isAdmin}
 				<Button
+					onclick={async () => await goto('/ucp/admin')}
 					class="text-foreground bg-[var(--color-primary)] font-bold hover:bg-[var(--color-secondary)]"
 					>Adminisztráció</Button
 				>

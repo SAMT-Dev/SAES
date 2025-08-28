@@ -26,19 +26,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
     let env_mode = env::var("ENV_MODE");
     envs::load_envs().await;
-    if env_mode.is_err() {
-        panic!("ENV_MODE nincs setelve! production / testing / devel")
-    }
-    if ![
-        "production".to_string(),
-        "testing".to_string(),
-        "devel".to_string(),
-    ]
-    .contains(&env_mode.clone()?)
-    {
-        panic!("ENV_MODE rosszul setelve! production / testing / devel")
-    }
-    let env_mode = env_mode.unwrap();
+    let env_mode = if env_mode.is_ok() {
+        env_mode.unwrap()
+    } else {
+        "devel".to_string()
+    };
     BASE_HASHMAP.write().await.insert(
         "env_mode".to_string(),
         env_mode.clone().to_uppercase().to_string(),

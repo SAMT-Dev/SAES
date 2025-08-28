@@ -1,11 +1,10 @@
 use std::{env, thread};
 
-use api::run_api;
 use tracing::{info, warn};
 
 use crate::{
     config::loader::get_module_config,
-    modules::{cdn::run_cdn, gbot::run_gbot_checks},
+    modules::{api::run_api_checks, cdn::run_cdn_checks, gbot::run_gbot_checks},
 };
 
 pub mod api;
@@ -29,7 +28,7 @@ pub async fn enable_modules() {
                 .thread_name("api")
                 .build()
                 .unwrap();
-            rt.block_on(run_api()).unwrap();
+            rt.block_on(run_api_checks()).unwrap();
         }));
     } else {
         warn!("Module API DISABLED");
@@ -64,12 +63,16 @@ pub async fn enable_modules() {
                 .thread_name("cdn")
                 .build()
                 .unwrap();
-            rt.block_on(run_cdn()).unwrap();
+            rt.block_on(run_cdn_checks()).unwrap();
         }));
     } else {
         warn!("Module CDN DISABLED");
     }
     for thread in threads {
-        let _ = thread.join().unwrap();
+        let name = thread.thread().name().map(|n| n.to_string());
+        let stat = thread.join();
+        if stat.is_err() {
+            warn!("{} crashed!", name.as_deref().unwrap_or("Unknown"));
+        }
     }
 }

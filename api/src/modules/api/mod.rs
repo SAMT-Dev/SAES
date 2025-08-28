@@ -10,8 +10,10 @@ use tokio::sync::{OnceCell, RwLock};
 use tower::ServiceBuilder;
 use tower_cookies::CookieManagerLayer;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
-use tracing::info;
+use tracing::{info, warn};
 use utils::structs::AppUser;
+
+use crate::BASE_HASHMAP;
 
 pub mod api;
 pub mod app;
@@ -27,8 +29,16 @@ pub mod utils;
 pub static SOCKET_IO: OnceCell<SocketIo> = OnceCell::const_new();
 pub static APP_AUTHS: OnceCell<RwLock<Vec<AppUser>>> = OnceCell::const_new();
 
+pub async fn run_api_checks() -> Result<(), Box<dyn Error>> {
+    loop {
+        let _ = run_api().await;
+        warn!("API crashed, restarting...")
+    }
+}
+
 pub async fn run_api() -> Result<(), Box<dyn Error>> {
-    let env_mode = env::var("ENV_MODE").unwrap();
+    let hash = BASE_HASHMAP.read().await;
+    let env_mode = hash.get("env_mode").unwrap().clone();
     init::main().await;
     let hash = env::var("COMMIT_HASH");
     let (layer, io) = SocketIo::new_layer();

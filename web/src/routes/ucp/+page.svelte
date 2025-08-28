@@ -47,58 +47,62 @@
 	// 		body: reason
 	// 	});
 	// };
+	import * as Card from '$lib/components/ui/card/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 
-<div
-	class="child:p-2 md:child:p-16 grid grid-cols-1 grid-rows-1 pb-[800px] text-center text-black dark:text-white"
->
+<div class="child:p-2 md:child:p-16 text-center text-black dark:text-white">
 	{#if !data.error}
-		<div class="ml-16 mr-16 mt-16 rounded-lg bg-amber-600">
-			<h1 class="text-2xl drop-shadow-lg md:text-5xl md:font-bold">
-				{greet}, {data.layout?.admin ? 'SA ' : ''}{data.layout?.name}{end}
-			</h1>
-			<a href="/logout" data-sveltekit-reload>Kijelentkezés</a>
-			{#if data.layout?.factions}
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Pozíciód: {data.layout.factions.positionname}
-				</h2>
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Műszakod: {data.layout.factions.shiftname}
-				</h2>
-			{/if}
-			{#if allowFacts(data, ['SCKK', 'TOW', 'UNI'])}
-				{#if Number(data.calls?.app) + Number(data.calls?.leintes) > 0}
-					{#if data.calls?.app === null}
-						<h2 class="text-xl drop-shadow-lg md:text-2xl">
-							Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}
-						</h2>
-					{:else}
-						<h2 class="text-xl drop-shadow-lg md:text-2xl">
-							Hívásaid (app+leintés): {data.calls?.app}+{data.calls?.leintes}={Number(
-								data.calls?.app
-							) + Number(data.calls?.leintes)}
-						</h2>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>{greet}, {data.layout?.admin ? 'SA ' : ''}{data.layout?.name}{end}</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				{#if data.layout?.factions}
+					<h2 class="text-xl drop-shadow-lg md:text-2xl">
+						Pozíciód: {data.layout.factions.positionname}
+					</h2>
+					<h2 class="text-xl drop-shadow-lg md:text-2xl">
+						Műszakod: {data.layout.factions.shiftname}
+					</h2>
+				{/if}
+				{#if allowFacts(data, ['SCKK', 'TOW', 'UNI'])}
+					{#if Number(data.calls?.app) + Number(data.calls?.leintes) > 0}
+						{#if data.calls?.app === null}
+							<h2 class="text-xl drop-shadow-lg md:text-2xl">
+								Hívásaid (app nem megy, csak leintés): {data.calls?.leintes}
+							</h2>
+						{:else}
+							<h2 class="text-xl drop-shadow-lg md:text-2xl">
+								Hívásaid (app+leintés): {data.calls?.app}+{data.calls?.leintes}={Number(
+									data.calls?.app
+								) + Number(data.calls?.leintes)}
+							</h2>
+						{/if}
 					{/if}
 				{/if}
-			{/if}
-			{#if (data.calls?.potlek.de && data.calls?.potlek.de > 0) || (data.calls?.potlek.du && data.calls?.potlek.du > 0)}
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Elfogadott pótlékaid: délelőtti: {data.calls?.potlek.de}, éjszakai: {data.calls?.potlek
-						.du}
-				</h2>
-			{/if}
-			{#if data.calls?.price! > 0}
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Elfogadott számlák összege: {data.calls?.price}$.
-				</h2>
-			{/if}
-			{#if allowFacts(data, ['APMS']) && data.szamlak}
-				<h2 class="text-xl drop-shadow-lg md:text-2xl">
-					Kezelt számlák (feltöltött+elfogadott): {data.szamlak?.uploaded}+{data.szamlak
-						?.accepted}={Number(data.szamlak?.uploaded) + Number(data.szamlak?.accepted)}
-				</h2>
-			{/if}
-		</div>
+				{#if (data.calls?.potlek.de && data.calls?.potlek.de > 0) || (data.calls?.potlek.du && data.calls?.potlek.du > 0)}
+					<h2 class="text-xl drop-shadow-lg md:text-2xl">
+						Elfogadott pótlékaid: délelőtti: {data.calls?.potlek.de}, éjszakai: {data.calls?.potlek
+							.du}
+					</h2>
+				{/if}
+				{#if data.calls?.price! > 0}
+					<h2 class="text-xl drop-shadow-lg md:text-2xl">
+						Elfogadott számlák összege: {data.calls?.price}$.
+					</h2>
+				{/if}
+				{#if allowFacts(data, ['APMS']) && data.szamlak}
+					<h2 class="text-xl drop-shadow-lg md:text-2xl">
+						Kezelt számlák (feltöltött+elfogadott): {data.szamlak?.uploaded}+{data.szamlak
+							?.accepted}={Number(data.szamlak?.uploaded) + Number(data.szamlak?.accepted)}
+					</h2>
+				{/if}
+			</Card.Content>
+			<Card.Footer>
+				<Button variant="destructive">Kijelentkezés</Button>
+			</Card.Footer>
+		</Card.Root>
 	{/if}
 </div>
 {#if data.error}

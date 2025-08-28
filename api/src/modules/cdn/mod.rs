@@ -15,9 +15,16 @@ use tokio::fs::File;
 use tokio_util::io::ReaderStream;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
-use tracing::info;
+use tracing::{info, warn};
 
 use crate::{DB_CLIENT, config::loader::get_module_config};
+
+pub async fn run_cdn_checks() -> Result<(), Box<dyn Error>> {
+    loop {
+        let _ = run_cdn().await;
+        warn!("CDN crashed, restarting...")
+    }
+}
 
 pub async fn run_cdn() -> Result<(), Box<dyn Error>> {
     let app = Router::new()

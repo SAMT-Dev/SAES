@@ -55,19 +55,27 @@ export const pages = (fact: string) => {
 			faction: ["SCKK", "TOW", "UNI"],
 		},
 		{
-			url: "/ucp/potlekok",
-			display: "Pótlékok",
+			display: "Feltöltések",
 			faction: ["SCKK", "TOW", "APMS", "UNI"],
-		},
-		{
-			url: "/ucp/leintesek",
-			display: `Leintések${fact === "TOW" ? " / Bejelentések" : ""}`,
-			faction: ["SCKK", "TOW", "UNI"],
-		},
-		{
-			url: "/ucp/szamlak",
-			display: "Szereltetési számlák",
-			faction: ["SCKK", "TOW", "APMS", "UNI"],
+			children: [
+				{
+					url: "/ucp/potlekok",
+					display: "Pótlékok",
+					faction: ["SCKK", "TOW", "APMS", "UNI"],
+				},
+				{
+					url: "/ucp/leintesek",
+					display: `Leintések${
+						fact === "TOW" ? " / Bejelentések" : ""
+					}`,
+					faction: ["SCKK", "TOW", "UNI"],
+				},
+				{
+					url: "/ucp/szamlak",
+					display: "Szereltetési számlák",
+					faction: ["SCKK", "TOW", "APMS", "UNI"],
+				},
+			],
 		},
 	];
 };
