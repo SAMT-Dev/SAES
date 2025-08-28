@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"@date-fns/tz": "^1.4.1",
 		"@internationalized/date": "^3.8.2",
-		"@lucide/svelte": "^0.539.0",
+		"@lucide/svelte": "^0.515.0",
 		"@sveltejs/adapter-node": "^5.2.14",
 		"@sveltejs/kit": "^2.28.0",
 		"@sveltejs/vite-plugin-svelte": "^6.1.1",

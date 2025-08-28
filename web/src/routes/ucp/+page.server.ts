@@ -1,7 +1,8 @@
 // import { sheet } from '$lib/server/google';
 // import { prisma } from '$lib/server/prisma';
-import type { PageServerLoad } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 import { apiUrl } from "$lib/api";
+import { redirect } from "@sveltejs/kit";
 
 export const load = (async ({ cookies }) => {
 	if (!cookies.get("auth_token")) {
@@ -56,3 +57,13 @@ export const load = (async ({ cookies }) => {
 		};
 	}
 }) satisfies PageServerLoad;
+
+export const actions = {
+	logout: async ({ cookies, request }) => {
+		cookies.delete("auth_token", { path: "/" });
+		cookies.delete("dc-auth", { path: "/" });
+		cookies.delete("dc-refresh", { path: "/" });
+		cookies.delete("selected_faction", { path: "/" });
+		throw redirect(302, new URL(request.url).pathname);
+	},
+} satisfies Actions;

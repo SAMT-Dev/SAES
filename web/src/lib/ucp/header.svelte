@@ -70,8 +70,8 @@
 {/snippet}
 
 <nav
-	style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
-	class="bg-background/20 fixed left-1/2 top-0 z-50 mt-2 flex h-20 w-11/12 max-w-[80dvw] -translate-x-1/2 flex-col items-center justify-between rounded-full px-5 backdrop-blur-lg"
+	style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};--primary: ${data.info?.primary}; --secondary: ${data.info?.secondary}; --accent: ${data.info?.tertiary};`}
+	class="bg-secondary/20 fixed left-1/2 top-0 z-50 mt-2 flex h-20 w-11/12 max-w-[80dvw] -translate-x-1/2 flex-col items-center justify-between rounded-full px-5 backdrop-blur-lg"
 >
 	{#if maintenance}
 		<div
@@ -141,13 +141,16 @@
 										{#snippet child()}
 											<a
 												href={page.url}
-												class={navigationMenuTriggerStyle('hover:text-[var(--color-primary)]')}
+												class={`${navigationMenuTriggerStyle()} bg-background/20 hover:bg-accent/20`}
 												>{page.display}</a
 											>
 										{/snippet}
 									</NavigationMenu.Link>
 								{:else}
-									<NavigationMenu.Trigger>{page.display}</NavigationMenu.Trigger>
+									<NavigationMenu.Trigger
+										class={`${navigationMenuTriggerStyle()} bg-background/20 hover:bg-accent/20`}
+										>{page.display}</NavigationMenu.Trigger
+									>
 									<NavigationMenu.Content>
 										<ul class="grid gap-2 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
 											{#each page.children as pc}

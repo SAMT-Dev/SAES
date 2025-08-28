@@ -207,7 +207,7 @@
 		<ViewTransition />
 		<main
 			style={`--color-primary: ${data.info?.primary}; --color-secondary: ${data.info?.secondary}; --color-tertiary: ${data.info?.tertiary};`}
-			class="pt-26 selection:bg-[var(--color-primary)]"
+			class="pt-26 container mx-auto selection:bg-[var(--color-primary)]"
 		>
 			{@render children?.()}
 		</main>

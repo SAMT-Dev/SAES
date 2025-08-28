@@ -100,7 +100,9 @@
 				{/if}
 			</Card.Content>
 			<Card.Footer>
-				<Button variant="destructive">Kijelentkezés</Button>
+				<form action="?/logout" method="POST">
+					<Button variant="destructive" type="submit">Kijelentkezés</Button>
+				</form>
 			</Card.Footer>
 		</Card.Root>
 	{/if}
